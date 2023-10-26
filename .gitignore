@@ -1,0 +1,10 @@
+chemacs/doom
+chemacs/elegant
+chemacs/nano
+doom/themes
+
+chemacs/scratch/*
+!chemacs/scratch/conf.org
+!chemacs/scratch/init.el
+
+hypr/dreamy-dots

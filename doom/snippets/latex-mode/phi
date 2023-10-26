@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Phi
+# key: phi
+# condition: t
+# --
+
+$\phi$

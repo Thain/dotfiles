@@ -1,0 +1,59 @@
+\author{Liam Chung}
+\usepackage{amsfonts}
+\usepackage{amsmath, amsthm, mathtools}
+%\usepackage{lipsum}
+\usepackage{amssymb}
+\usepackage{csquotes}
+\usepackage[utf8]{inputenc}
+%\usepackage{ntheorem}
+\usepackage[shortlabels]{enumitem}
+% \usepackage[margin=1.8in]{geometry}
+
+%\usepackage{wasysym}
+\usepackage{tikz-cd}
+
+% \usepackage{ebproof} % for drawing proof trees
+\usepackage{/home/thain/.config/latex/prooft} % implements \prv, see final example
+\usepackage{/home/thain/.config/latex/quiver}
+
+\newcommand{\no}{\noindent}
+\newcommand{\m}{\mathbb}
+\newcommand{\vs}{\vspace{1\baselineskip}} %add one vertical space
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\ker}{ker}
+\DeclareMathOperator{\deg}{deg}
+
+\newcommand{\inv}{^{-1}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\Set}{\textbf{Set} }
+\newcommand{\id}{\text{id}}
+\newcommand{\op}{^{\text{op}}}
+\renewcommand{\hom}{\text{Hom}}
+\renewcommand{\phi}{\varphi}
+
+\newenvironment{problem}[1]
+        {\no\textbf{PROBLEM #1.}}
+
+\newtheorem*{theorem}{Theorem}
+\newtheorem*{corollary}{Corollary}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{remark}{Remark}
+\newtheorem*{definition}{Definition}
+\newtheorem*{proposition}{Proposition}
+
+
+\DeclareFontFamily{U}{min}{}
+\DeclareFontShape{U}{min}{m}{n}{<-> udmj30}{}
+\newcommand\yo{\!\text{\usefont{U}{min}{m}{n}\symbol{'207}}\!}
+
+
+\usepackage{CJKutf8}
+\newcommand{\wan}{
+    \begin{CJK*}{UTF8}{gbsn}
+    \hfill 完
+    \end{CJK*}
+}

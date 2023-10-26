@@ -1,0 +1,100 @@
+\def\provx#1#2#3#4{
+\setbox1=\hbox{\kern1.5pt$\scriptstyle#3$}
+\def\zeichen{#2}
+\ifx\zeichen\empty\setbox0=\hbox to .75em{}\else\setbox0=\hbox
+{\kern1.5pt$\scriptstyle#2$}\fi
+\dimen1=\dp0 \ifdim \dimen1=0pt 
+\advance \dimen1 by 1.5ex \else \advance \dimen1 by 1.2ex 
+\fi\dimen3=2ex\dimen4=.5ex\ifdim \wd0<\wd1 \dimen2=\wd1 \else \dimen2=\wd0 
+\fi\hbox{$#1\hskip 5pt minus5pt\vrule height\dimen3 
+depth\dimen4\raise\dimen1\copy0\hskip-1\wd0 \lower\ht1 
+\copy1\hskip-1\wd1\vrule width\dimen2 height.7ex depth-.6ex\hskip3pt 
+minus1.5pt#4\hskip2pt plus2pt minus2pt$}}
+
+\def\prov#1#2#3{
+\setbox1=\hbox{\kern1.5pt$\scriptstyle#2$}
+\def\zeichen{#1}
+\ifx\zeichen\empty\setbox0=\hbox to .75em{}\else\setbox0=\hbox
+{\kern1.5pt$\scriptstyle#1$}\fi
+\dimen1=\dp0 
+\ifdim \dimen1=0pt 
+\advance \dimen1 by 1.5ex \else \advance \dimen1 by 1.2ex 
+\fi\dimen3=2ex\dimen4=.5ex\ifdim \wd0<\wd1 \dimen2=\wd1 \else \dimen2=\wd0 
+\fi\hbox{\hskip0pt plus 4pt
+$\vrule height\dimen3
+depth\dimen4\raise\dimen1\copy0\hskip-1\wd0  
+\lower\ht1\copy1\hskip-1\wd1\vrule width\dimen2 height.7ex depth-.6ex 
+\hskip3pt minus1.5pt#3\hskip2pt plus2pt minus2pt$}}
+
+\def\prv#1#2{
+\setbox1=\hbox{\kern1.5pt$\scriptstyle#2$}
+\ifx\zeichen\empty\setbox0=\hbox to .75em{}\else\setbox0=\hbox
+{\kern1.5pt$\scriptstyle#1$}\fi
+\dimen1=\dp0 \ifdim \dimen1=0pt 
+\advance \dimen1 by 1.5ex \else \advance \dimen1 by 1.2ex 
+\fi\dimen3=2ex\dimen4=.5ex\ifdim \wd0<\wd1 \dimen2=\wd1 \else \dimen2=\wd0 
+\fi\hbox{\hskip.5em$\vrule height\dimen3
+depth\dimen4\raise\dimen1\copy0\hskip-1\wd0  
+\lower\ht1\copy1\hskip-1\wd1\vrule width\dimen2 height.7ex depth-.6ex 
+\hskip3pt minus1.5pt$}}
+
+\mathchardef\str='1066
+\def\negprov#1#2#3{
+\setbox1=\hbox{\kern1.5pt$\scriptstyle#2$}
+\setbox4=\hbox{$\str$}
+\def\zeichen{#1}
+\ifx\zeichen\empty\setbox0=\hbox to 1em{}\else\setbox0=\hbox
+{\kern1.5pt$\scriptstyle#1$}\fi
+\dimen1=\dp0 
+\ifdim \dimen1=0pt 
+\advance \dimen1 by 1.5ex \else \advance \dimen1 by 1.2ex 
+\fi\dimen3=2ex\dimen4=.5ex\ifdim \wd0<\wd1 \dimen2=\wd1 \else \dimen2=\wd0 
+\fi\hbox{\hskip.5em$\kern-1.9pt\raise1pt\copy4\kern-\wd4\kern1.9pt\vrule height\dimen3
+depth\dimen4\raise\dimen1\copy0\hskip-1\wd0  
+\lower\ht1\copy1\hskip-1\wd1\vrule width\dimen2 height.7ex depth-.6ex 
+\hskip3pt minus1.5pt#3\hskip2pt plus2pt minus2pt$}}
+
+\def\goed#1{\setbox5=\hbox{$#1$}\dimen1=.25em \dimen2=\dimen1 \advance \dimen2 
+by -1pt\hbox{\raise.65\ht5 \hbox{\vrule height.5\ht5 depth0pt width.4pt\vrule 
+height.5\ht5 width\dimen1 depth-.48\ht5}\kern-\dimen2\copy5\kern-\dimen2 
+\raise.65\ht5 \hbox{\vrule height .5\ht5 width\dimen1 depth-.48\ht5\vrule 
+height.5\ht5 depth 0pt width.4pt}\hskip4pt plus2pt minus2pt}}
+
+\def\mod#1#2{
+	\def\zeichen{#1}
+	\hbox{\hskip 2pt plus3pt minus 2pt\vrule width.5pt height2ex depth.5ex
+		\vbox{\ifx\zeichen\empty\hbox to .75em{}\else
+		\hbox{\kern1.5pt $\scriptstyle#1$}\fi
+		\kern2pt
+		\hrule 
+		\kern1.7pt
+		\hrule\kern1.7pt}
+		\hskip3pt minus 2pt$#2$}\hskip2pt
+		plus3pt minus2pt}
+
+\def\notmod#1#2{\hbox{\hskip 2pt plus 3pt minus 3pt\vrule width.5pt
+		height2ex depth.5ex 
+		\vbox{\hbox{\kern1.5pt $\scriptstyle#1$}\kern3pt
+		\setbox0=\hbox{\kern2pt$\scriptstyle/$}
+		\hrule
+		\kern-1.7pt 
+		\copy0
+		\kern-\ht0
+		\kern 1.7pt
+		\hrule\kern1.7pt}n
+		\hskip3pt minus 2pt$#2$}\hskip2pt
+		plus3pt minus2pt}
+\def\sq{\hbox{\rlap{$\sqcap$}$\sqcup$}}
+\def\qed{\ifmmode\sq\else{\unskip\nobreak\hfil\penalty50\hskip1em\null 
+\nobreak\hfil\sq\parfillskip=0pt\finalhyphendemerits=0\endgraf}\fi\medskip}
+
+\def\lleq	{\hbox{\hskip3pt minus3pt\kern1pt\lower4pt
+		\vbox{\hbox{$\scriptstyle\ll$} 
+		\kern-7pt\hbox{\kern1pt$\scriptstyle=$}}\hskip3pt minus 3pt}} 
+
+\def\qcolon{\hbox{$\hskip1.5pt\dpkt\hskip4pt plus1pt minus3pt$}}
+\mathchardef\res='1152
+\mathchardef\qin='1062
+\mathchardef\qprec='1036
+\mathchardef\qless='474
+\mathchardef\dpkt='72

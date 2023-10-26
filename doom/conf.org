@@ -1,0 +1,1359 @@
+
+#+TITLE: Literate Configuration
+ #+STARTUP: overview hideblocks
+
+* Initial setup
+** Name & Email
+Some functionality uses this for identification, e.g. GPG configuration, email clients, file templates and snippets.
+#+begin_src emacs-lisp
+(setq user-full-name "Liam Chung"
+      user-mail-address "lwalkerchung@gmail.com")
+#+end_src
+** Dashboard
+Setting the ascii function for rendering on my dashboard.
+#+begin_src emacs-lisp :tangle no
+(defun doom-dashboard-draw-ascii-emacs-banner-fn ()
+  (let* ((banner
+          '(",---.,-.-.,---.,---.,---."
+            "|---'| | |,---||    `---."
+            "`---'` ' '`---^`---'`---'"))
+         (longest-line (apply #'max (mapcar #'length banner))))
+    (put-text-property
+     (point)
+     (dolist (line banner (point))
+       (insert (+doom-dashboard--center
+                +doom-dashboard--width
+                (concat line (make-string (max 0 (- longest-line (length line))) 32)))
+               "\n"))
+     'face 'doom-dashboard-banner)))
+#+end_src
+#+begin_src emacs-lisp
+(defun a-very-pretty-flower ()
+  (let* ((banner '("                              ....                                  "
+                   "                           ,;;\'\'\'\';;,                    ,;;;;,     "
+                   "                 ,        ;;\'      `;;,               .,;;;\'   ;    "
+                   "              ,;;;       ;;          `;;,\';;;,.     ,%;;\'     \'     "
+                   "            ,;;,;;       ;;         ,;`;;;, `;::.  %%;\'             "
+                   "           ;;;,;;;       `\'       ,;;; ;;,;;, `::,%%;\'              "
+                   "           ;;;,;;;,          .,%%%%%\'% ;;;;,;;   %;;;               "
+                   " ,%,.      `;;;,;;;,    .,%%%%%%%%%\'%; ;;;;;,;;  %;;;               "
+                   ";,`%%%%%%%%%%`;;,;;\'%%%%%%%%%%%%%\'%%\'  `;;;;;,;, %;;;               "
+                   ";;;,`%%%%%%%%%%%,; ..`%%%%%%%%;\'%%%\'    `;;;;,;; %%;;               "
+                   " `;;;;;,`%%%%%,;;/, .. `\"\"\"\'\',%%%%%      `;;;;;; %%;;,              "
+                   "    `;;;;;;;,;;/////,.    ,;%%%%%%%        `;;;;,`%%;;              "
+                   "           ;;;/%%%%,%///;;;\';%%%%%%,          `;;;%%;;,             "
+                   "          ;;;/%%%,%%%%%/;;;\';;\'%%%%%,             `%%;;             "
+                   "         .;;/%%,%%%%%//;;\'  ;;;\'%%%%%,             %%;;,            "
+                   "         ;;//%,%%%%//;;;\'   `;;;;\'%%%%             `%;;;            "
+                   "         ;;//%,%//;;;;\'      `;;;;\'%%%              %;;;,           "
+                   "         `;;//,/;;;\'          `;;;\'%%\'              `%;;;           "
+                   "           `;;;;\'               `;\'%\'                `;;;;          "
+                   "                                  \'      .,,,.        `;;;;         "
+                   "                                      ,;;;;;;;;;;,     `;;;;        "
+                   "                                     ;;;\'    ;;;,;;,    `;;;;       "
+                   "                                     ;;;      ;;;;,;;.   `;;;;      "
+                   "                                      `;;      ;;;;;,;;   ;;;;      "
+                   "                                        `\'      `;;;;,;;  ;;;;      "
+                   "                                                   `;;,;, ;;;;      "
+                   "                                                      ;;, ;;;;      "
+                   "                                                        \';;;;;      "
+                   "                                                         ;;;;;      "
+                   "                                                        .;;;;\'      "
+                   "                                                       .;;;;\'       "
+                   "                                                      ;;;;;\'        "
+                   "                                                    ,;;;;\'          "))
+         (longest-line (apply #'max (mapcar #'length banner))))
+    (put-text-property
+     (point)
+     (dolist (line banner (point))
+       (insert (+doom-dashboard--center
+                +doom-dashboard--width
+                (concat line (make-string (max 0 (- longest-line (length line))) 32)))
+               "\n"))
+     'face 'doom-dashboard-banner)))
+ #+end_src
+Set the ascii banner to be my ascii function, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
+#+begin_src emacs-lisp
+; (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
+(setq +doom-dashboard-ascii-banner-fn #'a-very-pretty-flower)
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+(setq-hook! '+doom-dashboard-mode-hook cursor-type nil)
+(setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor nil)
+#+end_src
+** Theme
+My theme, with some old ones I've used thrown in.
+#+begin_src emacs-lisp
+;;alternatives: doom-dracula, doom-one, doom-solarized-dark, doom-palenight
+;(setq doom-theme 'doom-nord)
+;(setq doom-theme 'doom-nano-dark)
+(setq doom-theme 'doom-palenight)
+(setq projectile-project-search-path '("~/documents" ) ;; default project dir
+      line-move-visual nil ;; no visual line mode, ie moving across wrapped lines are separate
+      display-line-numbers-type t ;; line numbers: nil for none, relative, or t for reg
+      ;doom-font (font-spec :family "JetBrains Mono" :size 22)
+      ;doom-font (font-spec :family "Roboto Mono" :size 22)
+      doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'regular)
+      confirm-kill-emacs nil) ;; do not ask if i want to exit
+#+end_src
+** Misc stuff
+#+begin_src emacs-lisp
+;; i think it should work better now since i put snippets back in packages.el?
+;;(setq doom-snippets-dir "~/.doom.d/snippets/")
+;;(setq +file-templates-dir "~/.doom.d/snippets/")
+(set-file-template! "\\.tex$" :trigger "latex-default")
+;;(yas-reload-all)
+
+;; when opening file, read number of lines and add width to line number column
+(defun display-line-numbers-equalize ()
+  (setq display-line-numbers-width (length (number-to-string (line-number-at-pos (point-max))))))
+(add-hook 'find-file-hook 'display-line-numbers-equalize)
+
+;; Hide the tabs since I don't want to click on them
+(setq tab-bar-show nil
+      desktop-save-mode t)
+#+end_src
+** Mode hooks
+Require modes and set default modes for file extensions
+#+begin_src emacs-lisp
+(require 'web-mode)
+(require 'pdf-tools)
+(add-to-list 'auto-mode-alist '("\\.html\;" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php\;" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js\;" . js-mode))
+;(add-to-list 'auto-mode-alist '("\\.fish\;" . fish-mode))
+(add-to-list 'auto-mode-alist '("\\.pdf\;" . pdf-tools))
+
+(use-package! kbd-mode)
+(add-to-list 'auto-mode-alist '("\\.kbd\;" . kbd-mode))
+
+#+end_src
+** Modeline
+#+begin_src emacs-lisp
+; (use-package lambda-line
+;   :custom
+;   (lambda-line-icon-time nil) ;; requires ClockFace font (see below)
+;   (lambda-line-position 'top) ;; Set position of status-line
+;   (lambda-line-abbrev t) ;; abbreviate major modes
+;   (lambda-line-hspace " ")  ;; add some cushion
+;   (lambda-line-prefix t) ;; use a prefix symbol
+;   (lambda-line-prefix-padding nil) ;; no extra space for prefix
+;   (lambda-line-status-invert nil)  ;; no invert colors
+;   (lambda-line-gui-ro-symbol  " ◉") ;; symbols
+;   (lambda-line-gui-mod-symbol " ●")
+;   (lambda-line-gui-rw-symbol  " ○")
+;   (lambda-line-space-top +.60)  ;; padding on top and bottom of line
+;   (lambda-line-space-bottom -.60)
+;   (lambda-line-symbol-position 0) ;; adjust the vertical placement of symbol
+;   :config
+;   ;; activate lambda-line
+;   (lambda-line-mode)
+;   ;; set divider line in footer
+;   (when (eq lambda-line-position 'top)
+;     (setq-default mode-line-format (list "%_"))
+;     (setq mode-line-format (list "%_"))))
+#+end_src
+* Keybinds
+** Leader
+*** Workspace
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("TAB" . "workspace")
+        :desc "load workspace"              "SPC" #'+workspace/load
+        :desc "workspace forward"             "l" #'+workspace/switch-right
+        :desc "workspace back"                "h" #'+workspace/switch-left))
+#+end_src
+*** Buffer
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("b" . "buffer")
+        :desc "Kill buffer and window"        "k" #'kill-buffer-and-window))
+#+end_src
+*** Dired
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("d" . "dired")
+        :desc "Open dired in specified dir"   "." #'dired
+        :desc "Open dired in $HOME"           "h" (lambda () (interactive) (dired "~"))
+        :desc "Open dired in root"            "r" (lambda () (interactive) (dired "/"))
+        :desc "Open dired in org dir"         "o" (lambda () (interactive) (dired "~/documents/org"))
+        :desc "Close all dired buffers"       "q" #'+dired/quit-all
+        :desc "Open dired in PWD"             "d" #'dired-jump))
+#+end_src
+*** Open
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("o" . "open")
+        :desc "Open agenda"                   "a" #'org-agenda
+        :desc "Open terminal"                 "s" #'vterm
+        :desc "Open media player"             "e" #'emms
+        :desc "Open calendar"                 "c" #'=calendar
+        :desc "Open notes (notes.org)"        "n" (lambda () (interactive) (find-file "~/documents/org/notes.org"))
+        :desc "Open inbox"                    "i" (lambda () (interactive) (find-file "~/documents/org/gtd/inbox.org"))
+        :desc "Open main org file"            "o" (lambda () (interactive) (find-file "~/documents/org/gtd/gtd.org"))
+        :desc "Open config (conf.org)"        "C" (lambda () (interactive) (find-file "~/.config/doom/conf.org"))
+        :desc "Open $HOME in dired"           "h" (lambda () (interactive) (dired "~"))
+        :desc "Open root in dired"            "r" (lambda () (interactive) (dired "/"))
+        :desc "Open todo"                     "t" #'org-todo-list))
+#+end_src
+*** Window
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("w" . "window")
+        :desc "open file in other window"    "." #'find-file-other-window
+        :desc "vsplit and follow"            "v" #'+evil/window-vsplit-and-follow
+        :desc "split and follow"             "s" #'+evil/window-split-and-follow))
+#+end_src
+*** Unbind
+#+begin_src emacs-lisp
+(map! :leader
+    ;; notes. not really necessary for what little i do,
+    ;; so i've bound the ones i need over to the "open" and "dired" prefixes
+    "n" nil
+    ;; git, get to it when i need it
+    "g" nil
+    ;; actions; a wild list of things. "embark" is a recurring word
+    "a" nil
+    ;; resume last search
+    "'" nil
+    ;; toggle last popup
+    "~" nil
+    ;; universal arg?
+    "u" nil
+    ;; search. should get a dict/thesaur backend
+    "s" nil
+    ;; code. need modules for it?
+    "c" nil
+    ;; toggle. good for toggling modes and variables, but i dont have
+    ;; specific things in mind yet. would like one for visual line mode
+    "t" nil
+    (:prefix ("o" . "open")
+        "b" nil "-" nil "E" nil
+        "l" nil "L" nil "u" nil "R" nil
+        "U" nil "A" nil "d" nil)
+    (:prefix ("h" . "help")
+        "l" #'+lookup/definition
+        ;; apropos. seems like a documentation thing
+        ;"a" nil
+        "A" nil
+        ;; describe coding system. no idea
+        "C" nil
+        ;; describe various things I don't need
+        ;; face, gnu,   input,   news,   syntax, manorwoman, lang
+        "g" nil "l" nil "n" nil "s" nil "W" nil     "L" nil
+        ;; autodef, profiler, info other window
+        "u" nil     "T" nil   "4" nil "h" nil
+        ;; alternate versions of things i already got rid of
+        ;; and will certainly never use these keybinds for em
+        "C-a" nil "C-c" nil "C-d" nil "C-e" nil "C-f" nil "C-k" nil
+        "C-l" nil "C-n" nil "C-o" nil "C-p" nil "C-s" nil "C-t" nil
+        "C-w" nil "<f1>" nil "q" nil  "C-\\" nil
+        ;; various things maybe I will eventually want, but not yet
+        ;; command, goto docs key, sandbox, local help, char
+        "x" nil     "K" nil        "E" nil  "." nil     "'" nil
+        ;; info, symbol, help packages, library
+        "i" nil "o" nil "p" nil "P" nil
+        ;; input history, online lookup, load theme, whereis
+        "I" nil          "O" nil        "t" nil     "w" nil)
+    (:prefix ("b" . "buffer")
+        "n" nil "z" nil "Z" nil
+        "x" nil "u" nil "p" nil
+        "N" nil "r" nil "O" nil)
+    (:prefix ("f" . "file")
+        "c" nil "e" nil "E" nil "l" nil
+        "P" nil "F" nil "u" nil "U" nil)
+    (:prefix ("w" . "window")
+        "C-S-h" nil "C-S-j" nil "C-S-k" nil "C-S-l" nil "C-S-r" nil "C-S-s" nil "C-S-w" nil
+        "C-b" nil "C-c" nil "C-f" nil "C-h" nil "C-j" nil "C-l" nil "C-w" nil "C-v" nil
+        "C-n" nil "C-o" nil "C-p" nil "C-r" nil "C-s" nil "C-t" nil "C-u" nil "C-k" nil
+        "C-q" nil "C-x" nil "C-_" nil "<left>" nil "<right>" nil
+        "C-<left>" nil "C-<right>" nil "<up>" nil "C-<down>" nil "<down>" nil "C-<up>" nil
+        "c" nil "t" nil "b" nil "n" nil "m" nil
+        ;; I don't really separate windows. should i?
+        "T" nil
+        ;; TODO a bunch of evil binds. what are these supposed to do
+        "g" nil "f" nil
+        ;; don't need these since i made split and follow the default
+        "S" nil "V" nil
+        ;; TODO what are these supposed to do
+        "r" nil "R" nil "p" nil
+        ;; TODO what is the difference between these two and spc w d
+        "q" nil "c" nil
+        ;; TODO why do these do weird shit "_" nil
+        "|" nil))
+#+end_src
+*** Capture
+#+begin_src emacs-lisp
+(map! :leader :desc "Open org capture"   "c" #'org-capture )
+#+end_src
+*** EMMS
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("e" . "emms")
+        :desc "Open emms buffer"         "o" #'emms
+        :desc "Open emms buffer"         "e" #'emms
+        :desc "Open smart browser"       "B" #'emms-smart-browse
+        :desc "Open normal browser"      "b" #'emms-browser
+        :desc "Clear playlist"           "c" #'emms-playlist-current-clear
+        :desc "Pause / Resume"           "p" #'emms-pause
+        :desc "Start"                    "s" #'emms-start
+        :desc "Stop"                     "t" #'emms-stop
+        :desc "Next track"               "." #'emms-next
+        :desc "Prev track"               "," #'emms-previous
+        (:prefix ("a" . "add")
+                :desc "Add dir"                  "d" #'emms-add-directory
+                :desc "Add file"                 "f" #'emms-add-file
+                :desc "Cache all files in dir"   "c" #'emms-add-directory-tree
+                :desc "Add playlist"             "p" #'emms-add-playlist)))
+
+#+end_src
+** Evil
+switching to isearch
+#+begin_src emacs-lisp
+(evil-select-search-module 'evil-search-module 'isearch)
+#+end_src
+Attempting to simplify evil
+#+begin_src emacs-lisp
+
+;;(after! evil (setq evil-want-minibuffer 1))
+;; TODO bind an ex search and replace
+(map! :map evil-motion-state-map :prefix "g"
+      :desc "goto line number"                 "o" 'evil-goto-line
+      :desc "cursor to end of line"            "l" 'evil-end-of-line
+      :desc "nonblank start of line"           "h" 'evil-first-non-blank
+      "$" nil "^" nil "e" nil "E" nil ;; removing binds
+      "K" nil "n" nil "N" nil "t" nil "T" nil "u" nil "U" nil "C-]" nil
+      "C-g" nil "<down>" nil "<up>" nil "<home>" nil "<end>" nil "#" nil "*" nil
+      "0" nil "_" nil
+      ;; a lot of stuff in here, esp related to avy it seems. worth exploring eventually
+      "s" nil
+      )
+
+(map! :map evil-visual-state-map :prefix "g"
+      :desc "cursor to end of line"            "l" 'evil-end-of-line
+      :desc "nonblank start of line"           "h" 'evil-first-non-blank
+      )
+
+(map! :map evil-normal-state-map :prefix "g"
+      :desc "invert case of selection"         "`" 'evil-invert-case
+      "8" nil "&" nil "@" nil "?" nil "~" nil "," nil "a" nil "A" nil "f" nil "F" nil
+      "I" nil "J" nil "l" nil "L" nil "P" nil "y" nil
+      ;; maybe bring these back when i'm ready. lots of lookup for files and references
+      "d" nil "D" nil "f" nil "O" nil
+      ;; what do these do? evil-fill
+      "w" nil "q" nil
+      ;; how does eval work? both for selection and whole buffer
+      "r" nil "R" nil
+      ;; some workspace stuff?
+      "t" nil "T" nil
+      ;; a lot of stuff in here, esp related to avy it seems. worth exploring eventually
+      "s" nil
+      )
+#+end_src
+* Org
+** Config
+#+begin_src emacs-lisp
+(after! org
+  (setq org-directory "~/documents/org"
+        ;; todo vars
+        org-todo-keywords '((sequence "TODO(t)" "|" "WAIT(w)" "DONE(d)" ))
+        ;;org-todo-keyword-faces '(("TODO" . "magenta"))
+        org-use-fast-todo-selection 'expert
+        ;; agenda vars
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-files (list "~/documents/org/gtd/")
+        ;; startup vars
+        org-startup-folded t
+        org-startup-indented t
+        ;; org-startup-with-inline-images t
+        ;; fontifying
+        org-fontify-done-headline t
+        org-fontify-whole-heading-line t
+        org-fontify-quote-and-verse-blocks t
+        org-src-fontify-natively t
+        ;; other
+        org-cycle-include-plain-lists 'integrate ; plain lists start folded
+        org-tags-column -60
+        org-ellipsis "  " ;; folding symbol
+        org-agenda-block-separator ""
+        org-list-allow-alphabetical t   ; have a. A. a) A) list bullets
+        org-fold-catch-invisible-edits 'smart ; don't brazenly edit things you can't see
+
+        org-refile-targets '(("~/documents/org/gtd/gtd.org" :maxlevel . 2)
+                           ("~/documents/org/gtd/someday.org" :level . 2))
+        ))
+        ;;prot/scroll-center-cursor-mode t))
+#+end_src
+Remove auto fill mode, which introduces line breaks if lines get really long. I like to write long paragraphs in org mode so this is just a nuisance for me.
+#+begin_src emacs-lisp
+(remove-hook 'org-mode-hook #'auto-fill-mode)
+#+end_src
+** Appearance
+*** Hooks
+#+begin_src emacs-lisp
+(add-hook! org-mode :append
+           #'visual-line-mode
+           #'org-appear-mode
+           #'olivetti-mode
+           #'org-superstar-mode
+           #'prettify-symbols-mode
+           ;#'org-modern
+           #'org-toggle-pretty-entities
+           ;#'variable-pitch-mode
+)
+(setq-hook! org-mode line-spacing .1)
+#+end_src
+*** Face/font settings
+Strike through completed org entries
+#+begin_src emacs-lisp
+(custom-set-faces!
+  '(org-todo          :family "FiraCode Nerd Font")
+  '(org-done          :family "FiraCode Nerd Font" :strike-through t)
+  '(org-headline-done :strike-through t))
+#+end_src
+Making nicer and bigger faces for headings
+Old one:
+#+begin_src emacs-lisp
+;(custom-set-faces!
+ ;'(outline-8          :family "ETBembo" :weight bold)
+ ;'(outline-7          :family "ETBembo" :weight bold)
+ ;'(outline-6          :family "ETBembo" :weight bold)
+ ;'(outline-5          :family "ETBembo" :weight bold)
+ ;'(outline-4          :family "ETBembo" :weight bold :height 1.2)
+ ;'(outline-3          :family "ETBembo" :weight bold :height 1.4)
+ ;'(outline-2          :family "ETBembo" :weight bold :height 1.6)
+ ;'(outline-1          :family "ETBembo" :weight bold :height 1.8)
+ ;'(org-document-title :family "ETBembo" :weight bold :height 2.5 :underline nil)
+ ;'(variable-pitch     :family "ETBembo" :height 150 :weight book)
+ ;'(org-hide           :family "FiraCode Nerd Font" :height 0.8)
+
+ ;'(outline-4          :family "FiraCode Nerd Font" :weight bold :height 1.1)
+ ;'(outline-3          :family "FiraCode Nerd Font" :weight bold :height 1.4)
+ ;'(outline-2          :family "FiraCode Nerd Font" :weight bold :height 1.5)
+ ;'(outline-1          :family "FiraCode Nerd Font" :weight bold :height 1.6)
+ ;'(org-document-title :family "FiraCode Nerd Font" :weight bold :height 2.2 :underline nil)
+ ;'(org-document-info-keyword :foreground "#676E95", :extend nil
+ ;                     :family "FiraCode Nerd Font" :height 200 :weight regular)
+ ;'(org-meta-line      :foreground "#676E95", :extend nil
+ ;                     :family "FiraCode Nerd Font" :height 100 :weight regular)
+ ;'(org-superstar-leading-bullet :family "FiraCode Nerd Font")
+ ;'(org-checkbox-statistics-todo :height 1.1)
+ ;'(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
+ ;'(org-date :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
+ ;'(org-table :family "FiraCode Nerd Font")
+ ;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
+ ;'(fixed-pitch        :family "FiraCode Nerd Font"   :height 100))
+#+end_src
+New one:
+#+begin_src emacs-lisp
+(custom-set-faces!
+ '(org-document-info-keyword :foreground "#676E95", :extend nil
+                      :family "FiraCode Nerd Font" :weight regular)
+ '(org-meta-line      :foreground "#676E95", :extend nil
+                      :family "FiraCode Nerd Font" :weight regular)
+ '(org-superstar-leading-bullet :family "FiraCode Nerd Font")
+ '(org-latex-and-related :weight normal :foreground "#82aaff")
+ '(org-date :weight normal :foreground "#82aaff")
+ '(org-special-keyword :weight normal :height 0.75 ))
+#+end_src
+Tweak highlighting from org source code blocks (like these!) In particular remove highlighting from start/end of org-blocks to avoid highlighting spilling out over into folded headlines. Also grey out meta info, make the document info much larger (only relevant given the symbol replacements I'm using), and make the checkbox stats for subitems (such as [2/3]) bigger. Lastly, make latex in org files display in fixed pitch.
+#+begin_src emacs-lisp
+(custom-set-faces!
+  '(org-block-begin-line  :background "#292D3E", :foreground nil, :extend nil
+                          :family "FiraCode Nerd Font" :weight regular)
+  '(org-block             :foreground unspecified, :extend nil
+                          :family "FiraCode Nerd Font" :weight regular)
+  '(org-block-end-line    :background "#292D3E", :foreground nil, :extend nil
+                          :family "FiraCode Nerd Font" :weight regular))
+#+end_src
+*** Margins
+Turn off line numbers, sets some margin on left and right sides of the buffer, and turns off tildes on empty lines.
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook (lambda ()
+  (display-line-numbers-mode -1)
+  (setq left-margin-width 2)
+  (setq right-margin-width 2)
+  (vi-tilde-fringe-mode -1)))
+#+end_src
+olivetti mode: if there is only one buffer, centers it with plenty of room on the sides.
+#+begin_src emacs-lisp
+(use-package! olivetti
+  :after org olivetti
+  :config
+    ;(setq olivetti-min-body-width 110
+    (setq olivetti-body-width 100
+          olivetti-style 'fancy ; fantastic new layout
+          olivetti-margin-width 6))
+
+(custom-set-faces! '(fringe :background "#272B3A"))
+#+end_src
+*** Symbol replacements
+~org-entities~: See the variable ~org-entities-user~ to add new symbol replacements for pretty entities in org.
+If the symbols rendering require packages to be loaded, add these packages to ~org-latex-packages-alist~.
+#+begin_src emacs-lisp
+(setq org-hide-emphasis-markers t
+      org-entities-user
+    '(("R"            "\\mathbb{R}" t   "&#82;" "R" "R" "ℝ")
+      ("C"            "\\mathbb{C}" t   "&#67;" "C" "C" "ℂ")
+      ("N"            "\\mathbb{N}" t   "&#78;" "N" "N" "ℕ")
+      ("Z"            "\\mathbb{Z}" t   "&#90;" "Z" "Z" "ℤ")
+      ("mapsto"       "\\mapsto"    t   "&#8614;" "mapsto" "mapsto" "↦")
+      ("contra"       "\\lightning"  nil "&#11085;" "contra" "contra" "↯")
+      ("Rarrow"       "\\Rightarrow"  t "&#8658;" "=>" "=>" "⇒")
+      ("inj"          "\\hookrightarrow" t "&#8618;" "inj" "inj" "↪")
+      ;("yo"           "\\yo"           nil "&#x3088;" "y" "y" "よ")
+      ("f"            "\\textit{f}" nil "&fnof;" "f" "f" "ƒ")))
+
+#+end_src
+~org-appear~: when point is over an entity, show the contents.
+#+begin_src emacs-lisp
+  (setq org-appear-autoemphasis t   ; need org-hide-emphasis-markers
+        org-appear-autosubmarkers t ; need org-pretty-entities
+        org-appear-autoentities t   ; need org-pretty-entities
+  )
+  #+end_src
+~prettify-symbols~
+#+begin_src emacs-lisp
+(add-hook! org-mode :append
+   (setq prettify-symbols-alist
+        ;'(("TODO" . "○")
+        ;  ("WAIT" . "○")
+        ;  ("INACTIVE" . "○")
+        ;  ("DONE" . "◉")
+        '(("TODO" . "T")
+          ("WAIT" . "W")
+          ("INACTIVE" . "I")
+          ("DONE" . "D")
+          ("[ ]" . "") ;alts: ☐ ◩ ☑
+          ("[X]" . "")
+          ("[-]" . "")
+          ;("[#A]" . "")
+          ;("[#B]" . "")
+          ;("[#C]" . "")
+          ("#+begin_src" . "»")
+          ("#+end_src" . "«")
+          ("#+BEGIN_SRC" . "»")
+          ("#+END_SRC" . "«")
+          ("#+BEGIN_EXPORT" . "»")
+          ("#+END_EXPORT" . "«")
+          ("#+RESULTS:" . "")
+          (":PROPERTIES:" . "")
+          ;("#+STARTUP:" . "")
+          ;(":Effort:" . "")
+          ("#+TITLE" . "󰬛")
+          ("#+title" . "󰬛")
+          ("#+SUBTITLE" . "󰬚")
+          ("#+subtitle" . "󰬚")
+          ("#+AUTHOR" . "󰬈")
+          ("#+author" . "󰬈")
+          ("#+DATE" . "󰬋")
+          ("#+date" . "󰬋")
+          ("[0/1]" . "󰽤")
+          ("[1/1]" . "󰪥")
+          ("[1/2]" . "󰪡")
+          ("[0/2]" . "󰽤")
+          ("[2/2]" . "󰪥")
+          ("[0/3]" . "")
+          ("[1/3]" . "󰫄")
+          ("[2/3]" . "󰫆")
+          ("[3/3]" . "󰫈")
+          ("[0/4]" . "󰽤")
+          ("[1/4]" . "󰪟")
+          ("[2/4]" . "󰪡")
+          ("[3/4]" . "󰪣")
+          ("[4/4]" . "󰪥")
+          ("[0/6]" . "")
+          ("[1/6]" . "󰫃")
+          ("[2/6]" . "󰫄")
+          ("[3/6]" . "󰫅")
+          ("[4/6]" . "󰫆")
+          ("[5/6]" . "󰫇")
+          ("[6/6]" . "󰫈")
+          ("[0/8]" . "󰽤")
+          ("[1/8]" . "󰪞")
+          ("[2/8]" . "󰪟")
+          ("[3/8]" . "󰪠")
+          ("[4/8]" . "󰪡")
+          ("[5/8]" . "󰪢")
+          ("[6/8]" . "󰪣")
+          ("[7/8]" . "󰪤")
+          ("[8/8]" . "󰪥"))))
+          ;("SCHEDULED:" . "")
+          ;("DEADLINE:" . "")
+#+end_src
+*** Superstar mode
+#+begin_src emacs-lisp
+;(setq org-hidden-keywords '(title)) ;; hide #+TITLE:
+
+; alternatives:  '("◉" "◈" "○" "▷") ;; Set different bullets
+(setq org-superstar-item-bullet-alist
+         '((?- . ?•) (?+ . ?◉)) ;; Set different bullets for plain lists
+      org-superstar-headline-bullets-list
+         ;'(" ") ;; Set different bullets
+         '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍") ;; Set different bullets
+      org-hide-leading-stars t)
+#+end_src
+** Capture
+#+begin_src emacs-lisp
+(setq org-capture-templates
+       '(("n" "note" entry (file+headline "~/documents/org/notes.org" "Inbox"))
+         ("s" "school" entry (file+headline "~/documents/org/gtd/inbox.org" "School"))
+         ("E" "emacs idea" entry (file+headline "~/documents/org/gtd/inbox.org" "Emacs"))
+         ("e" "emacs small" checkitem (file+headline "~/documents/org/gtd/gtd.org" "quick things"))
+         ("m" "math" entry (file+headline "~/documents/org/gtd/inbox.org" "Math"))
+          ))
+#+end_src
+** Mobile
+#+begin_src emacs-lisp
+(setq org-mobile-inbox-for-pull "~/documents/org/mobile.org")
+(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+(setq org-mobile-files '("~/documents/org/notes.org" "~/documents/org/todo/" "~/documents/org/personal/" "~/documents/org/lit-conf/"))
+(setq org-mobile-agendas '())
+#+end_src
+** Evil Keymap
+#+begin_src emacs-lisp
+(map! :map evil-org-mode-map :m :prefix "g"
+      :m "h" 'evil-first-non-blank-of-visual-line
+      :m "H" 'evil-org-top
+      :m "K" 'org-up-element
+      :m "k" 'org-backward-heading-same-level
+      :m "J" 'org-down-element
+      :m "j" 'org-forward-heading-same-level
+      :m "l" 'evil-end-of-visual-line
+      )
+#+end_src
+I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So instead of using ~evil-respect-visual-line-mode~, just rebind these two commands to their visual counterparts. Still need to somehow make this happen only in org mode ideally.
+#+begin_src emacs-lisp
+(map! :map evil-motion-state-map
+      "j" 'evil-next-visual-line
+      "k" 'evil-previous-visual-line
+      )
+#+end_src
+** Export
+*** LaTeX
+#+begin_src emacs-lisp
+(setq org-latex-default-packages-alist nil
+      org-latex-toc-command nil
+      org-latex-hyperref-template nil)
+      org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
+
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+
+(eval-after-load 'org
+  '(setf org-highlight-latex-and-related '(latex)))
+
+(setq org-latex-classes
+   '(("my-article" "
+\\documentclass[10pt,a4paper]{article}
+\\include{~/.config/latex/prelude}
+
+\\usepackage{hyperref}
+\\hypersetup{
+  colorlinks=true,
+  linkcolor=[rgb]{0,0.37,0.53},
+  citecolor=[rgb]{0,0.47,0.68},
+  filecolor=[rgb]{0,0.37,0.53},
+  urlcolor=[rgb]{0,0.37,0.53},
+  pagebackref=true,
+  linktoc=all,}"
+      ("\\section{%s}" . "\\section*{%s}")
+      ("\\subsection{%s}" . "\\subsection*{%s}")
+      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+)))
+#+end_src
+*** HTML
+** Calendar
+*** Date Formats
+Custom date formats
+#+begin_src emacs-lisp
+;(setq-default org-display-custom-times t)
+;(setq org-time-stamp-custom-formats '("<%a %b %e>" . "<%a %b %e %Y %H:%M>"))
+(setq cfw:event-format-detail "%s - %e : %l")
+(setq cfw:event-format-overview "%s - %e : %l")
+
+#+end_src
+*** Holidays
+#+begin_src emacs-lisp
+(setq calendar-holidays '((holiday-fixed 1 1 "New Year's Day")
+        (holiday-float 1 1 3 "Martin Luther King Day")
+        (holiday-fixed 2 2 "Groundhog Day")
+        (holiday-fixed 2 14 "Valentine's Day")
+        (holiday-float 2 1 3 "President's Day")
+        (holiday-fixed 3 17 "St. Patrick's Day")
+        (holiday-fixed 4 1 "April Fools' Day")
+        (holiday-float 5 0 2 "Mother's Day")
+        (holiday-float 5 1 -1 "Memorial Day")
+        (holiday-fixed 6 14 "Flag Day")
+        (holiday-float 6 0 3 "Father's Day")
+        (holiday-fixed 7 4 "Independence Day")
+        (holiday-float 9 1 1 "Labor Day")
+        (holiday-float 10 1 2 "Columbus Day")
+        (holiday-fixed 10 31 "Halloween")
+        (holiday-fixed 11 11 "Veteran's Day")
+        (holiday-float 11 4 4 "Thanksgiving")
+        (holiday-easter-etc)
+        (holiday-fixed 12 25 "Christmas")
+        (holiday-chinese-new-year)
+        (if calendar-chinese-all-holidays-flag
+            (append
+             (holiday-chinese 1 15 "Lantern Festival")
+             (holiday-chinese-qingming)
+             (holiday-chinese 5 5 "Dragon Boat Festival")
+             (holiday-chinese 7 7 "Double Seventh Festival")
+             (holiday-chinese 8 15 "Mid-Autumn Festival")
+             (holiday-chinese 9 9 "Double Ninth Festival")
+             (holiday-chinese-winter-solstice)))
+        (solar-equinoxes-solstices)
+        (holiday-sexp calendar-daylight-savings-starts
+                      (format "Daylight Saving Time Begins %s"
+                              (solar-time-string
+                               (/ calendar-daylight-savings-starts-time
+                                  (float 60))
+                               calendar-standard-time-zone-name)))
+        (holiday-sexp calendar-daylight-savings-ends
+                      (format "Daylight Saving Time Ends %s"
+                              (solar-time-string
+                               (/ calendar-daylight-savings-ends-time
+                                  (float 60))
+                               calendar-daylight-time-zone-name)))))
+#+end_src
+*** org-caldav
+#+begin_src emacs-lisp
+(setq org-caldav-url "https://cloud.thain.xyz/remote.php/dav/calendars/liam"
+      org-icalendar-timezone "Europe/Amsterdam")
+
+(setq org-caldav-calendars
+  '((:calendar-id "personal"
+     :files ("~/documents/org/calendar/personal.org")
+     :inbox (file+headline "~/documents/org/calendar/personal.org" "Inbox"))
+     ;;:inbox "~/documents/org/calendar/personal.org")
+    (:calendar-id "class"
+     :files ("~/documents/org/calendar/class.org")
+     :inbox "~/documents/org/calendar/class.org")))
+#+end_src
+From the example: what does this do?
+~:skip-conditions (regexp "soccer")~
+** Inactive
+*** Journal
+#+begin_src emacs-lisp
+(after! org-journal
+  (setq org-journal-dir "~/Documents/org/journal/"
+        org-journal-file-type 'weekly))
+
+;; org-journal keybinds
+(map! :leader
+      (:prefix ("j" . "journal")
+        :desc "New Entry"           "j" #'org-journal-new-entry
+        :desc "Open Journal"        "o" #'org-journal-open-current-journal-file
+        :desc "Save and Exit"       "d" #'(lambda () (interactive) (save-buffer) (kill-buffer-and-window))
+        :desc "Next Entry"          "n" #'org-journal-next-entry
+        :desc "Previous Entry"      "p" #'org-journal-previous-entry))
+
+#+end_src
+*** Roam
+#+begin_src emacs-lisp
+;; org roam config
+;;  manual told me to, something  about cache consistency and having roam available on startup
+;;(org-roam-db-autosync-mode)
+
+(setq org-roam-directory "~/documents/org/roam"
+      org-id-locations-file "~/documents/org/roam/.orgids")
+
+;; org roam keybinds
+(map! :leader
+      (:prefix ("r" . "roam")
+        :desc "Find node"                  "f" #'org-roam-node-find
+        :desc "Find ref"                   "F" #'org-roam-ref-find
+        :desc "Show graph"                 "g" #'org-roam-graph
+        :desc "Insert node"                "i" #'org-roam-node-insert
+        :desc "Capture to node"            "c" #'org-roam-capture
+        :desc "Toggle roam buffer"         "b" #'org-roam-buffer-toggle
+        :desc "Launch roam buffer"         "B" #'org-roam-buffer-display-dedicated
+        :desc "Sync database"              "s" #'org-roam-db-sync
+        :desc "Add ref"                    "r" #'org-roam-ref-add
+        :desc "Add alias"                  "a" #'org-roam-alias-add))
+;;         (:prefix ("d" . "by date")
+;;                 :desc "Arbitrary date" "d" #'org-roam-dailies-find-date
+;;                 :desc "Today"          "t" #'org-roam-dailies-find-today
+;;                 :desc "Tomorrow"       "m" #'org-roam-dailies-find-tomorrow
+;;                 :desc "Yesterday"      "y" #'org-roam-dailies-find-yesterday
+;;                 :desc "Goto previous note"        "b" #'org-roam-dailies-goto-previous-note
+;;                 :desc "Goto date"                 "d" #'org-roam-dailies-goto-date
+;;                 :desc "Capture date"              "D" #'org-roam-dailies-capture-date
+;;                 :desc "Goto next note"            "f" #'org-roam-dailies-goto-next-note
+;;                 :desc "Goto tomorrow"             "m" #'org-roam-dailies-goto-tomorrow
+;;                 :desc "Capture tomorrow"          "M" #'org-roam-dailies-capture-tomorrow
+;;                 :desc "Capture today"             "n" #'org-roam-dailies-capture-today
+;;                 :desc "Goto today"                "t" #'org-roam-dailies-goto-today
+;;                 :desc "Capture today"             "T" #'org-roam-dailies-capture-today
+;;                 :desc "Goto yesterday"            "y" #'org-roam-dailies-goto-yesterday
+;;                 :desc "Capture yesterday"         "Y" #'org-roam-dailies-capture-yesterday
+;;                 :desc "Find directory"            "-" #'org-roam-dailies-find-directory)))
+
+#+end_src
+*** Agenda
+Here's some stuff from slano's config when i wanna start using it.
+#+begin_src emacs-lisp
+;       ;; Agenda styling
+;       ;org-agenda-tags-column 0
+;       ;org-agenda-block-separator ?─
+;       ;org-agenda-time-grid
+;       ;'((daily today require-timed)
+;       ;  (800 1000 1200 1400 1600 1800 2000)
+;       ;  " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+;       ;org-agenda-current-time-string
+;       ;  "⭠ now ─────────────────────────────────────────────────")
+#+end_src
+* Dired
+** Config                                           :CLEAN:
+*** Dired ls options, recursive copying and deleting
+it seems -p doesn't work as it messes up the "R" mv to rewriting when you try to move multiple directories.
+#+begin_src emacs-lisp
+(after! dired
+   ;(setq dired-listing-switches "-Aphl -v --group-directories-first"
+   (setq dired-listing-switches "-AFhl --group-directories-first"
+        dired-recursive-copies 'always
+        dired-recursive-deletes 'always))
+#+end_src
+*** What do these do
+Hook for sort-toggle-or-edit; not really sure what it does
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook
+      (lambda ()
+        (dired-sort-toggle-or-edit)))
+#+end_src
+*** Omit mode
+Hook to enable and then configure omit mode, hiding some files for readability.
+Turn off dired omit mode (SPC m h) to show them
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook
+      (lambda ()
+        (dired-hide-details-mode)))
+(setq dired-omit-files
+    (rx (or (seq bol (? ".") "#")     ;; emacs autosave files
+        (seq bol "." (not (any "."))) ;; dot-files
+        (seq "~" eol)                 ;; backup-files
+        (seq bol "CVS" eol)           ;; CVS dirs
+        )))
+#+end_src
+*** file previewing
+Doesn't currently work for pdfs unfortunately.
+#+begin_src emacs-lisp
+(map! :map dired-mode-map :n "v" 'dired-view-file)
+(map! :map view-mode-map :n "v" 'View-quit)
+(map! :map pdf-view-mode-map :n "v" 'View-quit)
+#+end_src
+* LaTeX
+** Config
+Basic config
+#+begin_src emacs-lisp
+;;(setq +latex-viewers '(pdf-tools))
+;; (setq TeX-view-program-list '(("Sioyek" "sioyek %o")))
+;; (setq TeX-view-program-selection '((output-pdf "Sioyek")))
+(setq +latex-viewers '(sioyek))
+
+(setq TeX-view-program-list
+        ;; '(("Sioyek" ("sioyek %o --reuse-instance"
+        '(("Sioyek" ("sioyek %o"
+        (mode-io-correlate " --forward-search-file %b --forward-search-line %n --inverse-search \"emacsclient --no-wait +%2:%3 %1\"")) "sioyek"))
+      TeX-view-program-selection
+        '(((output-dvi has-no-display-manager) "dvi2tty")
+          ((output-dvi style-pstricks)  "dvips and gv")
+          (output-dvi "xdvi")
+          (output-pdf "Sioyek")
+          (output-html "xdg-open")))
+
+;; latex config
+(use-package tex
+  :defer t
+  :ensure auctex
+  :config
+  (setq tex-auto-save t)
+  (setq tex-parse-self t)
+ ; (setq tex-fontify-script nil)
+ ; (setq font-latex-fontify-script nil)
+  ;; don't insert {} automatically for sub and superscripts
+  (setq TeX-electric-sub-and-superscript nil)
+  (setq-default tex-master nil))
+
+#+end_src
+Adding environments
+#+begin_src emacs-lisp
+(add-hook 'LaTeX-mode-hook
+      (lambda ()
+        (LaTeX-add-environments "align")
+        (LaTeX-add-environments "prooftree")
+        (LaTeX-add-environments "problem")
+        (LaTeX-add-environments "proof")
+        (LaTeX-add-environments "align*")))
+#+end_src
+Prettifying symbols and its behaviour
+#+begin_src emacs-lisp
+;(add-hook 'LaTeX-mode-hook #'prettify-symbols-mode)
+;(setq prettify-symbols-unprettify-at-point t)
+;(setq prettify-symbols-unprettify-at-point nil)
+#+end_src
+** Hooks
+Enable tex folding in all LaTeX docs
+#+begin_src emacs-lisp
+(add-hook 'LaTeX-mode-hook (lambda ()
+                             (cdlatex-mode 0)
+                             (outline-minor-mode 1) ))
+                             ; (TeX-fold-mode 0) ))
+                             ;(latex-preview-pane-mode 1)
+                             ;(TeX-fold-buffer)))
+#+end_src
+** Keybinds
+#+begin_src emacs-lisp
+(map! (:after latex
+       :map LaTeX-mode-map
+        :localleader
+        :desc "run all commands"      "a" #'TeX-command-run-all
+        :desc "env menu"              "e" #'LaTeX-environment
+        :desc "view errors"           "q" #'TeX-next-error
+        :desc "close block"           "C" #'LaTeX-close-block
+        :desc "open preview pane"     "c" #'latex-preview-pane-mode
+        :desc "open preview pane"     "p" #'helloworld
+        :desc "sect menu"             "s" #'LaTeX-section
+        (:prefix ("f" . "font")
+                :desc "bold"            "b" #'(lambda () (interactive) (TeX-font nil 2))
+                :desc "ital"            "i" #'(lambda () (interactive) (TeX-font nil 9))
+                :desc "emph"            "e" #'(lambda () (interactive) (TeX-font nil 5))
+                :desc "slant"           "s" #'(lambda () (interactive) (TeX-font nil 19))
+                :desc "roman"           "r" #'(lambda () (interactive) (TeX-font nil 18))
+                :desc "sans"            "f" #'(lambda () (interactive) (TeX-font nil 6))
+                :desc "typewr"          "t" #'(lambda () (interactive) (TeX-font nil 20))
+                :desc "smlcaps"         "c" #'(lambda () (interactive) (TeX-font nil 3))
+                :desc "delete font"     "d" #'(lambda () (interactive) (TeX-font nil 4)))))
+
+  ;;     :desc "ctrl + enter" "C-RET" #'LaTeX-insert-item
+#+end_src
+** CDLatex
+#+begin_src emacs-lisp
+;; (setq cdlatex-use-dollar-to-ensure-math t)
+#+end_src
+** Snippets
+#+begin_src emacs-lisp
+(defun my/yas-try-expanding-auto-snippets ()
+  (when (bound-and-true-p 'yas-minor-mode)
+      (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
+        (yas-expand))))
+
+;; Try after every insertion
+;(add-hook 'post-self-insert-hook #'my/yas-try-expanding-auto-snippets)
+
+(with-eval-after-load 'warnings
+  (cl-pushnew '(yasnippet backquote-change) warning-suppress-types
+              :test 'equal))
+#+end_src
+** Auto activating snippets
+#+begin_src emacs-lisp
+(use-package aas
+  :hook (LaTeX-mode . aas-activate-for-major-mode)
+  :hook (org-mode . aas-activate-for-major-mode)
+  :config
+  (aas-set-snippets 'text-mode
+    ;; expand unconditionally
+    ";o-" "ō"
+    ";i-" "ī"
+    ";a-" "ā"
+    ";u-" "ū"
+    ";e-" "ē")
+  (aas-set-snippets 'latex-mode
+    ;; set condition!
+    :cond #'texmathp ; expand only while in math
+    "supp" "\\supp"
+    "On" "O(n)"
+    "O1" "O(1)"
+    ;; Use YAS/Tempel snippets with ease!
+    ";ig" #'insert-register
+    ";call-sin"
+    (lambda (angle) ; Get as fancy as you like
+      (interactive "sAngle: ")
+      (insert (format "%s" (sin (string-to-number angle))))))
+  ;; disable snippets by redefining them with a nil expansion
+  (aas-set-snippets 'latex-mode
+    "mk"   '(yas "\$$1\$$0") ; YASnippet snippet shorthand form
+    "supp" nil))
+
+(add-to-list 'load-path "~/.config/doom")
+(require 'laas)
+#+end_src
+* PDF
+** Hooks for pdf viewing                            :CLEAN:
+#+begin_src emacs-lisp
+(add-hook 'pdf-outline-buffer-mode-hook #'pdf-outline-hook)
+(add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode)
+
+(defun pdf-outline-hook ()
+  (display-line-numbers-mode -1) ;; don't display line numbers
+  (setq left-margin-width 2)     ;;
+  (outline-hide-sublevels 1))
+
+#+end_src
+open pdfs scaled to fit page
+#+begin_src emacs-lisp
+(after! pdf-tools
+  (setq-default pdf-view-display-size 'fit-page))
+#+end_src
+automatically annotate highlights
+#+begin_src emacs-lisp
+(after! pdf-tools
+  (setq pdf-annot-activate-created-annotations t))
+
+(setq pdf-view-use-scaling t)
+(setq pdf-view-midnight-invert nil)
+#+end_src
+** keymap                                           :CLEAN:
+#+begin_src emacs-lisp
+(map! :after pdf-tools
+      :map pdf-isearch-active-mode-map
+      [return]  'isearch-repeat-forward
+      "ESC"     'isearch-cancel
+      )
+
+ (custom-set-faces!
+   '(pdf-isearch-match :background "MediumSeaGreen"))
+
+#+end_src
+** centering on zooming
+want to recenter the document when zooming in or out.
+The relevant functions are:
+- ~pdf-view-shrink~
+- ~pdf-view-enlarge~
+#+begin_src emacs-lisp
+(defun pdf-zoom-in ()
+  (pdf-view-shrink)
+  (pdf-view-center-in-window))
+
+(defun pdf-zoom-out ()
+  (pdf-view-enlarge)
+  (pdf-view-center-in-window))
+#+end_src
+** smooth scroll                                    :CLEAN:
+** continuous scroll                                :CLEAN:
+* EMMS
+** Initialization                                   :CLEAN:
+#+begin_src emacs-lisp
+(emms-all)
+(emms-history-load)
+(emms-default-players)
+#+end_src
+Other config pieces pulled from elsewhere; do I want/need them?
+#+begin_src emacs-lisp
+;(require 'emms-source-file nil t)
+;(require 'emms-source-playlist nil t)
+(when (require 'emms-player-mpv nil t)
+    (add-to-list 'emms-player-mpv-parameters
+            (setq emms-player-mpv-input-file (expand-file-name "emms-mpv-input-file" emms-directory))
+            (setq emms-player-list '(emms-player-mpv))))
+#+end_src
+** Config
+#+begin_src emacs-lisp
+(define-emms-simple-player mpv '(file url)
+(regexp-opt '(".mp3" ".wav" ".mov" ".avi" ".mkv" ".mp4" ".flac" ".m4a" ))
+"mpv" "--quiet" "--no-audio-display" "--no-terminal" "--shuffle" "yes")
+
+(setq emms-source-file-default-directory (expand-file-name "~/media/music/")
+      emms-browser-default-browse-type 'info-album
+      emms-info-functions '(emms-info-exiftool)
+      emms-browser-covers 'emms-browser-cache-thumbnail-async
+      emms-playlist-buffer-name "*Music*")
+
+(emms-browser-make-filter "all" 'ignore)
+#+end_src
+** Browser Info Format
+Format strings govern the way items are displayed in the browser and playlist. You can customize these if you wish.
+*** Documentation
+Insert 'info-title' / 'info-artist' / 'info-album' into:
+emms-browser-<type>-format
+emms-browser-playlist-<type>-format
+
+The format specifiers available include:
+- %i indent relative to the current level
+- %n the value of the item - eg -info-artist might be "pink floyd”
+- %y the album year
+- %A the album name
+- %a the artist name of the track
+- %t the title of the track
+- %T the track number
+- %cS a small album cover
+- %cM a medium album cover
+- %cL a big album cover
+
+Note that if you use track-related items like %t, it will take the data from the first track.
+
+The faces used to display the various fields are also customizable. They are in the format emms-browser-<type>-face, where type is one of "year/genre", "artist", "album" or "track". Note that faces lack the initial "info-" part. For example, to change the artist face, type M-x customize-face emms-browser-artist-face.
+*** Config
+In the browser buffer:
+#+begin_src emacs-lisp
+(setq emms-browser-info-title-format "%i%T. %t")
+(setq emms-browser-info-album-format "%i%cS %n")
+#+end_src
+In the music buffer:
+#+begin_src emacs-lisp
+(setq emms-browser-playlist-info-title-format "%i%T. %t")
+(setq emms-browser-playlist-info-album-format "%i%cM")
+#+end_src
+** Keybinds
+Press tab to collapse/expand current item
+#+begin_src emacs-lisp
+(map! :map emms-browser-mode-map :n "<backtab>" #'emms-browser-toggle-subitems
+                                 :n "<tab>"     #'emms-browser-toggle-subitems)
+#+end_src
+*** browser
+**** evil
+- keep
+ <normal-state> +           emms-volume-raise
+ <normal-state> -           emms-volume-lower
+ <normal-state> /           emms-isearch-buffer
+ <normal-state> <backtab>   emms-browser-toggle-subitems
+ <normal-state> <tab>       emms-browser-toggle-subitems
+ <normal-state> C           emms-browser-clear-playlist
+ <normal-state> C-<return>  emms-browser-add-tracks-and-play
+ <normal-state> C-j         emms-browser-next-non-track
+ <normal-state> C-k         emms-browser-prev-non-track
+ <normal-state> RET         emms-browser-add-tracks
+- remove
+- ???
+ <normal-state> <           emms-seek-backward
+ <normal-state> =           emms-volume-raise
+ <normal-state> >           emms-seek-forward
+<normal-state> D           emms-browser-delete-files
+<normal-state> N           isearch-repeat-backward
+<normal-state> X           emms-stop
+<normal-state> [ [         emms-browser-prev-non-track
+<normal-state> ] ]         emms-browser-next-non-track
+<normal-state> ^           emms-browser-move-up-level
+<normal-state> d           emms-browser-view-in-dired
+<normal-state> g 0         emms-browser-expand-all
+<normal-state> g 1         emms-browser-collapse-all
+<normal-state> g 2         emms-browser-expand-to-level-2
+<normal-state> g 3         emms-browser-expand-to-level-3
+<normal-state> g 4         emms-browser-expand-to-level-4
+<normal-state> g A         emms-browse-by-album
+<normal-state> g C w       emms-browser-lookup-composer-on-wikipedia
+<normal-state> g P w       emms-browser-lookup-performer-on-wikipedia
+<normal-state> g a         emms-browse-by-artist
+<normal-state> g b         emms-browse-by-genre
+<normal-state> g c         emms-browse-by-composer
+<normal-state> g d         emms-browser-view-in-dired
+<normal-state> g j         emms-browser-next-non-track
+<normal-state> g k         emms-browser-prev-non-track
+<normal-state> g p         emms-browse-by-performer
+<normal-state> g y         emms-browse-by-year
+<normal-state> n           isearch-repeat-forward
+<normal-state> r           emms-random
+<normal-state> s A         emms-browser-search-by-album
+<normal-state> s a         emms-browser-search-by-artist
+<normal-state> s c         emms-browser-search-by-composer
+<normal-state> s p         emms-browser-search-by-performer
+<normal-state> s s         emms-browser-search-by-names
+<normal-state> s t         emms-browser-search-by-title
+<normal-state> u           emms-playlist-mode-undo
+<normal-state> x           emms-pause
+<normal-state> z c         emms-browser-collapse-all
+<normal-state> z m         emms-browser-collapse-all
+<normal-state> z o         emms-browser-expand-one-level
+<normal-state> z r         emms-browser-expand-all
+**** not evil
+- already have
+ W d                        emms-browser-view-in-dired
+ ~+~                          emms-volume-raise
+ ~-~                          emms-volume-lower
+ C                          emms-browser-clear-playlist
+ RET                        emms-browser-add-tracks
+ C-RET                      emms-browser-add-tracks-and-play
+ d                          emms-browser-view-in-dired
+ /                          emms-isearch-buffer
+- add in
+ D                          emms-browser-delete-files
+ q                          emms-browser-bury-buffer
+ b 1                        emms-browse-by-artist
+ b 2                        emms-browse-by-album
+ b 3                        emms-browse-by-genre
+ b 4                        emms-browse-by-year
+ b 5                        emms-browse-by-composer
+ b 6                        emms-browse-by-performer
+ s A                        emms-browser-search-by-album
+ s a                        emms-browser-search-by-artist
+ s c                        emms-browser-search-by-composer
+ s p                        emms-browser-search-by-performer
+ s s                        emms-browser-search-by-names
+ s t                        emms-browser-search-by-title
+- ???
+ 1                          emms-browser-collapse-all
+ 2                          emms-browser-expand-to-level-2
+ 3                          emms-browser-expand-to-level-3
+ 4                          emms-browser-expand-to-level-4
+ <                          emms-browser-previous-filter
+ >                          emms-browser-next-filter
+ <backtab>                  emms-browser-prev-non-track
+ C-/                        emms-playlist-mode-undo
+ E                          emms-browser-expand-all
+- expand/collapse
+ W 0                        emms-browser-expand-all
+ W 1                        emms-browser-collapse-all
+ W 2                        emms-browser-expand-to-level-2
+ W 3                        emms-browser-expand-to-level-3
+ W 4                        emms-browser-expand-to-level-4
+- browse by
+ W A                        emms-browse-by-album
+ W a                        emms-browse-by-artist
+ W b                        emms-browse-by-genre
+ W c                        emms-browse-by-composer
+ W p                        emms-browse-by-performer
+ W y                        emms-browse-by-year
+- look up
+ W C w                      emms-browser-lookup-composer-on-wikipedia
+ W P w                      emms-browser-lookup-performer-on-wikipedia
+W j                        emms-browser-next-non-track
+W k                        emms-browser-prev-non-track
+^                          emms-browser-move-up-level
+<tab>                      emms-browser-next-non-track
+*** playlist
+~+~                         emms-volume-raise
+~-~                         emms-volume-lower
+/ /                       emms-playlist-limit-to-all
+/ a                       emms-playlist-limit-to-info-artist
+/ b                       emms-playlist-limit-to-info-album
+/ c                       emms-playlist-limit-to-info-composer
+/ d                       emms-playlist-limit-to-description
+/ g                       emms-playlist-limit-to-info-genre
+/ n                       emms-playlist-limit-to-name
+/ p                       emms-playlist-limit-to-info-performer
+/ t                       emms-playlist-limit-to-info-title
+/ y                       emms-playlist-limit-to-info-year
+<                         emms-seek-backward
+<emacs-state> M-SPC m i   emms-insert-file
+<emacs-state> M-SPC m l   emms-toggle-repeat-playlist
+<emacs-state> M-SPC m m   emms-shuffle
+<emacs-state> M-SPC m p   emms-insert-playlist
+<emacs-state> M-SPC m s   emms-playlist-save
+<emacs-state> M-SPC m t   emms-toggle-repeat-track
+<insert-state> M-SPC m i  emms-insert-file
+<insert-state> M-SPC m l  emms-toggle-repeat-playlist
+<insert-state> M-SPC m m  emms-shuffle
+<insert-state> M-SPC m p  emms-insert-playlist
+<insert-state> M-SPC m s  emms-playlist-save
+<insert-state> M-SPC m t  emms-toggle-repeat-track
+<motion-state> SPC m i    emms-insert-file
+<motion-state> SPC m l    emms-toggle-repeat-playlist
+<motion-state> SPC m m    emms-shuffle
+<motion-state> SPC m p    emms-insert-playlist
+<motion-state> SPC m s    emms-playlist-save
+<motion-state> SPC m t    emms-toggle-repeat-track
+<mouse-2>                 emms-playlist-mode-play-current-track
+<normal-state> +          emms-volume-raise
+<normal-state> -          emms-volume-lower
+<normal-state> .          emms-playlist-mode-center-current
+<normal-state> <          emms-seek-backward
+<normal-state> =          emms-volume-raise
+<normal-state> >          emms-seek-forward
+<normal-state> C          emms-playlist-clear
+<normal-state> C-j        emms-next
+<normal-state> C-k        emms-previous
+<normal-state> D          emms-playlist-mode-kill-track
+<normal-state> G          emms-playlist-mode-last
+<normal-state> M-y        emms-playlist-mode-yank-pop
+<normal-state> O          evil-collection-emms-playlist-mode-insert-newline-above
+<normal-state> P          evil-collection-emms-playlist-mode-paste-before
+<normal-state> R          emms-tag-editor-rename
+<normal-state> RET        emms-playlist-mode-play-smart
+<normal-state> S          nil
+<normal-state> SPC m i    emms-insert-file
+<normal-state> SPC m l    emms-toggle-repeat-playlist
+<normal-state> SPC m m    emms-shuffle
+<normal-state> SPC m p    emms-insert-playlist
+<normal-state> SPC m s    emms-playlist-save
+<normal-state> SPC m t    emms-toggle-repeat-track
+<normal-state> X          emms-stop
+<normal-state> [ [        emms-playlist-mode-previous
+<normal-state> ] ]        emms-playlist-mode-next
+<normal-state> a          emms-playlist-mode-add-contents
+<normal-state> d          emms-playlist-mode-goto-dired-at-point
+<normal-state> g d        emms-playlist-mode-goto-dired-at-point
+<normal-state> g g        emms-playlist-mode-first
+<normal-state> g j        emms-next
+<normal-state> g k        emms-previous
+<normal-state> o          evil-collection-emms-playlist-mode-insert-newline-below
+<normal-state> p          evil-collection-emms-playlist-mode-paste-after
+<normal-state> r          emms-random
+<normal-state> s          nil
+<normal-state> u          emms-playlist-mode-undo
+<normal-state> x          emms-pause
+<normal-state> z e        emms-tag-editor-edit
+<normal-state> z p        emms-playlist-set-playlist-buffer
+<normal-state> z s        emms-show
+<visual-state> D          emms-playlist-mode-kill
+<visual-state> SPC m i    emms-insert-file
+<visual-state> SPC m l    emms-toggle-repeat-playlist
+<visual-state> SPC m m    emms-shuffle
+<visual-state> SPC m p    emms-insert-playlist
+<visual-state> SPC m s    emms-playlist-save
+<visual-state> SPC m t    emms-toggle-repeat-track
+>                         emms-seek-forward
+?                         describe-mode
+C                         emms-playlist-clear
+C-/                       emms-playlist-mode-undo
+C-M-i                     ispell-complete-word
+C-_                       emms-playlist-mode-undo
+C-j                       emms-playlist-mode-insert-newline
+C-k                       emms-playlist-mode-kill-track
+C-n                       next-line
+C-p                       previous-line
+C-w                       emms-playlist-mode-kill
+C-x C-s                   emms-playlist-save
+C-x u                     emms-playlist-mode-undo
+C-y                       emms-playlist-mode-yank
+D                         emms-playlist-mode-kill-track
+E                         emms-tag-editor-edit
+K                         emms-playlist-mode-current-kill
+M-<                       emms-playlist-mode-first
+M->                       emms-playlist-mode-last
+M-n                       emms-playlist-mode-next
+M-p                       emms-playlist-mode-previous
+M-y                       emms-playlist-mode-yank-pop
+P                         emms-pause
+R                         emms-tag-editor-rename
+RET                       emms-playlist-mode-play-smart
+S C                       emms-playlist-sort-by-info-composer
+S L                       emms-playlist-sort-by-list
+S N                       emms-playlist-sort-by-name
+S T                       emms-playlist-sort-by-file-mtime
+S a                       emms-playlist-sort-by-info-artist
+S b                       emms-playlist-sort-by-info-album
+S c                       emms-playlist-sort-by-play-count
+S e                       emms-playlist-sort-by-file-extension
+S l                       emms-playlist-sort-by-last-played
+S n                       emms-playlist-sort-by-natural-order
+S o                       emms-playlist-sort-by-info-note
+S p                       emms-playlist-sort-by-info-performer
+S t                       emms-playlist-sort-by-info-title
+S y                       emms-playlist-sort-by-info-year
+SPC                       scroll-up
+a                         emms-playlist-mode-add-contents
+b                         emms-playlist-set-playlist-buffer
+c                         emms-playlist-mode-center-current
+d                         emms-playlist-mode-goto-dired-at-point
+f                         emms-show
+n                         emms-next
+p                         emms-previous
+q                         #<anonymous-function>
+r                         emms-random
+s                         emms-stop
+* Inactive
+** Mastodon                                    :NOT_IN_USE:
+#+begin_src emacs-lisp
+;; mastodon config
+;;(setq mastodon-instance-url "https://mathstodon.xyz" mastodon-active-user "thain")
+#+end_src
+** Vterm
+#+begin_src emacs-lisp
+;; vterm config
+;; (after! vterm
+;;   (setq vterm-shell "/usr/bin/fish"
+;;         vterm-ignore-blink-cursor nil))
+#+end_src

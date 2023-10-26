@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: AlignAt*
+# key: alia
+# condition: t
+# --
+
+\begin{alignat*}{$1}
+    $0
+\end{alignat*}

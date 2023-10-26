@@ -1,0 +1,155 @@
+
+(defcfg  ;; For linux & by-id lists pluggable devices
+fallthrough true  ;; If key not bound/left_empty(_), fall back to default
+allow-cmd true    ;; To run system commands. MIGHT face issues with tiling window managers due to command helpers.
+input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")  ;; 'ls /dev/input/by-id/' for detachable, 'ls /dev/input/by-path/' for builtin
+output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please check the docs.
+)
+
+;; This is the real representation of your actual keyboard. We haven't started
+;; customizing layouts yet.
+(defsrc
+  esc   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps  a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft  z    x    c    v    b    n    m    ,    .    /    rsft up
+  lctl  -    lmet lalt           spc            ralt rctl left down right
+)
+
+;; ---------------------
+;; ALIASES
+;; ---------------------
+(defalias
+;; sym  (layer-toggle syms)
+ vi   (layer-toggle vim)
+ syml (layer-toggle sym)
+ fnl  (layer-toggle fn)
+ cmk  (layer-switch colemakdh)
+ qwt  (layer-switch qwerty)
+ exp  (layer-switch experimental)
+ crz  (layer-switch crazy)
+
+ semvi  (tap-hold-next-release 200 ; (layer-toggle vim)) ;; vim keybinds when holding ;
+ ovi    (tap-hold-next-release 200 o (layer-toggle vim)) ;; colemak edition
+ escf   (tap-hold-next-release 200 esc @fnl)
+ symbsp   (tap-hold-next-release 200 bspc @syml)
+ sfcspc    (tap-hold-next-release 200 spc (layer-toggle shift))
+
+ ctlspc  (tap-hold-next-release 200 spc  lctl)
+ sftspc  (tap-hold-next-release 200 spc  lsft)
+ altesc  (tap-hold-next-release 200 esc  ralt)
+ ctlesc  (tap-hold-next-release 200 esc  lctl)
+ sfesc  (tap-hold-next-release 200 esc  lsft)
+ sfqt    (tap-hold-next-release 200 ' lsft)
+ sfent    (tap-hold-next-release 200 ret lsft)
+
+ ;; a first argument on press, second on release
+ scrn   (cmd-button "grim -g $(slurp) /home/thain/media/pictures/screenshots/$(date +%s_grim.png)")
+)
+
+;; The first custom layer is the one that gets activated when kmonad is started
+(deflayer qwerty
+  @escf brdn brup prev pp  next @scrn @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  -     a    s    d    f    g    h    j    k    l    @semvi @sfqt   ret
+  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
+  lctl  _   lalt lmet           @sfcspc       @ctlesc ralt left down right
+)
+
+(deflayer vim
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    C-right   _ _  _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    left down up   right _   _    _
+  _     _    _    _    _    C-left    _ _  _    _    _    _    _
+  _     _    _    _              _              _    _    _    _    _
+)
+
+;; layer for learning colemak-dh
+(deflayer colemakdh
+  esc   brdn brup prev pp  next @scrn @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    f    p    b    j    l    u    y    ;    [    ]    \
+  -     a    r    s    t    g    m    n    e    i    @ovi @sfqt  ret
+  lsft  z    x    c    d    v    k    h    ,    .    /    rsft up
+  lctl  _   lalt lmet           @sftspc      @ctlesc rctl left down right
+)
+
+(deflayer experimental
+  @escf brdn brup prev pp  next @scrn @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  -     a    s    d    f    g    h    j    k    l    @semvi @sfqt   ret
+  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
+  lalt  _   lmet @ctlspc       @sfent      @symbsp @altesc left down right
+)
+
+(deflayer crazy
+  @escf brdn brup prev pp  next @scrn @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    _    6    7    8    9    0    =    bspc
+  tab   q    w    e    r    t    _    y    u    i    o    p    \    \
+  -     a    s    d    f    g    _    h    j    k    l    @semvi '
+  lsft  z    x    c    v    b    _    n    m    ,    .    /     up
+  lalt  _   lmet @ctlspc       @sfent      @symbsp @altesc left down right
+)
+
+
+;; ?? mctl bldn blup stopcd
+(deflayer fn
+  _     f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _              _              _    _    _    _    _
+)
+
+
+(deflayer sym
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     !    @    #    $    %    ^    &    *    \(   \)    ~    _    _
+  _     1    2    3    4    5    6    7    8    9    0    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _              _              _    _    _    _    _
+)
+
+(deflayer shift
+  @escf brdn brup prev pp  next @scrn @qwt @cmk @exp mute vold volu del
+  ~     !    @    #    $    %    ^    &    *    \(   \)   \_    +   C-bspc
+  S-tab S-q  S-w  S-e  S-r  S-t  S-y  S-u  S-i  S-o  S-p  [    ]    \
+  S--   S-a  S-s  S-d  S-f  S-g  S-h  S-j  S-k  S-l  S-;  S-'   C-ret
+  lsft  S-z  S-x  S-c  S-v  S-b  S-n  S-m  S-,  S-.  S-/   rsft up
+  lctl  _   lalt lmet           spc          @ctlesc ralt  left down right
+)
+
+
+
+#|
+
+
+
+
+;; A layer dedicated to symbols
+(deflayer syms
+  _         _        _       _       _       _      _       _        _        _       _      _         _     _       _      _
+  _         _        _       [       ]       _      _       _        _        |       _      _         _     _
+  _         !        +       \_      &       #      _       _        @        `       \      ~         _     _
+  f11       ^        -       esc     tab     =      _       ?        :        /       $      @asf      _
+  _         _        _       ;       *       _      _       _        %        _       _      _         _
+  _         _        _                       ret                     _        _       _      _         _
+)
+
+(deflayer qwerty
+  esc   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  lctl  a    s    d    f    g    h    j    k    l    ;    '  ret
+  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
+  lctl  _   lalt lmet           spc             ralt rctl left down right
+)
+
+
+|#
