@@ -443,7 +443,7 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
 (setq org-superstar-item-bullet-alist
          '((?- . ?•) (?+ . ?◉)) ;; Set different bullets for plain lists
       org-superstar-headline-bullets-list
-         '("I" "II" "III" "IIII" "V" "VI") ;; Set different bullets
+         '("Ⅰ" "Ⅱ" "Ⅲ" "Ⅳ" "Ⅴ" "Ⅵ") ;; Set different bullets
       org-hide-leading-stars t)
 #+end_src
 ** Capture
