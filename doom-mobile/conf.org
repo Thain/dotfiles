@@ -72,10 +72,11 @@ My theme, with some old ones I've used thrown in.
         :desc "Open dired in specified dir"   "." #'dired
         :desc "Open dired in $HOME"           "h" (lambda () (interactive) (dired "~"))
         :desc "Open dired in root"            "r" (lambda () (interactive) (dired "/"))
-        :desc "Open dired in org dir"         "o" (lambda () (interactive) (dired "~/documents/org"))
+        :desc "Open dired in org dir"         "o" (lambda () (interactive) (dired org-directory))
         :desc "Close all dired buffers"       "q" #'+dired/quit-all
         :desc "Open dired in PWD"             "d" #'dired-jump))
 #+end_src
+
 *** Open
 #+begin_src emacs-lisp
 (map! :leader
