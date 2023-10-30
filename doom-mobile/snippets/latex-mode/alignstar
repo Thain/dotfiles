@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: Align*
+# key: alis
+# condition: t
+# --
+
+\begin{align*}
+    $0
+\end{align*}

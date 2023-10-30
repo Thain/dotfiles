@@ -1,0 +1,5 @@
+# key: set
+# name: Set
+# condition: (texmathp)
+# --
+\\\{$1\\\}$0
