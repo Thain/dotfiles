@@ -1,7 +1,0 @@
-#!/bin/env sh
-# Ask the user for login details
-read -p 'Input file: ' input
-read -p 'Output csv file: ' output
-echo
-echo Dumping TOC from $input to output $output...
-pdftk $input dump_data output $output

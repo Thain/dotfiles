@@ -1,0 +1,707 @@
+#+title: Desktop Environment
+#+property: header-args:conf :tangle ~/.config/hypr/hyprland.conf
+
+The Desktop Environment I've created, using:
+- Hyprland, with Hyprpaper
+- [[Waybar][Waybar]] for a top bar
+- [[Mako][Mako]] for notification
+- [[Fuzzel]] for application launcher
+
+* Monitors
+#+begin_src conf
+# monitor=eDP-1,2256x1505,0x0,1
+# monitor=DP-1, 1920x1080, 0x0,1
+monitor=,1920x1080, 0x0,1
+monitor=eDP-1,preferred,1920x580,1.3
+#+end_src
+* Workspaces
+#+begin_src conf
+# workspaces setup
+# workspace=1,monitor:DP-1
+# workspace=2,monitor:DP-1
+# workspace=3,monitor:DP-1
+workspace=1,monitor:DP-4
+workspace=2,monitor:DP-4
+workspace=3,monitor:DP-4
+workspace=4,monitor:eDP-1
+workspace=5,monitor:eDP-1
+#+end_src
+* Startup Appliations
+#+begin_src conf
+exec-once = wl-paste -t text --watch clipman store
+exec-once = waybar
+exec-once = hyprpaper
+exec-once = mako
+exec-once = syncthing
+exec-once = fcitx5 -d --replace
+#+end_src
+* Env vars
+#+begin_src conf
+# Some default env vars.
+env = XCURSOR_SIZE,24
+
+input {
+    kb_layout = us
+    kb_variant =
+    kb_model =
+    kb_rules =
+    follow_mouse = 1
+
+    touchpad {
+        natural_scroll = no
+        scroll_factor = 0.4
+    }
+
+    sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+}
+
+general {
+    gaps_in = 5
+    gaps_out = 10
+    border_size = 2
+    col.active_border = rgba(66ccffee) rgba(66ff99ee) 45deg
+    col.inactive_border = rgba(595959aa)
+
+    layout = dwindle
+    cursor_inactive_timeout = 3
+}
+
+decoration {
+    rounding = 8
+    blur {
+        enabled = true
+        size = 3
+        passes = 1
+        new_optimizations = on
+    }
+
+    drop_shadow = yes
+    shadow_range = 4
+    shadow_render_power = 3
+    col.shadow = rgba(1a1a1aee)
+}
+#+end_src
+* Animations
+#+begin_src conf
+animations {
+    enabled = yes
+
+    bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+
+    animation = windows, 1, 7, myBezier
+    animation = windowsOut, 1, 7, default, popin 80%
+    animation = border, 1, 10, default
+    animation = borderangle, 1, 8, default
+    animation = fade, 1, 7, default
+    animation = workspaces, 1, 5, default, slidevert
+}
+#+end_src
+* Layout
+#+begin_src conf
+dwindle {
+    pseudotile = yes # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+    preserve_split = yes # you probably want this
+}
+
+master {
+    new_is_master = true
+}
+
+gestures {
+    workspace_swipe = off
+}
+
+misc {
+ disable_hyprland_logo = true
+}
+#+end_src
+* Window Rules
+#+begin_src conf
+# Example windowrule v1
+# windowrule = float, ^(kitty)$
+# Example windowrule v2
+# windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
+# See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
+
+# windowrule = float, Choose Files
+
+#+end_src
+* Keybinds
+#+begin_src conf
+$mainMod = SUPER
+
+bind = $mainMod, T, exec, alacritty
+bind = $mainMod SHIFT, T, exec, mullvad-exclude alacritty
+# bind = $mainMod, B, exec, firefox
+bind = $mainMod, B, exec, brave --enable-features=UseOzonePlatform --ozone-platform=wayland
+#--gtk-version=4 '%U '
+bind = $mainMod SHIFT, B, exec, mullvad-exclude firefox
+bind = $mainMod, I, exec, clipman pick --tool=CUSTOM --tool-args="fuzzel -d"
+bind = $mainMod RALT, B, exec, sh ~/.config/scripts/waybar-hdmi
+bind = $mainMod, Q, killactive,
+bind = $mainMod, M, exec, telegram-desktop
+bind = $mainMod SHIFT, Q, exit,
+bind = $mainMod, E, exec, sh ~/.config/scripts/run-or-raise emacs emacs
+bind = $mainMod, V, togglefloating,
+# bindr= $mainMod, SUPER_L, exec, pkill fuzzel || fuzzel
+bind= $mainMod, SPACE, exec, pkill fuzzel || fuzzel
+bind= $mainMod, BACKSPACE, exec, pkill fuzzel || fuzzel
+bind= $mainMod, P, exec, sioyek
+
+#bind = $mainMod, P, pseudo, # dwindle
+#bind = $mainMod, s, togglesplit, # dwindle
+bind = $mainMod, s, swapnext,
+bind = $mainMod,Tab,cyclenext,
+
+
+# Move focus with mainMod + arrow keys
+bind = $mainMod, left, movefocus, l
+bind = $mainMod, right, movefocus, r
+bind = $mainMod, up, movefocus, u
+bind = $mainMod, down, movefocus, d
+
+# Switch workspaces
+bind = $mainMod, 1, workspace, 1
+bind = $mainMod, 2, workspace, 2
+bind = $mainMod, 3, workspace, 3
+bind = $mainMod, 4, workspace, 4
+bind = $mainMod, 5, workspace, 5
+
+# Move active window to a workspace
+bind = $mainMod SHIFT, 1, movetoworkspace, 1
+bind = $mainMod SHIFT, 2, movetoworkspace, 2
+bind = $mainMod SHIFT, 3, movetoworkspace, 3
+bind = $mainMod SHIFT, 4, movetoworkspace, 4
+bind = $mainMod SHIFT, 5, movetoworkspace, 5
+
+# bind = $mainMod SHIFT, left,  movetoworkspace, e-1
+# bind = $mainMod SHIFT, right, movetoworkspace, e+1
+
+# Move between workspaces, adding new ones if there are none
+bind = $mainMod, j, exec, hyprctl dispatch workspace r+1
+bind = $mainMod, k, exec, hyprctl dispatch workspace r-1
+bind = $mainMod, h, movefocus, l
+bind = $mainMod, l, movefocus, r
+# bind = $mainMod, h, focusmonitor, left
+# bind = $mainMod, l, focusmonitor, right
+
+bind = $mainMod SHIFT, j, exec, hyprctl dispatch movetoworkspace r+1
+bind = $mainMod SHIFT, k, exec, hyprctl dispatch movetoworkspace r-1
+bind = $mainMod SHIFT, h, movewindow, mon:DP-4
+bind = $mainMod SHIFT, l, movewindow, mon:eDP-1
+# bind = $mainMod, l, workspace, r+1
+# bind = $mainMod, h, workspace, r-1
+
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = $mainMod, mouse:272, movewindow
+bindm = $mainMod, mouse:273, resizewindow
+
+
+# BINDING FN KEYS
+# esc | bU  | bD  | 173 | 172 | 171 | f6  | f7  | cmk | f9  | 121 | 122 | 123
+# esc | bD  | bU  | rw  | pp  | ff  | ?   | ?   | ?   | ss  | mt  | vD  | vU
+# esc | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 0   | -   | =
+
+# binde will allow repeating when held.
+# change screen brightness
+binde =, XF86MonBrightnessUp, exec, backlight_control +5
+binde =, XF86MonBrightnessDown, exec, backlight_control -5
+
+# play/pause, prev and next
+bind =, 173, exec, playerctl previous
+bind =, 172, exec, playerctl play-pause
+bind =, 171, exec, playerctl next
+
+# take screenshot with grim and slurp
+# bind =, 234, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
+
+# 107 is printscreen
+bind =, 107, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
+bind =, f6, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
+
+# volume buttons
+bind  =, 121, exec, pamixer -t
+binde =, 122, exec, pamixer -d 5
+binde =, 123, exec, pamixer -i 5
+
+# bind  =, 170, exec, pamixer -t
+# bind  =, 255, exec, pamixer -t
+# bind  =, 255, exec, pamixer -t
+#+end_src
+* Wallpaper
+#+begin_src conf :tangle ~/.config/hypr/hyprpaper.conf
+preload = ~/media/pictures/wallpapers/outset-night.jpg
+preload = ~/media/pictures/wallpapers/outset-evening.jpg
+preload = ~/media/pictures/wallpapers/outset-day.jpg
+wallpaper = eDP-1,~/media/pictures/wallpapers/outset-night.jpg
+wallpaper = DP-1,~/media/pictures/wallpapers/outset-day.jpg
+wallpaper = DP-4,~/media/pictures/wallpapers/outset-evening.jpg
+#+end_src
+* Waybar
+** Config
+#+begin_src conf :tangle ~/.config/waybar/config.jsonc
+[{
+    "position": "top",
+    "layer": "top",
+    "name": "mainbar",
+    "height": 46,
+    // "mode": "overlay",
+    // "margin": "5 10 -5 10",
+    "margin": "5 10 -5 10",
+    "modules-left": ["hyprland/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["tray", "backlight", "network", "pulseaudio", "battery"],
+
+  "clock": {
+    "format": "{:%a, %b %d  %H:%M}",
+    "tooltip": "true",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": " {:%d/%m}"
+  },
+
+  "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format":"{icon}    {capacity}%",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["", "", "", "", ""]
+  },
+
+  "hyprland/workspaces": {
+        "active-only": false,
+        "all-outputs": false,
+        "format": "{icon}",
+        "on-click": "activate",
+        "format-icons": {
+            "1": "㆒",
+            "2": "㆓",
+            "3": "三",
+            "4": "四",
+            "5": "五",
+            "urgent": "",
+            "default": "󰧞",
+            "sort-by-number": true
+         },
+        "persistent_workspaces": {
+             "1": ["DP-4"],
+             "2": ["DP-4"],
+             "3": ["DP-4"],
+             "4": ["eDP-1"],
+             "5": ["eDP-1"]
+         }
+  },
+
+  "memory": {
+    "format": "󰍛  {}%",
+    "format-alt": "󰍛 {used}/{total} GiB",
+    "interval": 5
+  },
+
+  "cpu": {
+    "format": "󰻠  {usage}%",
+    "format-alt": "󰻠 {avg_frequency} GHz",
+    "interval": 5
+  },
+
+  "disk": {
+    "format": "󰋊  {}%",
+    "format-alt": "󰋊 {used}/{total} GiB",
+    "interval": 5
+  },
+  "network": {
+    "format-wifi": " 󰤨 ",
+    "format-ethernet": " {ifname}: Aesthetic",
+    "format-linked": " {ifname} (No IP)",
+    "format-disconnected": " 󰤭 ",
+    "format-alt": " {ifname}: {ipaddr}/{cidr}",
+    "tooltip-format": "{essid}",
+    "on-click-right": "nm-connection-editor"
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 5
+  },
+  "backlight": {
+    "format": "{icon}  {percent}%",
+    "format-icons": ["", "", "", "", "", "", "", "", ""]
+  },
+  "pulseaudio": {
+     "format": "{icon}  {volume}%",
+     "format-muted": "󰝟",
+     "format-icons": {
+        "default": ["󰕿", "󰖀", "󰕾"]
+     },
+   "on-click-right": "pavucontrol",
+   "on-click": "pavucontrol"
+  }
+}
+//{
+//    "position": "left",
+//    "name": "workspaces",
+//    "layer": "top",
+//    "mode": "overlay",
+//    "height": 270,
+//    "modules-center": ["hyprland/workspaces"],
+//
+//  "hyprland/workspaces": {
+//        "active-only": false,
+//        "all-outputs": false,
+//        "format": "{icon}",
+//        "on-click": "activate",
+//        "format-icons": {
+//            "1": "㆒",
+//            "2": "㆓",
+//            "3": "三",
+//            "4": "四",
+//            "5": "五",
+//            "urgent": "",
+//            "default": "󰧞",
+//            "sort-by-number": true
+//         },
+//       //"persistent_workspaces": {
+//       //    hello,
+//       //    "2": ["DP-4"],
+//       //    "3": ["DP-4"],
+//       //    "4": ["eDP-1"],
+//       //    "5": ["eDP-1"]
+//       //}
+//       "persistent_workspaces": {
+//           "1": ["DP-4"],
+//           "2": ["DP-4"],
+//           "3": ["DP-4"],
+//           "4": ["eDP-1"],
+//           "5": ["eDP-1"]
+//       }
+//  }
+//}
+]
+#+end_src
+** CSS
+#+begin_src css :tangle ~/.config/waybar/style.css
+ * {
+    border: none;
+    border-radius: 0px;
+    /*font-family: VictorMono, Iosevka Nerd Font, Noto Sans CJK;*/
+    font-family: "Noto Sans CJK";
+    font-style: normal;
+    min-height: 0;
+}
+
+.mainbar {
+    font-size: 18px;
+}
+
+.workspaces {
+    font-size: 32px;
+}
+
+window#waybar {
+  background: rgba(30, 30, 46, 1);
+  border-radius: 15px;
+  color: #d4d5d6;
+  padding: 100px;
+}
+
+#workspaces {
+  background: transparent;
+  margin: 5px 5px 5px 5px;
+  padding: 0px 5px 0px 5px;
+  border-radius: 16px;
+  border: solid 0px #d4d5d6;
+  font-weight: normal;
+  font-style: normal;
+}
+
+#workspaces button {
+    padding: 0px 5px;
+    border-radius: 16px;
+    color: #828384;
+}
+
+#workspaces button.active {
+    color: #e1e1e1;
+    border-radius: 16px;
+}
+
+#workspaces button:hover {
+    /*background-color: #E6B9C6;*/
+    background-color: transparent;
+    color: black;
+    border-radius: 16px;
+}
+
+#custom-date, #clock, #battery, #pulseaudio, #network, #custom-randwall, #custom-launcher {
+  background: transparent;
+  padding: 5px 5px 5px 5px;
+  margin: 5px 5px 5px 5px;
+  border-radius: 8px;
+  border: solid 0px #d4d5d6;
+}
+
+#custom-date {
+  color: #D3D6DB;
+}
+
+#custom-power {
+  color: #24283b;
+  background-color: #db4b4b;
+  border-radius: 5px;
+  margin-right: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 0px;
+  padding: 5px 10px;
+}
+
+#tray {
+  background: #282828;
+  margin: 5px 5px 5px 5px;
+  border-radius: 16px;
+  padding: 0px 5px;
+  /*border-right: solid 1px #282738;*/
+}
+
+#clock {
+    color: #D6D6D6;
+    /*background-color: #282828;*/
+    background-color: transparent;
+    border-radius: 0px 0px 0px 24px;
+    padding-left: 13px;
+    padding-right: 15px;
+    margin-right: 0px;
+    margin-left: 10px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    /*border-left: solid 1px #282738;*/
+}
+
+#backlight {
+  margin: 5px 5px 5px 5px;
+  padding: 0px 5px 0px 5px;
+  border-radius: 16px;
+  border: solid 0px #d4d5d6;
+  font-weight: normal;
+  font-style: normal;
+}
+
+#battery {
+    color: #9ece6a;
+}
+
+#battery.charging {
+    color: #9ece6a;
+}
+
+#battery.warning:not(.charging) {
+    color: #f7768e;
+    border-radius: 5px 5px 5px 5px;
+}
+
+#battery.critical:not(.charging) {
+    background-color: #f7768e;
+    color: #24283b;
+    border-radius: 5px 5px 5px 5px;
+}
+
+#backlight {
+    color: #d4d5d6;
+    border-radius: 0px 0px 0px 0px;
+    margin: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: 0px 0px;
+}
+
+#network {
+    color: #d4d5d6;
+    border-radius: 8px;
+    margin-right: 5px;
+}
+
+#pulseaudio {
+    color: #d4d5d6;
+    border-radius: 8px;
+    margin-left: 0px;
+}
+
+#pulseaudio.muted {
+    background: transparent;
+    color: #928374;
+    border-radius: 8px;
+    margin-left: 0px;
+}
+
+#custom-randwall {
+    color: #d4d5d6;
+    border-radius: 8px;
+    margin-right: 0px;
+}
+
+#custom-launcher {
+    color: #e5809e;
+    background-color: #282828;
+    border-radius: 0px 24px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0 20px 0 13px;
+    /*border-right: solid 1px #282738;*/
+}
+
+#custom-launcher button:hover {
+    background-color: #FB4934;
+    color: transparent;
+    border-radius: 8px;
+    margin-right: -5px;
+    margin-left: 10px;
+}
+
+#window {
+    background: #282828;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 16px;
+    /*border-left: solid 1px #282738;*/
+    /*border-right: solid 1px #282738;*/
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: normal;
+    font-style: normal;
+}
+
+#cpu {
+    /*background-color: #282828;*/
+    background-color: transparent;
+    /*color: #FABD2D;*/
+    border-radius: 16px;
+    margin: 5px;
+    padding: 0px 10px 0px 10px;
+}
+
+#memory {
+    /*background-color: #282828;*/
+    background-color: transparent;
+    /*color: #83A598;*/
+    border-radius: 16px;
+    margin: 5px;
+    padding: 0px 10px 0px 10px;
+}
+
+#disk {
+    /*background-color: #282828;*/
+    background-color: transparent;
+    /*color: #8EC07C;*/
+    border-radius: 16px;
+    margin: 5px;
+    padding: 0px 10px 0px 10px;
+}
+
+#custom-hyprpicker {
+    background-color: #282828;
+    /*color: #8EC07C;*/
+    border-radius: 16px;
+    margin: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 0px 11px 0px 9px;
+}
+#+end_src
+** waybar-hdmi
+#+begin_src sh :tangle ~/.config/waybar/waybar-hdmi
+#!/bin/env sh
+
+# edit the waybar config file
+#
+# break .config/waybar/config.jsonc into lines
+# search for line that reads '"persistent_workspaces": {'
+#
+# if the next line says "eDP-1" then swap that
+# (and following two lines) to "DP-4", or swap back
+#
+# "1": ["eDP-1"],   //   "1": ["DP-4"],
+# "2": ["eDP-1"],   //   "2": ["DP-4"],
+# "3": ["eDP-1"],   //   "3": ["DP-4"],
+
+if grep -q '"1": \["eDP-1"\]' ~/.config/waybar/config.jsonc; then
+     sed -i 's/\"1\": \[\"eDP-1\"\]/\"1\": \[\"DP-4\"\]/g' ~/.config/waybar/config.jsonc
+     sed -i 's/\"2\": \[\"eDP-1\"\]/\"2\": \[\"DP-4\"\]/g' ~/.config/waybar/config.jsonc
+     sed -i 's/\"3\": \[\"eDP-1\"\]/\"3\": \[\"DP-4\"\]/g' ~/.config/waybar/config.jsonc
+else
+     sed -i 's/\"1\": \[\"DP-4\"\]/\"1\": \[\"eDP-1\"\]/g' ~/.config/waybar/config.jsonc
+     sed -i 's/\"2\": \[\"DP-4\"\]/\"2\": \[\"eDP-1\"\]/g' ~/.config/waybar/config.jsonc
+     sed -i 's/\"3\": \[\"DP-4\"\]/\"3\": \[\"eDP-1\"\]/g' ~/.config/waybar/config.jsonc
+fi
+
+# kill and reload waybar
+killall waybar
+
+# start waybar
+waybar
+#+end_src
+* Mako
+#+begin_src conf :tangle ~/.config/mako/config
+sort=-time
+layer=overlay
+background-color=#2e3440
+width=380
+height=270
+border-size=1
+border-color=#88c0d0
+border-radius=15
+# icons=0
+max-icon-size=64
+default-timeout=5000
+ignore-timeout=1
+font=monospace 12
+
+[urgency=low]
+border-color=#cccccc
+
+[urgency=normal]
+border-color=#d08770
+
+[urgency=high]
+border-color=#bf616a
+default-timeout=0
+
+[category=mpd]
+default-timeout=2000
+group-by=category
+#+end_src
+* Fuzzel
+#+begin_src conf :tangle ~/.config/fuzzel/fuzzel.ini
+dpi-aware=no
+# icon-theme=Papirus-Dark
+width=40
+font=size=12
+line-height=30
+fields=name,generic,comment,categories,filename,keywords
+terminal=alacritty
+lines=7
+# prompt="❯ λ  "
+prompt="λ  "
+layer=overlay
+horizontal-pad=20
+vertical-pad=15
+image-size-ratio=0.4
+[colors]
+text=a5bbc3ff
+background=282a36fa
+selection=383a46fa
+selection-text=a5bbc3ff
+border=383a46fa
+
+[border]
+radius=20
+
+[dmenu]
+exit-immediately-if-empty=yes
+
+[key-bindings]
+cancel=Escape
+# prev=Control+k
+# next=Control+j
+#+end_src

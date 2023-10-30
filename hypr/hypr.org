@@ -1,5 +1,0 @@
-#+title: Hyprland Config
-
-* hyprland.conf
-* hyprpaper.conf
-* waybar.conf

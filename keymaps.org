@@ -1,0 +1,624 @@
+#+title: Keymaps
+
+* Redox
+** Keymap
+#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/redox/keymaps/thain/keymap.c
+#include QMK_KEYBOARD_H
+
+// Each layer gets a name for readability, which is then used in the keymap matrix below.
+// The underscores don't mean anything - you can have a layer called STUFF or any other name.
+// Layer names don't all need to be of the same length, obviously, and you can also skip them
+// entirely and just use numbers.
+#define _QWERTY 0
+#define _SYM 1
+#define _NAV 2
+#define _MCRO 3
+#define _GAME 4
+#define _COLEMAK 5
+
+enum custom_keycodes {
+  QWERTY = SAFE_RANGE,
+  SYM,
+  NAV,
+  MCRO,
+  GAME,
+  CMK,
+  KC_LMYP,
+  KC_RMYP,
+  MC_DD,
+  MC_LW,
+  MC_UV,
+};
+
+
+// Shortcut to make keymap more readable
+#define SYM      MO(_SYM)
+#define NAV      MO(_NAV)
+#define MCRO     MO(_MCRO)
+#define CMK      TO(_COLEMAK)
+#define ADJUST   MO(_ADJUST)
+#define GAME     TO(_GAME)
+
+#define CTL_SPC  MT(MOD_LCTL, KC_SPC)
+#define SYM_BSP  LT(_SYM, KC_BSPC)
+#define SFT_ENT  MT(MOD_LSFT, KC_ENT)
+#define ALT_ESC  MT(MOD_RALT, KC_ESC)
+
+// macros
+// screenshot key
+// layer for resetting
+
+#define CUT LCTL(KC_X)
+#define CPY LCTL(KC_C)
+#define PST LCTL(KC_V)
+
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+
+  [_QWERTY] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     KC_TILD ,KC_1    ,KC_2    ,KC_3    ,KC_4    ,KC_5    ,                                            KC_6    ,KC_7    ,KC_8    ,KC_9    ,KC_0    ,KC_EQL  ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     KC_TAB  ,KC_Q    ,KC_W    ,KC_E    ,KC_R    ,KC_T    ,KC_MPLY ,                          KC_MUTE ,KC_Y    ,KC_U    ,KC_I    ,KC_O    ,KC_P    ,KC_BSLS ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     KC_MINS ,KC_A    ,KC_S    ,KC_D    ,KC_F    ,KC_G    ,KC_LMYP ,                          KC_RMYP ,KC_H    ,KC_J    ,KC_K    ,KC_L    ,KC_SCLN ,KC_QUOT ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     KC_LBRC ,KC_Z    ,KC_X    ,KC_C    ,KC_V    ,KC_B    ,KC_MPRV ,KC_MNXT ,        KC_VOLD ,KC_VOLU ,KC_N    ,KC_M    ,KC_COMM ,KC_DOT  ,KC_SLSH ,KC_RBRC ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     CMK     ,KC_PSCR ,MCRO    ,NAV     ,     KC_LGUI ,    CTL_SPC ,SFT_ENT ,        SFT_ENT ,SYM_BSP ,    ALT_ESC ,     KC_LEFT ,KC_DOWN ,KC_UP   ,KC_RGHT
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),
+
+  [_COLEMAK] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     KC_TILD ,KC_1    ,KC_2    ,KC_3    ,KC_4    ,KC_5    ,                                            KC_6    ,KC_7    ,KC_8    ,KC_9    ,KC_0    ,KC_EQL  ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     KC_TAB  ,KC_Q    ,KC_W    ,KC_F    ,KC_P    ,KC_B    ,KC_MPLY ,                          KC_MUTE ,KC_J    ,KC_L    ,KC_U    ,KC_Y    ,KC_SCLN ,KC_BSLS ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     KC_MINS ,KC_A    ,KC_R    ,KC_S    ,KC_T    ,KC_G    ,KC_LMYP ,                          KC_RMYP ,KC_M    ,KC_N    ,KC_E    ,KC_I    ,KC_O    ,KC_QUOT ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     KC_LBRC ,KC_Z    ,KC_X    ,KC_C    ,KC_D    ,KC_V    ,KC_MPRV ,KC_MNXT ,        KC_VOLD ,KC_VOLU ,KC_K    ,KC_H    ,KC_COMM ,KC_DOT  ,KC_SLSH ,KC_RBRC ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     GAME    ,KC_PSCR ,MAC     ,NAV     ,     KC_LGUI ,    CTL_SPC ,SFT_ENT ,        SFT_ENT ,SYM_BSP ,    ALT_ESC ,     KC_LEFT ,KC_DOWN ,KC_UP   ,KC_RGHT
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),
+
+  [_SYM] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______ ,KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,KC_F5   ,                                            KC_F6   ,KC_F7   ,KC_F8   ,KC_F9   ,KC_F10  ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,KC_EXLM ,KC_AT   ,KC_HASH ,KC_DLR  ,KC_PERC ,_______ ,                          _______ ,KC_CIRC ,KC_AMPR ,KC_ASTR ,KC_LPRN ,KC_RPRN ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,KC_1    ,KC_2    ,KC_3    ,KC_4    ,KC_5    ,KC_LBRC ,                          KC_RBRC ,KC_6    ,KC_7    ,KC_8    ,KC_9    ,KC_0    ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),
+
+  [_NAV] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,XXXXXXX ,KC_MS_U ,XXXXXXX ,KC_WH_U ,XXXXXXX ,_______ ,                          _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,KC_MS_L ,KC_MS_D ,KC_MS_R ,KC_WH_D ,XXXXXXX ,_______ ,                          _______ ,KC_LEFT ,KC_DOWN ,KC_UP   ,KC_RIGHT,XXXXXXX ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______ ,_______ ,        _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,     KC_BTN1 ,    KC_BTN2 ,_______ ,        _______ ,_______ ,    XXXXXXX ,     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),
+
+  [_MCRO] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______ ,                          _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,_______ ,                          _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,MC_LW   ,MC_DD   ,MC_UV   ,XXXXXXX ,XXXXXXX ,_______ ,_______ ,        _______ ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,     XXXXXXX ,    XXXXXXX ,_______ ,        _______ ,_______ ,    XXXXXXX ,     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),
+
+  [_GAME] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LSFT ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     GAME    ,_______ ,_______ ,_______ ,     _______ ,    KC_BSPC , KC_ENT ,        KC_ENT  , KC_SPC ,    ALT_ESC ,     _______ ,_______ ,_______ ,_______
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  )
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_LMYP:
+            if (record->event.pressed) {  //if this is a keydown event
+                if (get_mods() & MOD_MASK_SHIFT) {   // if a shift key is held
+                    uint8_t temp_mods = get_mods();  // store the current mods that are held
+                    del_mods(MOD_MASK_SHIFT);        // ignore both shift keys
+                    SEND_STRING("[");               // tap the key without shift, types a  {  or  }
+                    set_mods(temp_mods);             // add back shift key(s)
+                } else {                             // if shift is not held
+                    SEND_STRING("{");               // tap the key without shift, types a  {  or  }
+                }
+            }
+            return false;  //do not process the key as normal
+        case KC_RMYP:
+            if (record->event.pressed) {  //if this is a keydown event
+                if (get_mods() & MOD_MASK_SHIFT) {   // if a shift key is held
+                    uint8_t temp_mods = get_mods();  // store the current mods that are held
+                    del_mods(MOD_MASK_SHIFT);        // ignore both shift keys
+                    SEND_STRING("]");               // tap the key without shift, types a  {  or  }
+                    set_mods(temp_mods);             // add back shift key(s)
+                } else {                             // if shift is not held
+                    SEND_STRING("}");               // tap the key without shift, types a  {  or  }
+                }
+            }
+            return false;  //do not process the key as normal
+        case MC_DD:
+            if (record->event.pressed)
+              SEND_STRING("docdempseylwc@gmail.com");
+            break;
+        case MC_LW:
+            if (record->event.pressed)
+              SEND_STRING("lwalkerchung@gmail.com");
+            break;
+        case MC_UV:
+            if (record->event.pressed)
+              SEND_STRING("liam.chung@student.uva.nl");
+            break;
+    }
+    return true;
+}
+#+end_src
+** Headers
+#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/redox/keymaps/thain/config.h
+#pragma once
+
+/* Select hand configuration */
+#define MASTER_LEFT
+//#define MASTER_RIGHT
+// #define EE_HANDS
+
+// Lets you roll mod-tap keys
+#define IGNORE_MOD_TAP_INTERRUPT
+#define TAPPING_TERM 200
+#+end_src
+* Kyria
+** Keymap
+#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/keymap.c
+#include QMK_KEYBOARD_H
+
+enum layers {
+    _QWERTY = 0,
+    _NAV,
+    _SYM,
+    _FUNCTION,
+};
+
+
+// Aliases for readability
+#define QWERTY   DF(_QWERTY)
+
+#define SYM      MO(_SYM)
+#define NAV      MO(_NAV)
+#define FKEYS    MO(_FUNCTION)
+#define ADJUST   MO(_ADJUST)
+
+#define CTL_SPC  LCTL_T(KC_SPC)
+#define SYM_BSP  LT(_SYM, KC_BSPC)
+#define SFT_ENT  LSFT_T(KC_ENT)
+#define ALT_ESC  RALT_T(KC_ESC)
+
+
+
+// clang-format off
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+/*
+ * Base Layer: QWERTY
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |  Tab   |   Q  |   W  |   E  |   R  |   T  |                              |   Y  |   U  |   I  |   O  |   P  |  Bksp  |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |  -  _  |   A  |   S  |   D  |   F  |   G  |                              |   H  |   J  |   K  |   L  | ;  : |  ' "   |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |  =  +  |   Z  |   X  |   C  |   V  |   B  |  ( { | Nav  |  |F-keys| } )  |   N  |   M  | ,  < | . >  | /  ? | RShift |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |Media:|Media:|Super | Ctrl | Shft |  | Shft | Sym+ | RAlt |Media:|Media:|
+ *                        | prev | next |      | +Spc | +Ent |  | +Ent | Bspc | +Esc |VolUp |VolDn |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+    [_QWERTY] = LAYOUT(
+     KC_TAB  , KC_Q ,  KC_W   ,  KC_E  ,   KC_R ,   KC_T ,                                        KC_Y,   KC_U ,  KC_I ,   KC_O ,  KC_P , KC_BSLS,
+     KC_MINS,  KC_A ,  KC_S   ,  KC_D  ,   KC_F ,   KC_G ,                                        KC_H,   KC_J ,  KC_K ,   KC_L ,KC_SCLN, KC_QUOT,
+     KC_EQL  , KC_Z ,  KC_X   ,  KC_C  ,   KC_V ,   KC_B , KC_LPRN, NAV    ,    FKEYS  , KC_RPRN, KC_N,   KC_M ,KC_COMM, KC_DOT ,KC_SLSH, KC_RSFT,
+                                KC_MPRV, KC_MNXT, KC_LGUI, CTL_SPC, SFT_ENT,    SFT_ENT, SYM_BSP, ALT_ESC, KC_VOLD, KC_VOLU
+    ),
+
+/*
+ * Alernate Base Layer: COLEMAK-DH
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |  Tab   |   Q  |   W  |   E  |   R  |   T  |                              |   Y  |   U  |   I  |   O  |   P  |  Bksp  |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |  -  _  |   A  |   S  |   D  |   F  |   G  |                              |   H  |   J  |   K  |   L  | ;  : |  ' "   |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |  =  +  |   Z  |   X  |   C  |   V  |   B  |  ( { | Nav  |  |F-keys| } )  |   N  |   M  | ,  < | . >  | /  ? | RShift |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |Media:|Media:|Super | Ctrl | Shft |  | Shft | Sym+ | RAlt |Media:|Media:|
+ *                        | prev | next |      | +Spc | +Ent |  | +Ent | Bspc | +Esc |VolUp |VolDn |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+    [_COLEMAK] = LAYOUT(
+     KC_TAB  , KC_Q ,  KC_W   ,  KC_F  ,   KC_P ,   KC_B ,                                        KC_J ,  KC_L ,  KC_U ,   KC_Y ,KC_SCLN, KC_BSLS,
+     KC_MINS , KC_A ,  KC_R   ,  KC_S  ,   KC_T ,   KC_G ,                                        KC_M ,  KC_N ,  KC_E ,   KC_I ,   KC_O, KC_QUOT,
+     KC_LBRC  , KC_Z ,  KC_X   ,  KC_C  ,   KC_D ,   KC_V , KC_LPRN, NAV    ,    FKEYS , KC_RPRN, KC_K,   KC_H ,KC_COMM, KC_DOT ,KC_SLSH,KC_RBRC,
+                                KC_MPRV, KC_MNXT, KC_LGUI, CTL_SPC, SFT_ENT,    SFT_ENT, SYM_BSP, ALT_ESC, KC_VOLD, KC_VOLU
+  ),
+
+
+/*
+ * Nav Layer: Media, navigation
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |        |      |      |      |      |      |                              | PgUp | Home |   ↑  | End  | VolUp| Delete |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |        |  GUI |  Alt | Ctrl | Shift|      |                              | PgDn |  ←   |   ↓  |   →  | VolDn| Insert |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |        |      |      |      |      |      |      |ScLck |  |      |      | Pause|M Prev|M Play|M Next|VolMut| PrtSc  |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+    [_NAV] = LAYOUT(
+      DT_PRNT, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+      DT_UP  , _______, _______, _______, _______, _______,                                     KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, _______, _______,
+      DT_DOWN, _______, _______, _______, _______, _______, _______, _______, _______, KC_DEL , _______, _______, _______, _______, _______, _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    ),
+
+/*
+ * Sym Layer: Numbers and symbols
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |    ~   |  !   |  @   |  #   |  $   |  %   |                              |   ^  |  &   |  *   |  (   |  )   |   +    |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |    `   |  1   |  2   |  3   |  4   |  5   |                              |   6  |  7   |  8   |  9   |  0   |   =    |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |    |   |      |      |      |      |      |  {   |      |  |      |   }  |      |      |      |      |      |        |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+    [_SYM] = LAYOUT(
+     KC_TILD , KC_EXLM,  KC_AT , KC_HASH,  KC_DLR, KC_PERC,                                     KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PLUS,
+      KC_GRV ,   KC_1 ,   KC_2 ,   KC_3 ,   KC_4 ,   KC_5 ,                                       KC_6 ,   KC_7 ,   KC_8 ,   KC_9 ,   KC_0 , KC_EQL ,
+     _______, _______, _______, _______, _______,  _______, KC_LCBR, _______, _______, KC_RCBR, _______, _______, _______, _______, _______, _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    ),
+
+/*
+ * Function Layer: Function keys
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |        |  F9  | F10  | F11  | F12  |      |                              |      |      |      |      |      |        |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |        |  F5  |  F6  |  F7  |  F8  |      |                              |      |      |      |      |      |        |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |        |  F1  |  F2  |  F3  |  F4  |      |      |      |  |      |      |      |      |      |      |      |        |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        |      |      |      |      |      |  |      |      |      |      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+    [_FUNCTION] = LAYOUT(
+      _______,  KC_F1 ,  KC_F2 ,  KC_F3 ,  KC_F4 , _______,                                     _______, _______, _______, _______, _______, _______,
+      _______,  KC_F5 ,  KC_F6 ,  KC_F7 ,  KC_F8 , _______,                                     _______, _______, _______, _______, _______, _______,
+      _______,  KC_F9 ,  KC_F10,  KC_F11,  KC_F12, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    ),
+
+// /*
+//  * Layer template
+//  *
+//  * ,-------------------------------------------.                              ,-------------------------------------------.
+//  * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+//  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+//  * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
+//  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
+//  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+//  *                        |      |      |      |      |      |  |      |      |      |      |      |
+//  *                        |      |      |      |      |      |  |      |      |      |      |      |
+//  *                        `----------------------------------'  `----------------------------------'
+//  */
+//     [_LAYERINDEX] = LAYOUT(
+//       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+//       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
+//       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+//                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+//     ),
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_LPRN:  //if keycode is (
+            if (record->event.pressed) {  //if this is a keydown event
+                if (get_mods() & MOD_MASK_SHIFT) {   //if a shift key is held
+                    uint8_t temp_mods = get_mods();  //store the current mods that are held
+                    del_mods(MOD_MASK_SHIFT);        //ignore both shift keys
+                    tap_code(KC_LBRC);               //tap the key without shift, types a  [  or  ]
+                    set_mods(temp_mods);             //add back shift key(s)
+                } else {                        //if shift is not held
+                    tap_code16(LSFT(keycode));  //tap the key with shift, types a  {  or  }
+                }
+            }
+            return false;  //do not process the key as normal
+        case KC_RPRN:  //or keycode is )
+            if (record->event.pressed) {  //if this is a keydown event
+                if (get_mods() & MOD_MASK_SHIFT) {   //if a shift key is held
+                    uint8_t temp_mods = get_mods();  //store the current mods that are held
+                    del_mods(MOD_MASK_SHIFT);        //ignore both shift keys
+                    tap_code(KC_RBRC);               //tap the key without shift, types a  [  or  ]
+                    set_mods(temp_mods);             //add back shift key(s)
+                } else {                        //if shift is not held
+                    tap_code16(LSFT(keycode));  //tap the key with shift, types a  {  or  }
+                }
+            }
+            return false;  //do not process the key as normal
+    }
+    return true;
+}
+
+
+
+#ifdef OLED_ENABLE
+oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_180; }
+
+bool oled_task_user(void) {
+    if (is_keyboard_master()) {
+        // QMK Logo and version information
+        // clang-format off
+        static const char PROGMEM qmk_logo[] = {
+            0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
+            0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
+            0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,0};
+        // clang-format on
+
+        oled_write_P(qmk_logo, false);
+        oled_write_P(PSTR("\n~~~ kyria ~~~ \n\n"), false);
+
+        // Host Keyboard Layer Status
+        oled_write_P(PSTR("Layer: "), false);
+        switch (get_highest_layer(layer_state|default_layer_state)) {
+            case _QWERTY:
+                oled_write_P(PSTR("QWERTY\n"), false);
+                break;
+            case _NAV:
+                oled_write_P(PSTR("Nav\n"), false);
+                break;
+            case _SYM:
+                oled_write_P(PSTR("Sym\n"), false);
+                break;
+            case _FUNCTION:
+                oled_write_P(PSTR("Function\n"), false);
+                break;
+            default:
+                oled_write_P(PSTR("Undefined\n"), false);
+        }
+    } else {
+        // clang-format off
+        static const char PROGMEM kyria_logo[] = {
+            0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,128,128,192,224,240,112,120, 56, 60, 28, 30, 14, 14, 14,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7, 14, 14, 14, 30, 28, 60, 56,120,112,240,224,192,128,128,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+            0,  0,  0,  0,  0,  0,  0,192,224,240,124, 62, 31, 15,  7,  3,  1,128,192,224,240,120, 56, 60, 28, 30, 14, 14,  7,  7,135,231,127, 31,255,255, 31,127,231,135,  7,  7, 14, 14, 30, 28, 60, 56,120,240,224,192,128,  1,  3,  7, 15, 31, 62,124,240,224,192,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+            0,  0,  0,  0,240,252,255, 31,  7,  1,  0,  0,192,240,252,254,255,247,243,177,176, 48, 48, 48, 48, 48, 48, 48,120,254,135,  1,  0,  0,255,255,  0,  0,  1,135,254,120, 48, 48, 48, 48, 48, 48, 48,176,177,243,247,255,254,252,240,192,  0,  0,  1,  7, 31,255,252,240,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+            0,  0,  0,255,255,255,  0,  0,  0,  0,  0,254,255,255,  1,  1,  7, 30,120,225,129,131,131,134,134,140,140,152,152,177,183,254,248,224,255,255,224,248,254,183,177,152,152,140,140,134,134,131,131,129,225,120, 30,  7,  1,  1,255,255,254,  0,  0,  0,  0,  0,255,255,255,  0,  0,  0,  0,255,255,  0,  0,192,192, 48, 48,  0,  0,240,240,  0,  0,  0,  0,  0,  0,240,240,  0,  0,240,240,192,192, 48, 48, 48, 48,192,192,  0,  0, 48, 48,243,243,  0,  0,  0,  0,  0,  0, 48, 48, 48, 48, 48, 48,192,192,  0,  0,  0,  0,  0,
+            0,  0,  0,255,255,255,  0,  0,  0,  0,  0,127,255,255,128,128,224,120, 30,135,129,193,193, 97, 97, 49, 49, 25, 25,141,237,127, 31,  7,255,255,  7, 31,127,237,141, 25, 25, 49, 49, 97, 97,193,193,129,135, 30,120,224,128,128,255,255,127,  0,  0,  0,  0,  0,255,255,255,  0,  0,  0,  0, 63, 63,  3,  3, 12, 12, 48, 48,  0,  0,  0,  0, 51, 51, 51, 51, 51, 51, 15, 15,  0,  0, 63, 63,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 48, 48, 63, 63, 48, 48,  0,  0, 12, 12, 51, 51, 51, 51, 51, 51, 63, 63,  0,  0,  0,  0,  0,
+            0,  0,  0,  0, 15, 63,255,248,224,128,  0,  0,  3, 15, 63,127,255,239,207,141, 13, 12, 12, 12, 12, 12, 12, 12, 30,127,225,128,  0,  0,255,255,  0,  0,128,225,127, 30, 12, 12, 12, 12, 12, 12, 12, 13,141,207,239,255,127, 63, 15,  3,  0,  0,128,224,248,255, 63, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+            0,  0,  0,  0,  0,  0,  0,  3,  7, 15, 62,124,248,240,224,192,128,  1,  3,  7, 15, 30, 28, 60, 56,120,112,112,224,224,225,231,254,248,255,255,248,254,231,225,224,224,112,112,120, 56, 60, 28, 30, 15,  7,  3,  1,128,192,224,240,248,124, 62, 15,  7,  3,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+            0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  3,  7, 15, 14, 30, 28, 60, 56,120,112,112,112,224,224,224,224,224,224,224,224,224,224,224,224,224,224,224,224,112,112,112,120, 56, 60, 28, 30, 14, 15,  7,  3,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+        };
+        // clang-format on
+        oled_write_raw_P(kyria_logo, sizeof(kyria_logo));
+    }
+    return false;
+}
+#endif
+#+end_src
+** Headers
+#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/config.h
+#pragma once
+
+// Lets you roll mod-tap keys
+#define IGNORE_MOD_TAP_INTERRUPT
+#define TAPPING_TERM 200
+
+#define OLED_BRIGHTNESS 5
+#+end_src
+** Rules
+#+begin_src makefile :tangle ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/rules.mk
+OLED_ENABLE = yes
+OLED_DRIVER = SSD1306   # Enables the use of OLED displays
+ENCODER_ENABLE = no       # Enables the use of one or more encoders
+RGBLIGHT_ENABLE = no      # Enable keyboard RGB underglow
+DYNAMIC_TAPPING_TERM_ENABLE = yes
+#+end_src
+* Kmonad
+#+begin_src kbd :tangle ~/.config/kmonad.kbd
+(defcfg  ;; For linux & by-id lists pluggable devices
+fallthrough true  ;; If key not bound/left_empty(_), fall back to default
+allow-cmd true    ;; To run system commands. MIGHT face issues with tiling window managers due to command helpers.
+input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")  ;; 'ls /dev/input/by-id/' for detachable, 'ls /dev/input/by-path/' for builtin
+output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please check the docs.
+)
+
+;; This is the real representation of your actual keyboard. We haven't started
+;; customizing layouts yet.
+(defsrc
+  esc   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps  a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft  z    x    c    v    b    n    m    ,    .    /    rsft up
+  lctl  -    lmet lalt           spc            ralt rctl left down right
+)
+
+;; ---------------------
+;; ALIASES
+;; ---------------------
+(defalias
+;; sym  (layer-toggle syms)
+ vi   (layer-toggle vim)
+ syml (layer-toggle sym)
+ fnl  (layer-toggle fn)
+ cmk  (layer-switch colemakdh)
+ qwt  (layer-switch qwerty)
+ exp  (layer-switch experimental)
+ crz  (layer-switch crazy)
+
+ semvi  (tap-hold-next-release 200 ; (layer-toggle vim)) ;; vim keybinds when holding ;
+ ovi    (tap-hold-next-release 200 o (layer-toggle vim)) ;; colemak edition
+ escf   (tap-hold-next-release 200 esc @fnl)
+ symbsp   (tap-hold-next-release 200 bspc @syml)
+ sfcspc    (tap-hold-next-release 200 spc (layer-toggle shift))
+
+ ctlspc  (tap-hold-next-release 200 spc  lctl)
+ sftspc  (tap-hold-next-release 200 spc  lsft)
+ altesc  (tap-hold-next-release 200 esc  ralt)
+ ctlesc  (tap-hold-next-release 200 esc  lctl)
+ sfesc  (tap-hold-next-release 200 esc  lsft)
+ sfqt    (tap-hold-next-release 200 ' lsft)
+ sfent    (tap-hold-next-release 200 ret lsft)
+
+ ;; a first argument on press, second on release
+ ;; scrn   (cmd-button "grim -g $(slurp) /home/thain/media/pictures/screenshots/$(date +%s_grim.png)")
+)
+
+;; The first custom layer is the one that gets activated when kmonad is started
+(deflayer qwerty
+  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  -     a    s    d    f    g    h    j    k    l    @semvi @sfqt   ret
+  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
+  lctl  _   lalt lmet           @sfcspc       @ctlesc ralt left down right
+)
+
+(deflayer vim
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    C-right   _ _  _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    left down up   right _   _    _
+  _     _    _    _    _    C-left    _ _  _    _    _    _    _
+  _     _    _    _              _              _    _    _    _    _
+)
+
+;; layer for learning colemak-dh
+(deflayer colemakdh
+  esc   brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    f    p    b    j    l    u    y    ;    [    ]    \
+  -     a    r    s    t    g    m    n    e    i    @ovi @sfqt  ret
+  lsft  z    x    c    d    v    k    h    ,    .    /    rsft up
+  lctl  _   lalt lmet           @sftspc      @ctlesc rctl left down right
+)
+
+(deflayer experimental
+  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  -     a    s    d    f    g    h    j    k    l    @semvi @sfqt   ret
+  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
+  lalt  _   lmet @ctlspc       @sfent      @symbsp @altesc left down right
+)
+
+(deflayer crazy
+  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  `     1    2    3    4    5    _    6    7    8    9    0    =    bspc
+  tab   q    w    e    r    t    _    y    u    i    o    p    \    \
+  -     a    s    d    f    g    _    h    j    k    l    @semvi '
+  lsft  z    x    c    v    b    _    n    m    ,    .    /     up
+  lalt  _   lmet @ctlspc       @sfent      @symbsp @altesc left down right
+)
+
+
+;; ?? mctl bldn blup stopcd
+(deflayer fn
+  _     f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _              _              _    _    _    _    _
+)
+
+
+(deflayer sym
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _    _
+  _     !    @    #    $    %    ^    &    *    \(   \)    ~    _    _
+  _     1    2    3    4    5    6    7    8    9    0    _    _
+  _     _    _    _    _    _    _    _    _    _    _    _    _
+  _     _    _    _              _              _    _    _    _    _
+)
+
+(deflayer shift
+  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  ~     !    @    #    $    %    ^    &    *    \(   \)   \_    +   C-bspc
+  S-tab S-q  S-w  S-e  S-r  S-t  S-y  S-u  S-i  S-o  S-p  S-[  S-]  S-\
+  S--   S-a  S-s  S-d  S-f  S-g  S-h  S-j  S-k  S-l  S-;  S-'   C-ret
+  lsft  S-z  S-x  S-c  S-v  S-b  S-n  S-m  S-,  S-.  S-/   rsft up
+  lctl  _   lalt lmet           spc          @ctlesc ralt  left down right
+)
+
+
+
+#|
+
+
+
+
+;; A layer dedicated to symbols
+(deflayer syms
+  _         _        _       _       _       _      _       _        _        _       _      _         _     _       _      _
+  _         _        _       [       ]       _      _       _        _        |       _      _         _     _
+  _         !        +       \_      &       #      _       _        @        `       \      ~         _     _
+  f11       ^        -       esc     tab     =      _       ?        :        /       $      @asf      _
+  _         _        _       ;       *       _      _       _        %        _       _      _         _
+  _         _        _                       ret                     _        _       _      _         _
+)
+
+(deflayer qwerty
+  esc   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+  lctl  a    s    d    f    g    h    j    k    l    ;    '  ret
+  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
+  lctl  _   lalt lmet           spc             ralt rctl left down right
+)
+
+
+|#
+#+end_src
+* QMK Config
+#+begin_src conf :tangle ~/.config/qmk/qmk.ini
+[user]
+keyboard = splitkb/kyria/rev2
+keymap = thain
+qmk_home = /home/thain/.config/qmk_firmware
+
+[mass_compile]
+keymap = default
+#+end_src

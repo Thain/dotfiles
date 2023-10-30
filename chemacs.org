@@ -1,0 +1,19 @@
+#+title: Chemacs Configuration
+
+My configuration for chemacs to have multiple versions of Emacs available.
+
+* Profiles
+Emacs profiles available:
+- doom
+- [[https://github.com/rougier/elegant-emacs][elegant]]
+- [[https://github.com/rougier/nano-emacs][nano]]
+- scratch
+#+begin_src emacs-lisp :tangle ~/.config/chemacs/profiles.el
+(("default"   . ((user-emacs-directory . "~/.config/chemacs/doom")
+   (env . (("DOOMDIR" . "~/.config/doom")))))
+ ("doom"      . ((user-emacs-directory . "~/.config/chemacs/doom")
+   (env . (("DOOMDIR" . "~/.config/doom")))))
+ ("elegant"   . ((user-emacs-directory . "~/.config/chemacs/elegant")))
+ ("nano"      . ((user-emacs-directory . "~/.config/chemacs/nano")))
+ ("scratch"   . ((user-emacs-directory . "~/.config/chemacs/scratch"))))
+#+end_src

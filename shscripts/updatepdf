@@ -1,8 +1,0 @@
-#!/bin/env sh
-# Ask the user for login details
-read -p 'Input file: ' input
-read -p 'Input csv file: ' csv
-read -p 'Output pdf file: ' output
-echo
-echo Updating TOC of $input to the $csv, outputting to $output...
-pdftk $input update_info $csv output $output

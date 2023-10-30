@@ -1,7 +1,0 @@
-(("default"   . ((user-emacs-directory . "~/.config/chemacs/doom")
-		 (env . (("DOOMDIR" . "~/.config/doom")))))
- ("doom"      . ((user-emacs-directory . "~/.config/chemacs/doom")
-		 (env . (("DOOMDIR" . "~/.config/doom")))))
- ("elegant"   . ((user-emacs-directory . "~/.config/chemacs/elegant")))
- ("nano"      . ((user-emacs-directory . "~/.config/chemacs/nano")))
- ("scratch"   . ((user-emacs-directory . "~/.config/chemacs/scratch"))))

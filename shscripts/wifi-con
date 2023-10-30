@@ -1,4 +1,0 @@
-#!/bin/env sh
-nmcli --ask dev wifi connect
-
-alias wifi-recon="nmcli dev wifi connect"

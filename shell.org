@@ -1,0 +1,595 @@
+#+title: Shell Config
+
+* Alacritty
+#+begin_src yml :tangle ~/.config/alacritty/alacritty.yml
+# Template
+# https://github.com/alacritty/alacritty/blob/master/alacritty.yml
+
+# Base16 Solarized Dark 256 - alacritty color config
+# Ethan Schoonover (modified by aramisgithub)
+colors:
+  # Default colors
+  primary:
+    background: '0x002b36'
+    foreground: '0x93a1a1'
+
+  # Colors the cursor will use if `custom_cursor_colors` is true
+  cursor:
+    text: '0x002b36'
+    cursor: '0x93a1a1'
+
+  # Normal colors
+  normal:
+    black:   '0x002b36'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0x6c71c4'
+    cyan:    '0x2aa198'
+    white:   '0x93a1a1'
+
+  # Bright colors
+  bright:
+    black:   '0x657b83'
+    red:     '0xdc322f'
+    green:   '0x859900'
+    yellow:  '0xb58900'
+    blue:    '0x268bd2'
+    magenta: '0x6c71c4'
+    cyan:    '0x2aa198'
+    white:   '0xfdf6e3'
+
+  indexed_colors:
+    - { index: 16, color: '0xcb4b16' }
+    - { index: 17, color: '0xd33682' }
+    - { index: 18, color: '0x073642' }
+    - { index: 19, color: '0x586e75' }
+    - { index: 20, color: '0x839496' }
+    - { index: 21, color: '0xeee8d5' }
+
+
+
+# Configuration for Alacritty, the GPU enhanced terminal emulator.
+
+# Import additional configuration files
+#
+# Imports are loaded in order, skipping all missing files, with the importing
+# file being loaded last. If a field is already present in a previous import, it
+# will be replaced.
+#
+# All imports must either be absolute paths starting with `/`, or paths relative
+# to the user's home directory starting with `~/`.
+#import:
+#  - /path/to/alacritty.yml
+
+# Any items in the `env` entry below will be added as
+# environment variables. Some entries may override variables
+# set by alacritty itself.
+#env:
+  # TERM variable
+  #
+  # This value is used to set the `$TERM` environment variable for
+  # each instance of Alacritty. If it is not present, alacritty will
+  # check the local terminfo database and use `alacritty` if it is
+  # available, otherwise `xterm-256color` is used.
+  #TERM: alacritty
+
+window:
+  # Blank space added around the window in pixels. This padding is scaled
+  # by DPI and the specified value is always added at both opposing sides.
+  padding:
+    x: 10
+    y: 5
+
+  # Spread additional padding evenly around the terminal content.
+  #dynamic_padding: false
+
+  # Background opacity
+  #
+  # Window opacity as a floating point number from `0.0` to `1.0`.
+  # The value `0.0` is completely transparent and `1.0` is opaque.
+  opacity: 0.65
+
+  # Window title
+  title: alacritty
+
+  # Window class (Linux/BSD only):
+  #class:
+    # Application instance name
+    #instance: Alacritty
+    # General application class
+    #general: Alacritty
+
+#scrolling:
+  # Maximum number of lines in the scrollback buffer.
+  # Specifying '0' will disable scrolling.
+  #history: 10000
+
+  # Scrolling distance multiplier.
+  #multiplier: 3
+
+# Font configuration
+font:
+  # Normal (roman) font face
+  #normal:
+    # Font family
+    # Default:
+    #   - (Linux/BSD) monospace
+    #family: monospace
+
+    # The `style` can be specified to pick a specific face.
+    #style: Regular
+
+  # Bold font face
+  #bold:
+    # Font family
+    #
+    # If the bold family is not specified, it will fall back to the
+    # value specified for the normal font.
+    #family: monospace
+
+    # The `style` can be specified to pick a specific face.
+    #style: Bold
+
+  # Italic font face
+  #italic:
+    # Font family
+    #
+    # If the italic family is not specified, it will fall back to the
+    # value specified for the normal font.
+    #family: monospace
+
+    # The `style` can be specified to pick a specific face.
+    #style: Italic
+
+  # Bold italic font face
+  #bold_italic:
+    # Font family
+    #
+    # If the bold italic family is not specified, it will fall back to the
+    # value specified for the normal font.
+    #family: monospace
+
+    # The `style` can be specified to pick a specific face.
+    #style: Bold Italic
+
+  # Point size
+  size: 16.0
+
+  # Offset is the extra space around each character. `offset.y` can be thought
+  # of as modifying the line spacing, and `offset.x` as modifying the letter
+  # spacing.
+  #offset:
+  #  x: 0
+  #  y: 0
+
+  # Glyph offset determines the locations of the glyphs within their cells with
+  # the default being at the bottom. Increasing `x` moves the glyph to the
+  # right, increasing `y` moves the glyph upward.
+  #glyph_offset:
+  #  x: 0
+  #  y: 0
+
+  # Thin stroke font rendering (macOS only)
+  #
+  # Thin strokes are suitable for retina displays, but for non-retina screens
+  # it is recommended to set `use_thin_strokes` to `false`.
+  #use_thin_strokes: true
+
+  # Use built-in font for box drawing characters.
+  #
+  # If `true`, Alacritty will use a custom built-in font for box drawing
+  # characters (Unicode points 2500 - 259f).
+  #
+  #builtin_box_drawing: true
+
+# If `true`, bold text is drawn using the bright color variants.
+#draw_bold_text_with_bright_colors: false
+
+  # Transparent cell backgrounds
+  #
+  # Whether or not `window.opacity` applies to all cell backgrounds or only to
+  # the default background. When set to `true` all cells will be transparent
+  # regardless of their background color.
+  #transparent_background_colors: false
+
+# Bell
+#
+# The bell is rung every time the BEL control character is received.
+#bell:
+  # Visual Bell Animation
+  #
+  # Animation effect for flashing the screen when the visual bell is rung.
+  #
+  # Values for `animation`:
+  #   - Ease
+  #   - EaseOut
+  #   - EaseOutSine
+  #   - EaseOutQuad
+  #   - EaseOutCubic
+  #   - EaseOutQuart
+  #   - EaseOutQuint
+  #   - EaseOutExpo
+  #   - EaseOutCirc
+  #   - Linear
+  #animation: EaseOutExpo
+
+  # Duration of the visual bell flash in milliseconds. A `duration` of `0` will
+  # disable the visual bell animation.
+  #duration: 0
+
+  # Visual bell animation color.
+  #color: '#ffffff'
+
+  # Bell Command
+  #
+  # This program is executed whenever the bell is rung.
+  #
+  # When set to `command: None`, no command will be executed.
+  #
+  # Example:
+  #   command:
+  #     program: notify-send
+  #     args: ["Hello, World!"]
+  #
+  #command: None
+
+#selection:
+  # This string contains all characters that are used as separators for
+  # "semantic words" in Alacritty.
+  #semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+
+  # When set to `true`, selected text will be copied to the primary clipboard.
+  #save_to_clipboard: false
+
+#cursor:
+  # Cursor style
+  #style:
+    # Cursor shape
+    #
+    # Values for `shape`:
+    #   - ▇ Block
+    #   - _ Underline
+    #   - | Beam
+    #shape: Block
+
+    # Cursor blinking state
+    #
+    # Values for `blinking`:
+    #   - Never: Prevent the cursor from ever blinking
+    #   - Off: Disable blinking by default
+    #   - On: Enable blinking by default
+    #   - Always: Force the cursor to always blink
+    #blinking: Off
+
+  # Vi mode cursor style
+  #
+  # If the vi mode cursor style is `None` or not specified, it will fall back to
+  # the style of the active value of the normal cursor.
+  #
+  # See `cursor.style` for available options.
+  #vi_mode_style: None
+
+  # Cursor blinking interval in milliseconds.
+  #blink_interval: 750
+
+  # If this is `true`, the cursor will be rendered as a hollow box when the
+  # window is not focused.
+  #unfocused_hollow: true
+
+  # Thickness of the cursor relative to the cell width as floating point number
+  # from `0.0` to `1.0`.
+  #thickness: 0.15
+
+# Live config reload (changes require restart)
+#live_config_reload: true
+
+# Shell
+#
+# You can set `shell.program` to the path of your favorite shell, e.g.
+# `/bin/fish`. Entries in `shell.args` are passed unmodified as arguments to the
+# shell.
+#
+# Default:
+#   - (macOS) /bin/bash --login
+#   - (Linux/BSD) user login shell
+#   - (Windows) powershell
+# shell:
+#   program: /usr/bin/fish
+#   args:
+#     - --login
+
+# Startup directory
+#
+# Directory the shell is started in. If this is unset, or `None`, the working
+# directory of the parent process will be used.
+#working_directory: None
+
+# Send ESC (\x1b) before characters when alt is pressed.
+#alt_send_esc: true
+
+# Offer IPC using `alacritty msg` (unix only)
+#ipc_socket: true
+
+#mouse:
+  # Click settings
+  #
+  # The `double_click` and `triple_click` settings control the time
+  # alacritty should wait
+#+end_src
+* Zsh
+** zshrc
+#+begin_src conf :tangle ~/.config/zsh/.zshrc
+# this file is last of my conf files. for interactive shells,
+# meaning it should have behavior and appearance for when
+# I've opened an interactive shell window.
+# Avoid putting anything time-intensive here.
+
+# variables controlling behaviour
+export HISTFILE=~/.config/zsh/histfile
+export HISTSIZE=1000
+export SAVEHIST=1000
+
+# variables controlling appearance
+# export PS1=$'\033[36m——————————————————————
+# \033[37m[\033[34m%n %~\033[37m]
+# \033[36m=> λ\033[37m '
+PROMPT="%F{white}[%F{blue}%~%F{white}]
+%F{cyan}λ %f"
+
+# show directories in bold light blue
+LS_COLORS="di=01;94"
+
+# show symbolic links in cyan
+LS_COLORS="${LS_COLORS}:ln=00;36"
+
+# show broken symbolic links in light red
+LS_COLORS="${LS_COLORS}:or=00;91"
+
+# show executable files in light green
+LS_COLORS="${LS_COLORS}:ex=00;92"
+
+export LS_COLORS
+
+setopt autocd extendedglob nomatch
+
+# dont beep on error
+unsetopt beep
+bindkey -e
+# for vim keybinds. was buggy and probably needs more tweaking somehow
+# bindkey -e
+
+# my aliases
+alias ls='ls --color=auto'
+alias la='ls -la'
+alias rmd='rm -rf'
+alias cls='clear && ls'
+alias yay-clean='yay -Sc'
+alias panels='ifuse --documents es.produkt.app.panels /mnt/iphone; thunar /mnt/iphone & disown; thunar ~/media/comics & disown; exit'
+alias unpanels='fusermount -u /mnt/iphone'
+alias sleepy='systemctl suspend'
+alias pi='ssh pi@192.168.1.28'
+alias oldie='ssh 192.168.1.167'
+
+alias wifi-list='nmcli -p -f IN-USE,SSID,RATE,BARS,SIGNAL,SECURITY dev wifi list'
+alias wifi-con='nmcli dev wifi connect'
+alias wifi-restart='sudo systemctl restart NetworkManager'
+
+# command autocompletion
+zstyle :compinstall filename '/home/thain/.config/zsh/.zshrc'
+
+autoload -Uz compinit
+compinit
+#+end_src
+** zprofile
+#+begin_src conf :tangle ~/.config/zsh/.zprofile
+# This file is loaded second (after .zshenv) and is for login shells
+# good for exporting environment variables
+export PATH=$PATH:"/home/thain/.config/chemacs/doom/bin"
+export PATH=$PATH:"/home/thain/.local/bin"
+export PATH=$PATH:"/home/thain/.config/shscripts"
+#+end_src
+** zshenv
+#+begin_src conf :tangle ~/.zshenv
+#!/usr/bin/env zsh
+# this file is for env vars that are available to other programs
+# in a zsh session.
+# of all of my conf files for zsh, this one is read first.
+export ZDOTDIR=/home/thain/.config/zsh
+
+export EDITOR=vim
+export QT_STYLE_OVERRIDE=adwaita-dark
+export QT_QPA_PLATFORMTHEME=gtk2
+#+end_src
+
+* Scripts
+** PDF
+Dump pdf TOC to a csv:
+#+begin_src sh :tangle ~/.config/scripts/pdf-dump
+#/bin/env sh
+# Ask the user for login details
+read -p 'Input file: ' input
+read -p 'Output csv file: ' output
+echo
+echo Dumping TOC from $input to output $output...
+pdftk $input dump_data output $output
+#+end_src
+Add pdf TOC from a csv:
+#+begin_src  sh ~/.config/scripts/pdf-toc
+#!/bin/env sh
+# Ask the user for login details
+read -p 'Input file: ' input
+read -p 'Input csv file: ' csv
+read -p 'Output pdf file: ' output
+echo
+echo Updating TOC of $input to the $csv, outputting to $output...
+pdftk $input update_info $csv output $output
+#+end_src
+** run-or-raise
+#+begin_src bash :tangle ~/.config/scripts/run-or-raise
+#!/usr/bin/env bash
+# arg1: target_class (regexp)
+# other args: command
+
+# demo:
+# 根据 arg1(window target_class) 来匹配当前运行的程序中有没有匹配的窗口，
+# hypr-run-or-raise emacs emacs
+# hypr-run-or-raise 'firefox|firefox-esr' firefox
+
+PROG=$( basename "$0" )
+float_only=""
+floating=""
+maximize=""
+cd=""
+resize=""
+
+TEMP=$( getopt --options mcfh --longoptions maximize,cd,floating,float-only,resize:,help -- "$@" ) || exit 1
+eval set -- "$TEMP"
+
+for i in "$@"; do
+    case "$i" in
+        -h|--help)
+            echo "Usage: $PROG OPTIONS target [runstring]"
+            echo
+            echo "Give focus to a program based on window class. If we can't give focus to something with that window class, then exec 'runstring'" |fmt
+            echo
+            echo "OPTIONS"
+            echo "-f|--float-only  只在 target_floating 窗口中寻找匹配的 target"
+            exit 0
+            ;;
+        -c|--cd*)
+            cd="set"
+            shift
+            ;;
+
+        -m|--maximize*)
+            maximize="set"
+            shift
+            ;;
+        --floating*)
+            # 将目标窗口转成floating
+            floating="true"
+            shift
+            ;;
+        -f|--float-only*)
+            # 只匹配当前是floating 的
+            float_only="set"
+            shift
+            ;;
+        --resize*)
+            resize="$2"
+            shift
+            shift
+            ;;
+
+    esac
+done
+
+shift
+
+# $target= app_id for wayland or target_class for x11
+target=$1
+# 转成小写
+# target=`echo $target|tr '[:upper:]' '[:lower:]'`
+# 获取除第 1 个参数外的所有参数
+shift 1
+cmd="$@"
+#
+if [ -n "$float_only" ]; then
+    # only match floating app
+    target_appinfo=`hyprctl clients -j | jq -rc '.[] | select((.class  | test("'"$target"'"; "i")) and (.floating == true) )'`
+else
+    # make the target floating
+    if [ "$floating" == "true" ]; then
+        # target_appinfo=`hyprctl clients -j | jq -rc '.[] | select((.class  | test("'"$target"'"; "i")) and (.floating == true) )'`
+        # 优先匹配floating 的
+        target_appinfo=`hyprctl clients -j | jq -rc '.[] | select((.class  | test("'"$target"'"; "i")) and (.floating == true) )'`
+        if [ -z "$target_appinfo" ]; then
+            target_appinfo=`hyprctl clients -j | jq -rc '.[] | select((.class |test("'"$target"'"; "i")))'`
+        fi
+    else
+        target_appinfo=`hyprctl clients -j | jq -rc '.[] | select((.class |test("'"$target"'"; "i")))'`
+    fi
+fi
+if [ ! "$target_appinfo" ]; then
+    # if app not found ,run the cmde
+    if echo "$cmd" | grep -q " "; then
+        sh -c "$cmd" &
+    else
+        $cmd &
+    fi
+    sleep 0.3
+    # 如果期望新创建的窗口是floating,则尝试将期转成floating
+    if [ "$floating" == "true" ]; then
+        if [ -n "$float_only" ]; then
+            target_appinfo=`hyprctl clients -j | jq -r '.[] | select((.class  | test("'"$target"'"; "i")) and (.floating == true) )'`
+        else
+            target_appinfo=`hyprctl clients -j | jq -r '.[] | select((.class |test("'"$target"'"; "i")))'`
+        fi
+        target_floating=`echo $target_appinfo|jq -r '.floating'|head -n 1`
+        if [ "$target_floating" == "false" ]; then
+            # 如果目标窗口不是floating,且 有--floating 参数（ 即想让目标窗口以floating的形式展示）
+            hyprctl dispatch togglefloating address:${target_addr}
+            hyprctl dispatch centerwindow
+        fi
+    fi
+else
+    # frontappinfo=`hyprctl clients -j | jq -r '.[] |select(.focused)'`
+    front_app=`hyprctl activewindow -j`
+    # front_class=`echo $front_app|jq -r '.class'`
+    front_addr=`echo $front_app|jq -r '.address'`
+    front_floating=`echo $front_app|jq -r '.floating'`
+    front_fullscreen=`echo $front_app|jq -r '.fullscreen'`
+
+    front_ws_name=`echo $front_app|jq -r '.workspace.name'`
+    # jq 的(.app_id // "") 表示取 app_id 若无此字段则为空串
+    # target_class=`echo $target_appinfo|jq -r '.class'|head -n 1`
+    target_addr=`echo $target_appinfo|jq -r '.address'|head -n 1`
+    target_floating=`echo $target_appinfo|jq -r '.floating'|head -n 1`
+    if [  "$front_addr" != "$target_addr" ]; then
+        # 如果当前窗口是special 的window，则先隐藏之,以免其遮挡聚焦后的窗口
+        if [[ "$front_ws_name" == *"special"* ]]; then
+            hyprctl dispatch "togglespecialworkspace"
+        fi
+        # 如果当前窗口是floating，则将其move 到special workspace,以免其遮挡聚焦后的窗口
+        if [[ "$front_floating" == "true" ]]; then
+            hyprctl dispatch "movetoworkspacesilent special"
+        fi
+
+        if [[ "$target_floating" == "true" || "$floating" == "true" ]]; then
+            # 如果当前窗口是fullscreen，则将其恢复
+            if [ "$front_fullscreen" == "true" ]; then
+                hyprctl dispatch "fullscreen"
+            fi
+            # move window to current ws
+             # hyprctl keyword animations:enabled 0
+             hyprctl dispatch "movetoworkspacesilent e+0,address:${target_addr}"
+             hyprctl dispatch "focuswindow address:${target_addr}"
+             if [[ "$floating" = "true" && "$target_floating" = "false" ]]; then
+                 # 如果目标窗口不是floating,且 有--floating 参数（ 即想让目标窗口以floating的形式展示）
+                 hyprctl dispatch togglefloating address:${target_addr}
+                 hyprctl dispatch centerwindow
+                 # resize 有bug
+                 # hyprctl dispatch resizeactive "$resize"
+             fi
+
+             # hyprctl keyword animations:enabled 1
+            if [ $maximize ]; then
+                hyprctl dispatch "fullscreen 1"
+            fi
+        else
+            hyprctl dispatch "focuswindow address:${target_addr}"
+        fi
+    else
+        if [[ "$front_ws_name" == *"special"* ]]; then
+            # hide 当前special workspace
+            hyprctl dispatch "togglespecialworkspace"
+        elif [ "$target_floating" == "true" ]; then
+            hyprctl dispatch "movetoworkspacesilent special"
+        # else
+        #     hyprctl dispatch "focuscurrentorlast"
+        fi
+    fi
+fi
+#+end_src

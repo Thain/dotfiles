@@ -1,2 +1,0 @@
-#!/bin/env sh
-nmcli -p -f IN-USE,SSID,RATE,BARS,SIGNAL,SECURITY dev wifi list
