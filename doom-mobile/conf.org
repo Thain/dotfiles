@@ -239,7 +239,7 @@ Attempting to simplify evil
         org-agenda-files (list (concat org-directory "/gtd/" ))
         ;; startup vars
         org-startup-folded t
-        ; org-startup-indented t
+        org-startup-indented nil
         ;; org-startup-with-inline-images t
         ;; fontifying
         org-fontify-done-headline t
