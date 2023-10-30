@@ -239,7 +239,7 @@ Attempting to simplify evil
         org-agenda-files (list (concat org-directory "/gtd/" ))
         ;; startup vars
         org-startup-folded t
-        org-startup-indented t
+        ; org-startup-indented t
         ;; org-startup-with-inline-images t
         ;; fontifying
         org-fontify-done-headline t
@@ -340,27 +340,6 @@ Tweak highlighting from org source code blocks (like these!) In particular remov
                           :family "FiraCode Nerd Font" :weight regular)
   '(org-block-end-line    :background "#292D3E", :foreground nil, :extend nil
                           :family "FiraCode Nerd Font" :weight regular))
-#+end_src
-*** Margins
-Turn off line numbers, sets some margin on left and right sides of the buffer, and turns off tildes on empty lines.
-#+begin_src emacs-lisp
-(add-hook 'org-mode-hook (lambda ()
-  (display-line-numbers-mode -1)
-  (setq left-margin-width 2)
-  (setq right-margin-width 2)
-  (vi-tilde-fringe-mode -1)))
-#+end_src
-olivetti mode: if there is only one buffer, centers it with plenty of room on the sides.
-#+begin_src emacs-lisp
-(use-package! olivetti
-  :after org olivetti
-  :config
-    ;(setq olivetti-min-body-width 110
-    (setq olivetti-body-width 100
-          olivetti-style 'fancy ; fantastic new layout
-          olivetti-margin-width 6))
-
-(custom-set-faces! '(fringe :background "#272B3A"))
 #+end_src
 *** Symbol replacements
 ~org-entities~: See the variable ~org-entities-user~ to add new symbol replacements for pretty entities in org.
@@ -464,26 +443,19 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
 (setq org-superstar-item-bullet-alist
          '((?- . ?•) (?+ . ?◉)) ;; Set different bullets for plain lists
       org-superstar-headline-bullets-list
-         ;'(" ") ;; Set different bullets
-         '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍") ;; Set different bullets
+         '("I" "II" "III" "IIII" "V" "VI") ;; Set different bullets
       org-hide-leading-stars t)
 #+end_src
 ** Capture
 #+begin_src emacs-lisp
-(setq org-capture-templates
-       '(("n" "note" entry (file+headline "~/documents/org/notes.org" "Inbox"))
-         ("s" "school" entry (file+headline "~/documents/org/gtd/inbox.org" "School"))
-         ("E" "emacs idea" entry (file+headline "~/documents/org/gtd/inbox.org" "Emacs"))
-         ("e" "emacs small" checkitem (file+headline "~/documents/org/gtd/gtd.org" "quick things"))
-         ("m" "math" entry (file+headline "~/documents/org/gtd/inbox.org" "Math"))
-          ))
-#+end_src
-** Mobile
-#+begin_src emacs-lisp
-(setq org-mobile-inbox-for-pull "~/documents/org/mobile.org")
-(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-(setq org-mobile-files '("~/documents/org/notes.org" "~/documents/org/todo/" "~/documents/org/personal/" "~/documents/org/lit-conf/"))
-(setq org-mobile-agendas '())
+(setq org-capture-templates '(
+   ("t" "TODO" entry (file "gtd/inbox.org") "* TODO %?" :unnarrowed t)
+   ( "r" "Reading list" )
+   ("re" "Emacs" entry (file/headline "gtd/rlist.org" "Emacs") "* %?")
+   ("ro" "Org Mode" entry (file+olp "gtd/rlist.org" "Org Mode" "Other") "* %?")
+   ("ra" "Arch" entry (file+headline "gtd/rlist.org" "Arch") "* %?")
+   ("rr" "Other" entry (file "gtd/rlist.org" ) "* %?")
+))
 #+end_src
 ** Evil Keymap
 #+begin_src emacs-lisp
@@ -504,41 +476,6 @@ I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So ins
       "k" 'evil-previous-visual-line
       )
 #+end_src
-** Export
-*** LaTeX
-#+begin_src emacs-lisp
-(setq org-latex-default-packages-alist nil
-      org-latex-toc-command nil
-      org-latex-hyperref-template nil)
-      org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
-
-(require 'ox-extra)
-(ox-extras-activate '(ignore-headlines))
-
-(eval-after-load 'org
-  '(setf org-highlight-latex-and-related '(latex)))
-
-(setq org-latex-classes
-   '(("my-article" "
-\\documentclass[10pt,a4paper]{article}
-\\include{~/.config/latex/prelude}
-
-\\usepackage{hyperref}
-\\hypersetup{
-  colorlinks=true,
-  linkcolor=[rgb]{0,0.37,0.53},
-  citecolor=[rgb]{0,0.47,0.68},
-  filecolor=[rgb]{0,0.37,0.53},
-  urlcolor=[rgb]{0,0.37,0.53},
-  pagebackref=true,
-  linktoc=all,}"
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-)))
-#+end_src
-*** HTML
 ** Calendar
 *** Date Formats
 Custom date formats
@@ -594,22 +531,6 @@ Custom date formats
                                   (float 60))
                                calendar-daylight-time-zone-name)))))
 #+end_src
-*** org-caldav
-#+begin_src emacs-lisp
-(setq org-caldav-url "https://cloud.thain.xyz/remote.php/dav/calendars/liam"
-      org-icalendar-timezone "Europe/Amsterdam")
-
-(setq org-caldav-calendars
-  '((:calendar-id "personal"
-     :files ("~/documents/org/calendar/personal.org")
-     :inbox (file+headline "~/documents/org/calendar/personal.org" "Inbox"))
-     ;;:inbox "~/documents/org/calendar/personal.org")
-    (:calendar-id "class"
-     :files ("~/documents/org/calendar/class.org")
-     :inbox "~/documents/org/calendar/class.org")))
-#+end_src
-From the example: what does this do?
-~:skip-conditions (regexp "soccer")~
 * Dired
 ** Config                                           :CLEAN:
 *** Dired ls options, recursive copying and deleting
@@ -621,7 +542,7 @@ it seems -p doesn't work as it messes up the "R" mv to rewriting when you try to
         dired-recursive-copies 'always
         dired-recursive-deletes 'always))
 #+end_src
-*** What do these do
+*** What does this do
 Hook for sort-toggle-or-edit; not really sure what it does
 #+begin_src emacs-lisp
 (add-hook 'dired-mode-hook
