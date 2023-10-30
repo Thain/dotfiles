@@ -6,7 +6,7 @@
         org-use-fast-todo-selection 'expert
         ;; agenda vars
         org-agenda-skip-scheduled-if-done t
-        org-agenda-files (list "~/documents/org/gtd/")
+        org-agenda-files (list (concat org-directory "/gtd/" ))
         ;; startup vars
         org-startup-folded t
         org-startup-indented t
@@ -24,10 +24,10 @@
         org-list-allow-alphabetical t   ; have a. A. a) A) list bullets
         ;;org-fold-catch-invisible-edits 'smart ; don't brazenly edit things you can't see
         org-archive-location "~/documents/.org-archive/%s_archive::"
-        org-refile-targets '(("~/documents/org/gtd/admin.org" :maxlevel . 2)
-                           ("~/documents/org/gtd/school.org" :maxlevel . 2)
-                           ("~/documents/org/gtd/rlist.org" :maxlevel . 2)
-                           ("~/documents/org/gtd/projects.org" :maxlevel . 2))
+        org-refile-targets '((( concat org-directory "/gtd/admin.org" ) :maxlevel . 2)
+                           (( concat org-directory "/gtd/school.org" ) :maxlevel . 2)
+                           (( concat org-directory "/gtd/rlist.org" ) :maxlevel . 2)
+                           (( concat org-directory "/gtd/projects.org" ) :maxlevel . 2))
         ))
 
 (remove-hook 'org-mode-hook #'auto-fill-mode)
@@ -183,17 +183,17 @@
       org-hide-leading-stars t)
 
 (setq org-capture-templates '(
-   ("t" "TODO" entry (file "~/documents/org/gtd/inbox.org") "* TODO %?" :unnarrowed t)
+   ("t" "TODO" entry (file ( concat org-directory "/gtd/inbox.org" )) "* TODO %?" :unnarrowed t)
    ( "r" "Reading list" )
-   ("re" "Emacs" entry (file+headline "~/documents/org/gtd/rlist.org" "Emacs") "* %?")
-   ("ro" "Org Mode" entry (file+olp "~/documents/org/gtd/rlist.org" "Org Mode" "Other") "* %?")
-   ("ra" "Arch" entry (file+headline "~/documents/org/gtd/rlist.org" "Arch") "* %?")
-   ("rr" "Other" entry (file+headline "~/documents/org/gtd/rlist.org") "* %?")
+   ("re" "Emacs" entry (file+headline ( concat org-directory "/gtd/rlist.org" ) "Emacs") "* %?")
+   ("ro" "Org Mode" entry (file+olp ( concat org-directory "/gtd/rlist.org" ) "Org Mode" "Other") "* %?")
+   ("ra" "Arch" entry (file+headline ( concat org-directory "/gtd/rlist.org" ) "Arch") "* %?")
+   ("rr" "Other" entry (file+headline ( concat org-directory "/gtd/rlist.org" )) "* %?")
 ))
 
 (after! org
   (setq org-agenda-skip-scheduled-if-done t
-        org-agenda-files (list "~/documents/org/gtd/")
+        org-agenda-files (list ( concat org-directory "/gtd/" ))
         ;org-agenda-block-separator ""
         ;; styling
         org-agenda-tags-column 'auto
@@ -310,15 +310,15 @@
 
 (setq org-caldav-calendars
   '((:calendar-id "personal"
-     :files ("~/documents/org/calendar/personal.org")
-     :inbox (file+headline "~/documents/org/calendar/personal.org" "Inbox"))
+     :files (( concat org-directory "/calendar/personal.org" ))
+     :inbox (file+headline ( concat org-directory "/calendar/personal.org" ) "Inbox"))
      ;;:inbox "~/documents/org/calendar/personal.org")
     (:calendar-id "class"
-     :files ("~/documents/org/calendar/class.org")
-     :inbox "~/documents/org/calendar/class.org")))
+     :files (( concat org-directory "/calendar/class.org" ))
+     :inbox ( concat org-directory "/calendar/class.org" ))))
 
 (after! org-journal
-  (setq org-journal-dir "~/Documents/org/journal/"
+  (setq org-journal-dir (concat org-directory "/journal/")
         org-journal-file-type 'weekly))
 
 ;; org-journal keybinds
@@ -334,8 +334,8 @@
 ;;  manual told me to, something  about cache consistency and having roam available on startup
 ;;(org-roam-db-autosync-mode)
 
-(setq org-roam-directory "~/documents/org/roam"
-      org-id-locations-file "~/documents/org/roam/.orgids")
+(setq org-roam-directory ( concat org-directory "/roam" )
+      org-id-locations-file ( concat org-directory "/roam/.orgids" ))
 
 ;; org roam keybinds
 (map! :leader

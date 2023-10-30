@@ -27,55 +27,9 @@ Setting the ascii function for rendering on my dashboard.
                "\n"))
      'face 'doom-dashboard-banner)))
 #+end_src
-#+begin_src emacs-lisp
-(defun a-very-pretty-flower ()
-  (let* ((banner '("                              ....                                  "
-                   "                           ,;;\'\'\'\';;,                    ,;;;;,     "
-                   "                 ,        ;;\'      `;;,               .,;;;\'   ;    "
-                   "              ,;;;       ;;          `;;,\';;;,.     ,%;;\'     \'     "
-                   "            ,;;,;;       ;;         ,;`;;;, `;::.  %%;\'             "
-                   "           ;;;,;;;       `\'       ,;;; ;;,;;, `::,%%;\'              "
-                   "           ;;;,;;;,          .,%%%%%\'% ;;;;,;;   %;;;               "
-                   " ,%,.      `;;;,;;;,    .,%%%%%%%%%\'%; ;;;;;,;;  %;;;               "
-                   ";,`%%%%%%%%%%`;;,;;\'%%%%%%%%%%%%%\'%%\'  `;;;;;,;, %;;;               "
-                   ";;;,`%%%%%%%%%%%,; ..`%%%%%%%%;\'%%%\'    `;;;;,;; %%;;               "
-                   " `;;;;;,`%%%%%,;;/, .. `\"\"\"\'\',%%%%%      `;;;;;; %%;;,              "
-                   "    `;;;;;;;,;;/////,.    ,;%%%%%%%        `;;;;,`%%;;              "
-                   "           ;;;/%%%%,%///;;;\';%%%%%%,          `;;;%%;;,             "
-                   "          ;;;/%%%,%%%%%/;;;\';;\'%%%%%,             `%%;;             "
-                   "         .;;/%%,%%%%%//;;\'  ;;;\'%%%%%,             %%;;,            "
-                   "         ;;//%,%%%%//;;;\'   `;;;;\'%%%%             `%;;;            "
-                   "         ;;//%,%//;;;;\'      `;;;;\'%%%              %;;;,           "
-                   "         `;;//,/;;;\'          `;;;\'%%\'              `%;;;           "
-                   "           `;;;;\'               `;\'%\'                `;;;;          "
-                   "                                  \'      .,,,.        `;;;;         "
-                   "                                      ,;;;;;;;;;;,     `;;;;        "
-                   "                                     ;;;\'    ;;;,;;,    `;;;;       "
-                   "                                     ;;;      ;;;;,;;.   `;;;;      "
-                   "                                      `;;      ;;;;;,;;   ;;;;      "
-                   "                                        `\'      `;;;;,;;  ;;;;      "
-                   "                                                   `;;,;, ;;;;      "
-                   "                                                      ;;, ;;;;      "
-                   "                                                        \';;;;;      "
-                   "                                                         ;;;;;      "
-                   "                                                        .;;;;\'      "
-                   "                                                       .;;;;\'       "
-                   "                                                      ;;;;;\'        "
-                   "                                                    ,;;;;\'          "))
-         (longest-line (apply #'max (mapcar #'length banner))))
-    (put-text-property
-     (point)
-     (dolist (line banner (point))
-       (insert (+doom-dashboard--center
-                +doom-dashboard--width
-                (concat line (make-string (max 0 (- longest-line (length line))) 32)))
-               "\n"))
-     'face 'doom-dashboard-banner)))
- #+end_src
 Set the ascii banner to be my ascii function, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
 #+begin_src emacs-lisp
-; (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
-(setq +doom-dashboard-ascii-banner-fn #'a-very-pretty-flower)
+ (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
 (setq-hook! '+doom-dashboard-mode-hook cursor-type nil)
@@ -88,55 +42,12 @@ My theme, with some old ones I've used thrown in.
 ;(setq doom-theme 'doom-nord)
 ;(setq doom-theme 'doom-nano-dark)
 (setq doom-theme 'doom-palenight)
-(setq projectile-project-search-path '("~/documents" ) ;; default project dir
-      line-move-visual nil ;; no visual line mode, ie moving across wrapped lines are separate
-      display-line-numbers-type t ;; line numbers: nil for none, relative, or t for reg
+(setq line-move-visual nil ;; no visual line mode, ie moving across wrapped lines are separate
+      display-line-numbers-type nil ;; line numbers: nil for none, relative, or t for reg
       ;doom-font (font-spec :family "JetBrains Mono" :size 22)
       ;doom-font (font-spec :family "Roboto Mono" :size 22)
       doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'regular)
       confirm-kill-emacs nil) ;; do not ask if i want to exit
-#+end_src
-** Misc stuff
-#+begin_src emacs-lisp
-;; i think it should work better now since i put snippets back in packages.el?
-;;(setq doom-snippets-dir "~/.doom.d/snippets/")
-;;(setq +file-templates-dir "~/.doom.d/snippets/")
-(set-file-template! "\\.tex$" :trigger "latex-default")
-;;(yas-reload-all)
-
-;; when opening file, read number of lines and add width to line number column
-(defun display-line-numbers-equalize ()
-  (setq display-line-numbers-width (length (number-to-string (line-number-at-pos (point-max))))))
-(add-hook 'find-file-hook 'display-line-numbers-equalize)
-
-;; Hide the tabs since I don't want to click on them
-(setq tab-bar-show nil
-      desktop-save-mode t)
-#+end_src
-** Modeline
-#+begin_src emacs-lisp
-; (use-package lambda-line
-;   :custom
-;   (lambda-line-icon-time nil) ;; requires ClockFace font (see below)
-;   (lambda-line-position 'top) ;; Set position of status-line
-;   (lambda-line-abbrev t) ;; abbreviate major modes
-;   (lambda-line-hspace " ")  ;; add some cushion
-;   (lambda-line-prefix t) ;; use a prefix symbol
-;   (lambda-line-prefix-padding nil) ;; no extra space for prefix
-;   (lambda-line-status-invert nil)  ;; no invert colors
-;   (lambda-line-gui-ro-symbol  " ◉") ;; symbols
-;   (lambda-line-gui-mod-symbol " ●")
-;   (lambda-line-gui-rw-symbol  " ○")
-;   (lambda-line-space-top +.60)  ;; padding on top and bottom of line
-;   (lambda-line-space-bottom -.60)
-;   (lambda-line-symbol-position 0) ;; adjust the vertical placement of symbol
-;   :config
-;   ;; activate lambda-line
-;   (lambda-line-mode)
-;   ;; set divider line in footer
-;   (when (eq lambda-line-position 'top)
-;     (setq-default mode-line-format (list "%_"))
-;     (setq mode-line-format (list "%_"))))
 #+end_src
 * Keybinds
 ** Leader
@@ -173,8 +84,8 @@ My theme, with some old ones I've used thrown in.
         :desc "Open terminal"                 "s" #'vterm
         :desc "Open media player"             "e" #'emms
         :desc "Open calendar"                 "c" #'=calendar
-        :desc "Open notes (notes.org)"        "n" (lambda () (interactive) (find-file "~/storage/shared/Documents/org/notes.org"))
-        :desc "Open inbox"                    "i" (lambda () (interactive) (find-file "~/storage/shared/Documents/org/gtd/inbox.org"))
+        :desc "Open notes (notes.org)"        "n" (lambda () (interactive) (find-file (concat org-directory "/notes.org" )))
+        :desc "Open inbox"                    "i" (lambda () (interactive) (find-file (concat org-directory "/gtd/inbox.org" )))
         :desc "Open config (conf.org)"        "C" (lambda () (interactive) (find-file "~/.config/doom/conf.org"))
         :desc "Open $HOME in dired"           "h" (lambda () (interactive) (dired "~"))
         :desc "Open root in dired"            "r" (lambda () (interactive) (dired "/"))
@@ -270,27 +181,6 @@ My theme, with some old ones I've used thrown in.
 #+begin_src emacs-lisp
 (map! :leader :desc "Open org capture"   "c" #'org-capture )
 #+end_src
-*** EMMS
-#+begin_src emacs-lisp
-(map! :leader
-      (:prefix ("e" . "emms")
-        :desc "Open emms buffer"         "o" #'emms
-        :desc "Open emms buffer"         "e" #'emms
-        :desc "Open smart browser"       "B" #'emms-smart-browse
-        :desc "Open normal browser"      "b" #'emms-browser
-        :desc "Clear playlist"           "c" #'emms-playlist-current-clear
-        :desc "Pause / Resume"           "p" #'emms-pause
-        :desc "Start"                    "s" #'emms-start
-        :desc "Stop"                     "t" #'emms-stop
-        :desc "Next track"               "." #'emms-next
-        :desc "Prev track"               "," #'emms-previous
-        (:prefix ("a" . "add")
-                :desc "Add dir"                  "d" #'emms-add-directory
-                :desc "Add file"                 "f" #'emms-add-file
-                :desc "Cache all files in dir"   "c" #'emms-add-directory-tree
-                :desc "Add playlist"             "p" #'emms-add-playlist)))
-
-#+end_src
 ** Evil
 switching to isearch
 #+begin_src emacs-lisp
@@ -345,7 +235,7 @@ Attempting to simplify evil
         org-use-fast-todo-selection 'expert
         ;; agenda vars
         org-agenda-skip-scheduled-if-done t
-        org-agenda-files (list "~/storage/shared/Documents/org/gtd/")
+        org-agenda-files (list (concat org-directory "/gtd/" ))
         ;; startup vars
         org-startup-folded t
         org-startup-indented t
@@ -363,8 +253,10 @@ Attempting to simplify evil
         org-list-allow-alphabetical t   ; have a. A. a) A) list bullets
         org-fold-catch-invisible-edits 'smart ; don't brazenly edit things you can't see
 
-        org-refile-targets '(("~/documents/org/gtd/gtd.org" :maxlevel . 2)
-                           ("~/documents/org/gtd/someday.org" :level . 2))
+        org-refile-targets '((( concat org-directory "/gtd/admin.org" ) :maxlevel . 2)
+                           (( concat org-directory "/gtd/school.org" ) :maxlevel . 2)
+                           (( concat org-directory "/gtd/rlist.org" ) :maxlevel . 2)
+                           (( concat org-directory "/gtd/projects.org" ) :maxlevel . 2))
         ))
         ;;prot/scroll-center-cursor-mode t))
 #+end_src
