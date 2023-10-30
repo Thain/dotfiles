@@ -107,17 +107,13 @@
 
 (add-hook! org-mode :append
    (setq prettify-symbols-alist
-        ;'(("TODO" . "○")
-        ;  ("WAIT" . "○")
-        ;  ("INACTIVE" . "○")
-        ;  ("DONE" . "◉")
         '(("TODO" . "T")
+          ("NEXT" . "N")
           ("WAIT" . "W")
-          ("INACTIVE" . "I")
           ("DONE" . "D")
-          ("[ ]" . "") ;alts: ☐ ◩ ☑
-          ("[X]" . "")
-          ("[-]" . "")
+          ("[ ]" . "☐")
+          ("[X]" . "◩")
+          ("[-]" . "☑")
           ;("[#A]" . "")
           ;("[#B]" . "")
           ;("[#C]" . "")
@@ -183,12 +179,12 @@
       org-hide-leading-stars t)
 
 (setq org-capture-templates '(
-   ("t" "TODO" entry (file ( concat org-directory "/gtd/inbox.org" )) "* TODO %?" :unnarrowed t)
+   ("t" "TODO" entry (file "gtd/inbox.org") "* TODO %?" :unnarrowed t)
    ( "r" "Reading list" )
-   ("re" "Emacs" entry (file+headline ( concat org-directory "/gtd/rlist.org" ) "Emacs") "* %?")
-   ("ro" "Org Mode" entry (file+olp ( concat org-directory "/gtd/rlist.org" ) "Org Mode" "Other") "* %?")
-   ("ra" "Arch" entry (file+headline ( concat org-directory "/gtd/rlist.org" ) "Arch") "* %?")
-   ("rr" "Other" entry (file+headline ( concat org-directory "/gtd/rlist.org" )) "* %?")
+   ("re" "Emacs" entry (file/headline "gtd/rlist.org" "Emacs") "* %?")
+   ("ro" "Org Mode" entry (file+olp "gtd/rlist.org" "Org Mode" "Other") "* %?")
+   ("ra" "Arch" entry (file+headline "gtd/rlist.org" "Arch") "* %?")
+   ("rr" "Other" entry (file "gtd/rlist.org" ) "* %?")
 ))
 
 (after! org

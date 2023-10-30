@@ -170,17 +170,13 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
 #+begin_src emacs-lisp
 (add-hook! org-mode :append
    (setq prettify-symbols-alist
-        ;'(("TODO" . "○")
-        ;  ("WAIT" . "○")
-        ;  ("INACTIVE" . "○")
-        ;  ("DONE" . "◉")
         '(("TODO" . "T")
+          ("NEXT" . "N")
           ("WAIT" . "W")
-          ("INACTIVE" . "I")
           ("DONE" . "D")
-          ("[ ]" . "") ;alts: ☐ ◩ ☑
-          ("[X]" . "")
-          ("[-]" . "")
+          ("[ ]" . "☐")
+          ("[X]" . "◩")
+          ("[-]" . "☑")
           ;("[#A]" . "")
           ;("[#B]" . "")
           ;("[#C]" . "")

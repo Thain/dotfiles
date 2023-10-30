@@ -1,6 +1,6 @@
 
 #+TITLE: Literate Configuration
- #+STARTUP: overview hideblocks
+#+STARTUP: overview hideblocks
 
 * Initial setup
 ** Name & Email
@@ -11,8 +11,8 @@ Some functionality uses this for identification, e.g. GPG configuration, email c
 #+end_src
 ** Dashboard
 Setting the ascii function for rendering on my dashboard.
-#+begin_src emacs-lisp :tangle no
-(defun doom-dashboard-draw-ascii-emacs-banner-fn ()
+#+begin_src emacs-lisp
+(defun doom-dash-ascii ()
   (let* ((banner
           '(",---.,-.-.,---.,---.,---."
             "|---'| | |,---||    `---."
@@ -29,7 +29,7 @@ Setting the ascii function for rendering on my dashboard.
 #+end_src
 Set the ascii banner to be my ascii function, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
 #+begin_src emacs-lisp
- (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
+(setq +doom-dashboard-ascii-banner-fn #'doom-dash-ascii)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
 (setq-hook! '+doom-dashboard-mode-hook cursor-type nil)
@@ -254,13 +254,14 @@ Attempting to simplify evil
         org-list-allow-alphabetical t   ; have a. A. a) A) list bullets
         org-fold-catch-invisible-edits 'smart ; don't brazenly edit things you can't see
 
-        org-refile-targets '((( concat org-directory "/gtd/admin.org" ) :maxlevel . 2)
-                           (( concat org-directory "/gtd/school.org" ) :maxlevel . 2)
-                           (( concat org-directory "/gtd/rlist.org" ) :maxlevel . 2)
-                           (( concat org-directory "/gtd/projects.org" ) :maxlevel . 2))
-        ))
+        org-refile-targets '(("gtd/admin.org" :maxlevel . 2)
+                           ("gtd/school.org" :maxlevel . 2)
+                           ("gtd/rlist.org" :maxlevel . 2)
+                           ("gtd/projects.org" :maxlevel . 2)
+        )))
         ;;prot/scroll-center-cursor-mode t))
 #+end_src
+
 Remove auto fill mode, which introduces line breaks if lines get really long. I like to write long paragraphs in org mode so this is just a nuisance for me.
 #+begin_src emacs-lisp
 (remove-hook 'org-mode-hook #'auto-fill-mode)
@@ -312,7 +313,43 @@ Tweak highlighting from org source code blocks (like these!) In particular remov
          '((?- . ?•) (?+ . ?◉)) ;; Set different bullets for plain lists
       org-superstar-headline-bullets-list
          '("Ⅰ" "Ⅱ" "Ⅲ" "Ⅳ" "Ⅴ" "Ⅵ") ;; Set different bullets
-      org-hide-leading-stars t)
+      org-superstar-remove-leading-stars t)
+      ;org-hide-leading-stars t)
+#+end_src
+*** Prettier symbols
+#+begin_src emacs-lisp
+(add-hook! org-mode :append
+   (setq prettify-symbols-alist
+        '(("TODO" . "T")
+          ("NEXT" . "N")
+          ("WAIT" . "W")
+          ("DONE" . "D")
+          ("[ ]" . "☐")
+          ("[X]" . "☑")
+          ("[-]" . "◩")
+          ;("[#A]" . "")
+          ;("[#B]" . "")
+          ;("[#C]" . "")
+          ("#+begin_src" . "»")
+          ("#+end_src" . "«")
+          ("#+BEGIN_SRC" . "»")
+          ("#+END_SRC" . "«")
+          ("#+BEGIN_EXPORT" . "»")
+          ("#+END_EXPORT" . "«")
+          ("#+RESULTS:" . "")
+          (":PROPERTIES:" . "")
+          ;("#+STARTUP:" . "")
+          ;(":Effort:" . "")
+          ("#+TITLE" . "󰬛")
+          ("#+title" . "󰬛")
+          ("#+SUBTITLE" . "󰬚")
+          ("#+subtitle" . "󰬚")
+          ("#+AUTHOR" . "󰬈")
+          ("#+author" . "󰬈")
+          ("#+DATE" . "󰬋")
+          ("#+date" . "󰬋"))))
+          ;("SCHEDULED:" . "")
+          ;("DEADLINE:" . "")
 #+end_src
 ** Capture
 #+begin_src emacs-lisp
