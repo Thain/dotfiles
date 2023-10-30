@@ -284,52 +284,15 @@ Strike through completed org entries
 (custom-set-faces!
   '(org-todo          :family "FiraCode Nerd Font")
   '(org-done          :family "FiraCode Nerd Font" :strike-through t)
-  '(org-headline-done :strike-through t))
-#+end_src
-Making nicer and bigger faces for headings
-Old one:
-#+begin_src emacs-lisp
-;(custom-set-faces!
- ;'(outline-8          :family "ETBembo" :weight bold)
- ;'(outline-7          :family "ETBembo" :weight bold)
- ;'(outline-6          :family "ETBembo" :weight bold)
- ;'(outline-5          :family "ETBembo" :weight bold)
- ;'(outline-4          :family "ETBembo" :weight bold :height 1.2)
- ;'(outline-3          :family "ETBembo" :weight bold :height 1.4)
- ;'(outline-2          :family "ETBembo" :weight bold :height 1.6)
- ;'(outline-1          :family "ETBembo" :weight bold :height 1.8)
- ;'(org-document-title :family "ETBembo" :weight bold :height 2.5 :underline nil)
- ;'(variable-pitch     :family "ETBembo" :height 150 :weight book)
- ;'(org-hide           :family "FiraCode Nerd Font" :height 0.8)
-
- ;'(outline-4          :family "FiraCode Nerd Font" :weight bold :height 1.1)
- ;'(outline-3          :family "FiraCode Nerd Font" :weight bold :height 1.4)
- ;'(outline-2          :family "FiraCode Nerd Font" :weight bold :height 1.5)
- ;'(outline-1          :family "FiraCode Nerd Font" :weight bold :height 1.6)
- ;'(org-document-title :family "FiraCode Nerd Font" :weight bold :height 2.2 :underline nil)
- ;'(org-document-info-keyword :foreground "#676E95", :extend nil
- ;                     :family "FiraCode Nerd Font" :height 200 :weight regular)
- ;'(org-meta-line      :foreground "#676E95", :extend nil
- ;                     :family "FiraCode Nerd Font" :height 100 :weight regular)
- ;'(org-superstar-leading-bullet :family "FiraCode Nerd Font")
- ;'(org-checkbox-statistics-todo :height 1.1)
- ;'(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- ;'(org-date :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- ;'(org-table :family "FiraCode Nerd Font")
- ;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
- ;'(fixed-pitch        :family "FiraCode Nerd Font"   :height 100))
-#+end_src
-New one:
-#+begin_src emacs-lisp
-(custom-set-faces!
- '(org-document-info-keyword :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :weight regular)
- '(org-meta-line      :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :weight regular)
- '(org-superstar-leading-bullet :family "FiraCode Nerd Font")
- '(org-latex-and-related :weight normal :foreground "#82aaff")
- '(org-date :weight normal :foreground "#82aaff")
- '(org-special-keyword :weight normal :height 0.75 ))
+  '(org-headline-done :strike-through t)
+  '(org-document-info-keyword :foreground "#676E95", :extend nil
+                       :family "FiraCode Nerd Font" :weight regular)
+  '(org-meta-line      :foreground "#676E95", :extend nil
+                       :family "FiraCode Nerd Font" :weight regular)
+  '(org-superstar-leading-bullet :family "FiraCode Nerd Font")
+  '(org-latex-and-related :weight normal :foreground "#82aaff")
+  '(org-date :weight normal :foreground "#82aaff")
+  '(org-special-keyword :weight normal :height 0.75 ))
 #+end_src
 Tweak highlighting from org source code blocks (like these!) In particular remove highlighting from start/end of org-blocks to avoid highlighting spilling out over into folded headlines. Also grey out meta info, make the document info much larger (only relevant given the symbol replacements I'm using), and make the checkbox stats for subitems (such as [2/3]) bigger. Lastly, make latex in org files display in fixed pitch.
 #+begin_src emacs-lisp
@@ -341,104 +304,9 @@ Tweak highlighting from org source code blocks (like these!) In particular remov
   '(org-block-end-line    :background "#292D3E", :foreground nil, :extend nil
                           :family "FiraCode Nerd Font" :weight regular))
 #+end_src
-*** Symbol replacements
-~org-entities~: See the variable ~org-entities-user~ to add new symbol replacements for pretty entities in org.
-If the symbols rendering require packages to be loaded, add these packages to ~org-latex-packages-alist~.
-#+begin_src emacs-lisp
-(setq org-hide-emphasis-markers t
-      org-entities-user
-    '(("R"            "\\mathbb{R}" t   "&#82;" "R" "R" "ℝ")
-      ("C"            "\\mathbb{C}" t   "&#67;" "C" "C" "ℂ")
-      ("N"            "\\mathbb{N}" t   "&#78;" "N" "N" "ℕ")
-      ("Z"            "\\mathbb{Z}" t   "&#90;" "Z" "Z" "ℤ")
-      ("mapsto"       "\\mapsto"    t   "&#8614;" "mapsto" "mapsto" "↦")
-      ("contra"       "\\lightning"  nil "&#11085;" "contra" "contra" "↯")
-      ("Rarrow"       "\\Rightarrow"  t "&#8658;" "=>" "=>" "⇒")
-      ("inj"          "\\hookrightarrow" t "&#8618;" "inj" "inj" "↪")
-      ;("yo"           "\\yo"           nil "&#x3088;" "y" "y" "よ")
-      ("f"            "\\textit{f}" nil "&fnof;" "f" "f" "ƒ")))
-
-#+end_src
-~org-appear~: when point is over an entity, show the contents.
-#+begin_src emacs-lisp
-  (setq org-appear-autoemphasis t   ; need org-hide-emphasis-markers
-        org-appear-autosubmarkers t ; need org-pretty-entities
-        org-appear-autoentities t   ; need org-pretty-entities
-  )
-  #+end_src
-~prettify-symbols~
-#+begin_src emacs-lisp
-(add-hook! org-mode :append
-   (setq prettify-symbols-alist
-        ;'(("TODO" . "○")
-        ;  ("WAIT" . "○")
-        ;  ("INACTIVE" . "○")
-        ;  ("DONE" . "◉")
-        '(("TODO" . "T")
-          ("WAIT" . "W")
-          ("INACTIVE" . "I")
-          ("DONE" . "D")
-          ("[ ]" . "") ;alts: ☐ ◩ ☑
-          ("[X]" . "")
-          ("[-]" . "")
-          ;("[#A]" . "")
-          ;("[#B]" . "")
-          ;("[#C]" . "")
-          ("#+begin_src" . "»")
-          ("#+end_src" . "«")
-          ("#+BEGIN_SRC" . "»")
-          ("#+END_SRC" . "«")
-          ("#+BEGIN_EXPORT" . "»")
-          ("#+END_EXPORT" . "«")
-          ("#+RESULTS:" . "")
-          (":PROPERTIES:" . "")
-          ;("#+STARTUP:" . "")
-          ;(":Effort:" . "")
-          ("#+TITLE" . "󰬛")
-          ("#+title" . "󰬛")
-          ("#+SUBTITLE" . "󰬚")
-          ("#+subtitle" . "󰬚")
-          ("#+AUTHOR" . "󰬈")
-          ("#+author" . "󰬈")
-          ("#+DATE" . "󰬋")
-          ("#+date" . "󰬋")
-          ("[0/1]" . "󰽤")
-          ("[1/1]" . "󰪥")
-          ("[1/2]" . "󰪡")
-          ("[0/2]" . "󰽤")
-          ("[2/2]" . "󰪥")
-          ("[0/3]" . "")
-          ("[1/3]" . "󰫄")
-          ("[2/3]" . "󰫆")
-          ("[3/3]" . "󰫈")
-          ("[0/4]" . "󰽤")
-          ("[1/4]" . "󰪟")
-          ("[2/4]" . "󰪡")
-          ("[3/4]" . "󰪣")
-          ("[4/4]" . "󰪥")
-          ("[0/6]" . "")
-          ("[1/6]" . "󰫃")
-          ("[2/6]" . "󰫄")
-          ("[3/6]" . "󰫅")
-          ("[4/6]" . "󰫆")
-          ("[5/6]" . "󰫇")
-          ("[6/6]" . "󰫈")
-          ("[0/8]" . "󰽤")
-          ("[1/8]" . "󰪞")
-          ("[2/8]" . "󰪟")
-          ("[3/8]" . "󰪠")
-          ("[4/8]" . "󰪡")
-          ("[5/8]" . "󰪢")
-          ("[6/8]" . "󰪣")
-          ("[7/8]" . "󰪤")
-          ("[8/8]" . "󰪥"))))
-          ;("SCHEDULED:" . "")
-          ;("DEADLINE:" . "")
-#+end_src
 *** Superstar mode
 #+begin_src emacs-lisp
 ;(setq org-hidden-keywords '(title)) ;; hide #+TITLE:
-
 ; alternatives:  '("◉" "◈" "○" "▷") ;; Set different bullets
 (setq org-superstar-item-bullet-alist
          '((?- . ?•) (?+ . ?◉)) ;; Set different bullets for plain lists
@@ -475,61 +343,6 @@ I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So ins
       "j" 'evil-next-visual-line
       "k" 'evil-previous-visual-line
       )
-#+end_src
-** Calendar
-*** Date Formats
-Custom date formats
-#+begin_src emacs-lisp
-;(setq-default org-display-custom-times t)
-;(setq org-time-stamp-custom-formats '("<%a %b %e>" . "<%a %b %e %Y %H:%M>"))
-(setq cfw:event-format-detail "%s - %e : %l")
-(setq cfw:event-format-overview "%s - %e : %l")
-
-#+end_src
-*** Holidays
-#+begin_src emacs-lisp
-(setq calendar-holidays '((holiday-fixed 1 1 "New Year's Day")
-        (holiday-float 1 1 3 "Martin Luther King Day")
-        (holiday-fixed 2 2 "Groundhog Day")
-        (holiday-fixed 2 14 "Valentine's Day")
-        (holiday-float 2 1 3 "President's Day")
-        (holiday-fixed 3 17 "St. Patrick's Day")
-        (holiday-fixed 4 1 "April Fools' Day")
-        (holiday-float 5 0 2 "Mother's Day")
-        (holiday-float 5 1 -1 "Memorial Day")
-        (holiday-fixed 6 14 "Flag Day")
-        (holiday-float 6 0 3 "Father's Day")
-        (holiday-fixed 7 4 "Independence Day")
-        (holiday-float 9 1 1 "Labor Day")
-        (holiday-float 10 1 2 "Columbus Day")
-        (holiday-fixed 10 31 "Halloween")
-        (holiday-fixed 11 11 "Veteran's Day")
-        (holiday-float 11 4 4 "Thanksgiving")
-        (holiday-easter-etc)
-        (holiday-fixed 12 25 "Christmas")
-        (holiday-chinese-new-year)
-        (if calendar-chinese-all-holidays-flag
-            (append
-             (holiday-chinese 1 15 "Lantern Festival")
-             (holiday-chinese-qingming)
-             (holiday-chinese 5 5 "Dragon Boat Festival")
-             (holiday-chinese 7 7 "Double Seventh Festival")
-             (holiday-chinese 8 15 "Mid-Autumn Festival")
-             (holiday-chinese 9 9 "Double Ninth Festival")
-             (holiday-chinese-winter-solstice)))
-        (solar-equinoxes-solstices)
-        (holiday-sexp calendar-daylight-savings-starts
-                      (format "Daylight Saving Time Begins %s"
-                              (solar-time-string
-                               (/ calendar-daylight-savings-starts-time
-                                  (float 60))
-                               calendar-standard-time-zone-name)))
-        (holiday-sexp calendar-daylight-savings-ends
-                      (format "Daylight Saving Time Ends %s"
-                              (solar-time-string
-                               (/ calendar-daylight-savings-ends-time
-                                  (float 60))
-                               calendar-daylight-time-zone-name)))))
 #+end_src
 * Dired
 ** Config                                           :CLEAN:
