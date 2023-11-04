@@ -35,19 +35,18 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
 (setq-hook! '+doom-dashboard-mode-hook cursor-type nil)
 (setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor nil)
 #+end_src
-** Theme
+** Appearance
 My theme, with some old ones I've used thrown in.
 #+begin_src emacs-lisp
 ;;alternatives: doom-dracula, doom-one, doom-solarized-dark, doom-palenight
 ;(setq doom-theme 'doom-nord)
+(setq doom-theme 'doom-one)
 ;(setq doom-theme 'doom-nano-dark)
-(setq doom-theme 'doom-palenight)
-(setq line-move-visual nil ;; no visual line mode, ie moving across wrapped lines are separate
-      display-line-numbers-type nil ;; line numbers: nil for none, relative, or t for reg
-      ;doom-font (font-spec :family "JetBrains Mono" :size 22)
-      ;doom-font (font-spec :family "Roboto Mono" :size 22)
-      doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'regular)
-      confirm-kill-emacs nil) ;; do not ask if i want to exit
+;(setq doom-theme 'doom-palenight)
+(setq line-move-visual nil
+      display-line-numbers-type nil
+      doom-font (font-spec :family "FiraCode Nerd Font" :size 18 :weight 'regular)
+      confirm-kill-emacs nil)
 #+end_src
 * Keybinds
 ** Leader
@@ -382,7 +381,7 @@ I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So ins
       )
 #+end_src
 * Dired
-** Config                                           :CLEAN:
+** Config
 *** Dired ls options, recursive copying and deleting
 it seems -p doesn't work as it messes up the "R" mv to rewriting when you try to move multiple directories.
 #+begin_src emacs-lisp
@@ -392,13 +391,6 @@ it seems -p doesn't work as it messes up the "R" mv to rewriting when you try to
         dired-recursive-copies 'always
         dired-recursive-deletes 'always))
 #+end_src
-*** What does this do
-Hook for sort-toggle-or-edit; not really sure what it does
-#+begin_src emacs-lisp
-(add-hook 'dired-mode-hook
-      (lambda ()
-        (dired-sort-toggle-or-edit)))
-#+end_src
 *** Omit mode
 Hook to enable and then configure omit mode, hiding some files for readability.
 Turn off dired omit mode (SPC m h) to show them
@@ -407,16 +399,25 @@ Turn off dired omit mode (SPC m h) to show them
       (lambda ()
         (dired-hide-details-mode)))
 (setq dired-omit-files
-    (rx (or (seq bol (? ".") "#")     ;; emacs autosave files
-        (seq bol "." (not (any "."))) ;; dot-files
-        (seq "~" eol)                 ;; backup-files
-        (seq bol "CVS" eol)           ;; CVS dirs
-        )))
+  (rx (or (seq bol (? ".") "#") ;; emacs autosave files
+   (seq bol "." (not (any "."))) ;; dot-files
+   (seq "~" eol)                 ;; backup-files
+   (seq bol "CVS" eol)           ;; CVS dirs
+   )))
 #+end_src
 *** file previewing
 Doesn't currently work for pdfs unfortunately.
 #+begin_src emacs-lisp
 (map! :map dired-mode-map :n "v" 'dired-view-file)
+(map! :map dired-mode-map :n "<mouse-2>" 'dired-find-file)
 (map! :map view-mode-map :n "v" 'View-quit)
 (map! :map pdf-view-mode-map :n "v" 'View-quit)
 #+end_src
+
+#+begin_src emacs-lisp
+(setq-hook! dired-mode line-spacing 2900)
+(setq-default line-spacing 20)
+#+end_src
+
+#+RESULTS:
+: 20
