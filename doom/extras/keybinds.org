@@ -1,13 +1,23 @@
+#+title: Keybind Configuration
+#+STARTUP: overview hideblocks
+
+
+* Workspace
+#+begin_src emacs-lisp
 (map! :leader
       (:prefix ("TAB" . "workspace")
         :desc "load workspace"              "SPC" #'+workspace/load
         :desc "workspace forward"             "l" #'+workspace/switch-right
         :desc "workspace back"                "h" #'+workspace/switch-left))
-
+#+end_src
+* Buffer
+#+begin_src emacs-lisp
 (map! :leader
       (:prefix ("b" . "buffer")
         :desc "Kill buffer and window"        "k" #'kill-buffer-and-window))
-
+#+end_src
+* Dired
+#+begin_src emacs-lisp
 (map! :leader
       (:prefix ("d" . "dired")
         :desc "Open dired in specified dir"   "." #'dired
@@ -16,26 +26,34 @@
         :desc "Open dired in org dir"         "o" (lambda () (interactive) (dired "~/documents/org"))
         :desc "Close all dired buffers"       "q" #'+dired/quit-all
         :desc "Open dired in PWD"             "d" #'dired-jump))
-
+#+end_src
+* Open
+#+begin_src emacs-lisp
 (map! :leader
-      (:prefix ("o" . "open")
-        :desc "Open agenda"                   "a" #'org-agenda
-        :desc "Open shell"                    "s" #'vterm
-        :desc "Open media player"             "e" #'emms
-        :desc "Open calendar"                 "c" #'=calendar
-        :desc "Open notes (notes.org)"        "n" (lambda () (interactive) (find-file "~/documents/org/notes.org"))
-        :desc "Open inbox"                    "i" (lambda () (interactive) (find-file "~/documents/org/gtd/inbox.org"))
-        :desc "Open config (conf.org)"        "C" (lambda () (interactive) (find-file "~/.config/doom/conf.org"))
-        :desc "Open $HOME in dired"           "h" (lambda () (interactive) (dired "~"))
-        :desc "Open root in dired"            "r" (lambda () (interactive) (dired "/"))
-        :desc "Open todo"                     "t" #'org-todo-list))
+   (:prefix ("o" . "open")
+     :desc "Open agenda"                   "a" #'org-agenda
+     :desc "Open shell"                    "s" #'vterm
+     :desc "Open media player"             "e" #'emms
+     :desc "Open calendar"                 "c" #'=calendar
+     :desc "Open notes (notes.org)"        "n" (lambda () (interactive) (find-file "~/documents/org/notes.org"))
+     :desc "Open inbox"                    "i" (lambda () (interactive) (find-file "~/documents/org/gtd/inbox.org"))
+     :desc "Open Wiki"                     "w" (lambda () (interactive) (find-file "~/documents/org/wiki/index.org"))
+     :desc "Open config (conf.org)"        "C" (lambda () (interactive) (find-file "~/dots/doom/conf.org"))
+     :desc "Open $HOME in dired"           "h" (lambda () (interactive) (dired "~"))
+     :desc "Open root in dired"            "r" (lambda () (interactive) (dired "/"))
+     :desc "Open todo"                     "t" #'org-todo-list))
+#+end_src
 
+* Window
+#+begin_src emacs-lisp
 (map! :leader
       (:prefix ("w" . "window")
         :desc "open file in other window"    "." #'find-file-other-window
         :desc "vsplit and follow"            "v" #'+evil/window-vsplit-and-follow
         :desc "split and follow"             "s" #'+evil/window-split-and-follow))
-
+#+end_src
+* Unbind
+#+begin_src emacs-lisp
 (map! :leader
     ;; notes. not really necessary for what little i do,
     ;; so i've bound the ones i need over to the "open" and "dired" prefixes
@@ -111,9 +129,13 @@
         "q" nil "c" nil
         ;; TODO why do these do weird shit "_" nil
         "|" nil))
-
+#+end_src
+* Capture
+#+begin_src emacs-lisp
 (map! :leader :desc "Open org capture"   "c" #'org-capture )
-
+#+end_src
+* EMMS
+#+begin_src emacs-lisp
 (map! :leader
       (:prefix ("e" . "emms")
         :desc "Open emms buffer"         "o" #'emms
@@ -132,8 +154,14 @@
                 :desc "Cache all files in dir"   "c" #'emms-add-directory-tree
                 :desc "Add playlist"             "p" #'emms-add-playlist)))
 
+#+end_src
+* Evil
+switching to isearch
+#+begin_src emacs-lisp
 (evil-select-search-module 'evil-search-module 'isearch)
-
+#+end_src
+Attempting to simplify evil
+#+begin_src emacs-lisp
 ;;(after! evil (setq evil-want-minibuffer 1))
 ;; TODO bind an ex search and replace
 (map! :map evil-motion-state-map :prefix "g"
@@ -168,3 +196,4 @@
       ;; a lot of stuff in here, esp related to avy it seems. worth exploring eventually
       "s" nil
       )
+#+end_src

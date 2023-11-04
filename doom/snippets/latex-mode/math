@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: Math mode
-# key: math
-# condition: t
-# --
-\[ $0 \]

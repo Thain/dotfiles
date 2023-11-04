@@ -238,9 +238,9 @@ toggle_window_configuration <f12>
 #toggle_one_window <unbound>
 #+end_src
 * Preferences
-#+begin_src conf :tangle ~/.config/sioyek/pref_user.config
+#+begin_src conf :tangle ~/.config/sioyek/prefs_user.config
 ## Execute on startup
-startup_commands    toggle_custom_color
+startup_commands toggle_custom_color
 
 ## bind custom commands here
 ## new_command _my_command_name python /path/to/script.py %{file_name} %{paper_name}

@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: star
-# key: star
-# condition: (and (texmathp) 'auto)
-# expand-env: ((argument (quote t)))
-# group: math
-# --
-`(delete-backward-char 1)`_{\star}$0

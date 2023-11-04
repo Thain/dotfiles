@@ -1,8 +1,3 @@
-#+title: Org Mode Configuration
-;#+STARTUP: overview hideblocks
-
-* Config
-#+begin_src emacs-lisp
 (after! org
   (setq org-directory "~/documents/org"
         ;; todo vars
@@ -29,26 +24,27 @@
         org-list-allow-alphabetical t   ; have a. A. a) A) list bullets
         ;;org-fold-catch-invisible-edits 'smart ; don't brazenly edit things you can't see
         org-archive-location "~/documents/.org-archive/%s_archive::"
-        org-refile-targets '((( concat org-directory "/gtd/admin.org" ) :maxlevel . 2)
-                           (( concat org-directory "/gtd/school.org" ) :maxlevel . 2)
-                           (( concat org-directory "/gtd/rlist.org" ) :maxlevel . 2)
-                           (( concat org-directory "/gtd/projects.org" ) :maxlevel . 2))
-        ))
-#+end_src
-Remove auto fill mode, which introduces line breaks if lines get really long. I like to write long paragraphs in org mode so this is just a nuisance for me.
-#+begin_src emacs-lisp
-(remove-hook 'org-mode-hook #'auto-fill-mode)
-#+end_src
-add a hook to tangle config files after I save, so they're automatically kept up to date.
-#+begin_src emacs-lisp
-(add-hook 'org-mode-hook
-          (lambda () (add-hook 'after-save-hook #'org-babel-tangle
-                          :append :local)))
-#+end_src
+        org-refile-targets '(("~/documents/org/gtd/admin.org" :maxlevel . 2)
+                             ("~/documents/org/gtd/school.org" :maxlevel . 2)
+                             ("~/documents/org/gtd/rlist.org" :maxlevel . 2)
+                             ("~/documents/org/gtd/projects.org" :maxlevel . 2)
+                            )
+))
 
-* Appearance
-** Hooks
-#+begin_src emacs-lisp
+(remove-hook 'org-mode-hook #'auto-fill-mode)
+
+(defun tangle-dots ()
+  (when (or (equal (file-name-directory (directory-file-name buffer-file-name))
+               (concat (getenv "HOME") "/dots/"))
+            (equal (file-name-directory (directory-file-name buffer-file-name))
+               (concat (getenv "HOME") "/dots/doom/")))
+    (org-babel-tangle)
+    (message "%s tangled" buffer-file-name)))
+
+(add-hook 'org-mode-hook
+          (lambda () (add-hook 'after-save-hook #'tangle-dots
+                          :append :local)))
+
 (add-hook! org-mode :append
            #'visual-line-mode
            #'org-appear-mode
@@ -60,46 +56,12 @@ add a hook to tangle config files after I save, so they're automatically kept up
            ;#'variable-pitch-mode
 )
 (setq-hook! org-mode line-spacing .1)
-#+end_src
-** Face/font settings
-Strike through completed org entries
-#+begin_src emacs-lisp
+
 (custom-set-faces!
   '(org-todo          :family "FiraCode Nerd Font")
   '(org-done          :family "FiraCode Nerd Font" :strike-through t)
   '(org-headline-done :strike-through t))
-#+end_src
-Making nicer and bigger faces for headings
-Old one:
-#+begin_src emacs-lisp :tangle no
-(custom-set-faces!
- '(outline-8          :family "ETBembo" :weight bold)
- '(outline-7          :family "ETBembo" :weight bold)
- '(outline-6          :family "ETBembo" :weight bold)
- '(outline-5          :family "ETBembo" :weight bold)
- '(outline-4          :family "ETBembo" :weight bold :height 1.2)
- '(outline-3          :family "ETBembo" :weight bold :height 1.4)
- '(outline-2          :family "ETBembo" :weight bold :height 1.6)
- '(outline-1          :family "ETBembo" :weight bold :height 1.8)
- '(org-document-title :family "ETBembo" :weight bold :height 2.5 :underline nil)
- '(variable-pitch     :family "ETBembo" :height 150 :weight book)
- '(org-hide           :family "FiraCode Nerd Font" :height 0.8)
 
- '(org-document-title :family "ETBembo" :weight bold :height 2.2 :underline nil)
- '(org-document-info-keyword :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :height 200 :weight regular)
- '(org-meta-line      :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :height 100 :weight regular)
- '(org-superstar-leading-bullet :family "FiraCode Nerd Font")
- '(org-checkbox-statistics-todo :height 1.1)
- '(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- '(org-date :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- '(org-table :family "FiraCode Nerd Font")
- '(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
- '(fixed-pitch        :family "FiraCode Nerd Font"   :height 100))
-#+end_src
-New one:
-#+begin_src emacs-lisp
 (custom-set-faces!
  '(org-document-info-keyword :foreground "#676E95", :extend nil
                       :family "FiraCode Nerd Font" :weight regular)
@@ -109,9 +71,7 @@ New one:
  '(org-latex-and-related :weight normal :foreground "#82aaff")
  '(org-date :weight normal :foreground "#82aaff")
  '(org-special-keyword :weight normal :height 0.75 ))
-#+end_src
-Tweak highlighting from org source code blocks (like these!) In particular remove highlighting from start/end of org-blocks to avoid highlighting spilling out over into folded headlines. Also grey out meta info, make the document info much larger (only relevant given the symbol replacements I'm using), and make the checkbox stats for subitems (such as [2/3]) bigger. Lastly, make latex in org files display in fixed pitch.
-#+begin_src emacs-lisp
+
 (custom-set-faces!
   '(org-block-begin-line  :background "#292D3E", :foreground nil, :extend nil
                           :family "FiraCode Nerd Font" :weight regular)
@@ -119,18 +79,13 @@ Tweak highlighting from org source code blocks (like these!) In particular remov
                           :family "FiraCode Nerd Font" :weight regular)
   '(org-block-end-line    :background "#292D3E", :foreground nil, :extend nil
                           :family "FiraCode Nerd Font" :weight regular))
-#+end_src
-** Margins
-Turn off line numbers, sets some margin on left and right sides of the buffer, and turns off tildes on empty lines.
-#+begin_src emacs-lisp
+
 (add-hook 'org-mode-hook (lambda ()
   (display-line-numbers-mode -1)
   (setq left-margin-width 2)
   (setq right-margin-width 2)
   (vi-tilde-fringe-mode -1)))
-#+end_src
-olivetti mode: if there is only one buffer, centers it with plenty of room on the sides.
-#+begin_src emacs-lisp
+
 (use-package! olivetti
   :after org olivetti
   :config
@@ -140,11 +95,7 @@ olivetti mode: if there is only one buffer, centers it with plenty of room on th
           olivetti-margin-width 6))
 
 (custom-set-faces! '(fringe :background "#272B3A"))
-#+end_src
-** Symbol replacements
-~org-entities~: See the variable ~org-entities-user~ to add new symbol replacements for pretty entities in org.
-If the symbols rendering require packages to be loaded, add these packages to ~org-latex-packages-alist~.
-#+begin_src emacs-lisp
+
 (setq org-hide-emphasis-markers t
       org-entities-user
     '(("R"            "\\mathbb{R}" t   "&#82;" "R" "R" "ℝ")
@@ -158,16 +109,11 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
       ;("yo"           "\\yo"           nil "&#x3088;" "y" "y" "よ")
       ("f"            "\\textit{f}" nil "&fnof;" "f" "f" "ƒ")))
 
-#+end_src
-~org-appear~: when point is over an entity, show the contents.
-#+begin_src emacs-lisp
   (setq org-appear-autoemphasis t   ; need org-hide-emphasis-markers
         org-appear-autosubmarkers t ; need org-pretty-entities
         org-appear-autoentities t   ; need org-pretty-entities
   )
-  #+end_src
-~prettify-symbols~
-#+begin_src emacs-lisp
+
 (add-hook! org-mode :append
    (setq prettify-symbols-alist
         '(("TODO" . "T")
@@ -230,9 +176,7 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
           ("[8/8]" . "󰪥"))))
           ;("SCHEDULED:" . "")
           ;("DEADLINE:" . "")
-#+end_src
-** Superstar mode
-#+begin_src emacs-lisp
+
 ;(setq org-hidden-keywords '(title)) ;; hide #+TITLE:
 
 ; alternatives:  '("◉" "◈" "○" "▷") ;; Set different bullets
@@ -242,10 +186,7 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
          ;'(" ") ;; Set different bullets
          '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍") ;; Set different bullets
       org-hide-leading-stars t)
-#+end_src
-** TODO [[https://pank.eu/blog/pretty-babel-src-blocks.html][Pretty Org babel blocks]]
-* Capture
-#+begin_src emacs-lisp
+
 (setq org-capture-templates '(
    ("t" "TODO" entry (file "gtd/inbox.org") "* TODO %?" :unnarrowed t)
    ( "r" "Reading list" )
@@ -254,10 +195,7 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
    ("ra" "Arch" entry (file+headline "gtd/rlist.org" "Arch") "* %?")
    ("rr" "Other" entry (file "gtd/rlist.org" ) "* %?")
 ))
-#+end_src
 
-* Agenda
-#+begin_src emacs-lisp
 (after! org
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-files (list ( concat org-directory "/gtd/" ))
@@ -272,17 +210,12 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
         org-agenda-current-time-string
           "⭠ now ─────────────────────────────────────────────────"
 ))
-#+end_src
-Editing the Agenda keymap
-#+begin_src emacs-lisp
+
 (map! :map evil-org-agenda-mode-map
       :m "q" 'org-agenda-quit
       :m "Q" 'org-agenda-exit
       )
-#+end_src
 
-* Evil Keymap
-#+begin_src emacs-lisp
 (map! :map evil-org-mode-map :m :prefix "g"
       :m "h" 'evil-first-non-blank-of-visual-line
       :m "H" 'evil-org-top
@@ -292,61 +225,17 @@ Editing the Agenda keymap
       :m "j" 'org-forward-heading-same-level
       :m "l" 'evil-end-of-visual-line
       )
-#+end_src
-I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So instead of using ~evil-respect-visual-line-mode~, just rebind these two commands to their visual counterparts. Still need to somehow make this happen only in org mode ideally.
-#+begin_src emacs-lisp
+
 (map! :map evil-motion-state-map
       "j" 'evil-next-visual-line
       "k" 'evil-previous-visual-line
       )
-#+end_src
-* Export
-** LaTeX
-#+begin_src emacs-lisp
-(setq org-latex-default-packages-alist nil
-      org-latex-toc-command nil
-      org-latex-hyperref-template nil)
-      org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
 
-(require 'ox-extra)
-(ox-extras-activate '(ignore-headlines))
-
-(eval-after-load 'org
-  '(setf org-highlight-latex-and-related '(latex)))
-
-(setq org-latex-classes
-   '(("my-article" "
-\\documentclass[10pt,a4paper]{article}
-\\include{~/.config/latex/prelude}
-
-\\usepackage{hyperref}
-\\hypersetup{
-  colorlinks=true,
-  linkcolor=[rgb]{0,0.37,0.53},
-  citecolor=[rgb]{0,0.47,0.68},
-  filecolor=[rgb]{0,0.37,0.53},
-  urlcolor=[rgb]{0,0.37,0.53},
-  pagebackref=true,
-  linktoc=all,}"
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-)))
-#+end_src
-** HTML
-* Calendar
-** Date Formats
-Custom date formats
-#+begin_src emacs-lisp
 ;(setq-default org-display-custom-times t)
 ;(setq org-time-stamp-custom-formats '("<%a %b %e>" . "<%a %b %e %Y %H:%M>"))
 (setq cfw:event-format-detail "%s - %e : %l")
 (setq cfw:event-format-overview "%s - %e : %l")
 
-#+end_src
-** Holidays
-#+begin_src emacs-lisp
 (setq calendar-holidays '((holiday-fixed 1 1 "New Year's Day")
         (holiday-float 1 1 3 "Martin Luther King Day")
         (holiday-fixed 2 2 "Groundhog Day")
@@ -389,9 +278,7 @@ Custom date formats
                                (/ calendar-daylight-savings-ends-time
                                   (float 60))
                                calendar-daylight-time-zone-name)))))
-#+end_src
-** org-caldav
-#+begin_src emacs-lisp
+
 (setq org-caldav-url "https://cloud.thain.xyz/remote.php/dav/calendars/liam"
       org-icalendar-timezone "Europe/Amsterdam")
 
@@ -403,12 +290,7 @@ Custom date formats
     (:calendar-id "class"
      :files (( concat org-directory "/calendar/class.org" ))
      :inbox ( concat org-directory "/calendar/class.org" ))))
-#+end_src
-From the example: what does this do?
-~:skip-conditions (regexp "soccer")~
-* Inactive
-** Journal
-#+begin_src emacs-lisp
+
 (after! org-journal
   (setq org-journal-dir (concat org-directory "/journal/")
         org-journal-file-type 'weekly))
@@ -421,46 +303,3 @@ From the example: what does this do?
         :desc "Save and Exit"       "d" #'(lambda () (interactive) (save-buffer) (kill-buffer-and-window))
         :desc "Next Entry"          "n" #'org-journal-next-entry
         :desc "Previous Entry"      "p" #'org-journal-previous-entry))
-
-#+end_src
-** Roam
-#+begin_src emacs-lisp
-;; org roam config
-;;  manual told me to, something  about cache consistency and having roam available on startup
-;;(org-roam-db-autosync-mode)
-
-(setq org-roam-directory ( concat org-directory "/roam" )
-      org-id-locations-file ( concat org-directory "/roam/.orgids" ))
-
-;; org roam keybinds
-(map! :leader
-      (:prefix ("r" . "roam")
-        :desc "Find node"                  "f" #'org-roam-node-find
-        :desc "Find ref"                   "F" #'org-roam-ref-find
-        :desc "Show graph"                 "g" #'org-roam-graph
-        :desc "Insert node"                "i" #'org-roam-node-insert
-        :desc "Capture to node"            "c" #'org-roam-capture
-        :desc "Toggle roam buffer"         "b" #'org-roam-buffer-toggle
-        :desc "Launch roam buffer"         "B" #'org-roam-buffer-display-dedicated
-        :desc "Sync database"              "s" #'org-roam-db-sync
-        :desc "Add ref"                    "r" #'org-roam-ref-add
-        :desc "Add alias"                  "a" #'org-roam-alias-add))
-;;         (:prefix ("d" . "by date")
-;;                 :desc "Arbitrary date" "d" #'org-roam-dailies-find-date
-;;                 :desc "Today"          "t" #'org-roam-dailies-find-today
-;;                 :desc "Tomorrow"       "m" #'org-roam-dailies-find-tomorrow
-;;                 :desc "Yesterday"      "y" #'org-roam-dailies-find-yesterday
-;;                 :desc "Goto previous note"        "b" #'org-roam-dailies-goto-previous-note
-;;                 :desc "Goto date"                 "d" #'org-roam-dailies-goto-date
-;;                 :desc "Capture date"              "D" #'org-roam-dailies-capture-date
-;;                 :desc "Goto next note"            "f" #'org-roam-dailies-goto-next-note
-;;                 :desc "Goto tomorrow"             "m" #'org-roam-dailies-goto-tomorrow
-;;                 :desc "Capture tomorrow"          "M" #'org-roam-dailies-capture-tomorrow
-;;                 :desc "Capture today"             "n" #'org-roam-dailies-capture-today
-;;                 :desc "Goto today"                "t" #'org-roam-dailies-goto-today
-;;                 :desc "Capture today"             "T" #'org-roam-dailies-capture-today
-;;                 :desc "Goto yesterday"            "y" #'org-roam-dailies-goto-yesterday
-;;                 :desc "Capture yesterday"         "Y" #'org-roam-dailies-capture-yesterday
-;;                 :desc "Find directory"            "-" #'org-roam-dailies-find-directory)))
-
-#+end_src
