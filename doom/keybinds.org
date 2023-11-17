@@ -1,5 +1,6 @@
 #+title: Keybind Configuration
 #+STARTUP: overview hideblocks
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/keybinds.el
 
 
 * Workspace
@@ -196,4 +197,9 @@ Attempting to simplify evil
       ;; a lot of stuff in here, esp related to avy it seems. worth exploring eventually
       "s" nil
       )
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'keybinds)
 #+end_src

@@ -15,8 +15,9 @@ Some functionality uses this for identification, e.g. GPG configuration, email c
 (setq user-full-name "Liam Chung"
       user-mail-address "lwalkerchung@gmail.com")
 #+end_src
-** Dashboard
-Setting the ascii function for rendering on my dashboard.
+
+** Startup
+Set the ascii banner to be my ascii function, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
 #+begin_src emacs-lisp :tangle no
 (defun doom-dashboard-draw-ascii-emacs-banner-fn ()
   (let* ((banner
@@ -33,7 +34,7 @@ Setting the ascii function for rendering on my dashboard.
                "\n"))
      'face 'doom-dashboard-banner)))
 #+end_src
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun a-very-pretty-flower ()
   (let* ((banner '("                              ....                                  "
                    "                           ,;;\'\'\'\';;,                    ,;;;;,     "
@@ -78,8 +79,7 @@ Setting the ascii function for rendering on my dashboard.
                "\n"))
      'face 'doom-dashboard-banner)))
  #+end_src
-Set the ascii banner to be my ascii function, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ; (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
 (setq +doom-dashboard-ascii-banner-fn #'a-very-pretty-flower)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
@@ -87,13 +87,17 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
 (setq-hook! '+doom-dashboard-mode-hook cursor-type nil)
 (setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor nil)
 #+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'after-init-hook (lambda () (org-agenda nil "z")))
+#+end_src
 ** Theme
 My theme, with some old ones I've used thrown in.
 #+begin_src emacs-lisp
 ;;alternatives: doom-dracula, doom-one, doom-solarized-dark, doom-palenight
 ;(setq doom-theme 'doom-nord)
-;(setq doom-theme 'doom-nano-dark)
 (setq doom-theme 'doom-palenight)
+;(setq doom-theme 'doom-nano-light)
 (setq projectile-project-search-path '("~/documents" ) ;; default project dir
       line-move-visual nil ;; no visual lines by default
       display-line-numbers-type t
@@ -161,6 +165,14 @@ Require modes and set default modes for file extensions
 ;     (setq-default mode-line-format (list "%_"))
 ;     (setq mode-line-format (list "%_"))))
 #+end_src
+** Documentation
+Some setup for using the ~info~ mode
+#+begin_src emacs-lisp
+(add-hook! Info-mode :append
+           #'olivetti-mode
+           #'variable-pitch-mode
+)
+#+end_src
 * Dired
 ** Config                                           :CLEAN:
 *** Dired ls options, recursive copying and deleting
@@ -179,6 +191,7 @@ Hook for sort-toggle-or-edit; not really sure what it does
       (lambda ()
         (dired-sort-toggle-or-edit)))
 #+end_src
+
 *** Omit mode
 Hook to enable and then configure omit mode, hiding some files for readability.
 Turn off dired omit mode (SPC m h) to show them
@@ -576,9 +589,13 @@ s                         emms-stop
 #+end_src
 * External loading
 #+begin_src emacs-lisp
-(org-babel-load-file "~/dots/doom/extras/keybinds.org")
-(org-babel-load-file "~/dots/doom/extras/org-mode.org")
-(org-babel-load-file "~/dots/doom/extras/LaTeX.org")
+;; (org-babel-load-file "~/dots/doom/extras/keybinds.org")
+;; (org-babel-load-file "~/dots/doom/extras/org-mode.org")
+;; (org-babel-load-file "~/dots/doom/extras/LaTeX.org")
+
+(load-file (expand-file-name "extra/keybinds.el" doom-user-dir))
+(load-file (expand-file-name "extra/org-mode.el" doom-user-dir))
+(load-file (expand-file-name "extra/LaTeX.el" doom-user-dir))
 #+end_src
 * Modules
 #+begin_src emacs-lisp :tangle ~/.config/doom/init.el
@@ -718,7 +735,7 @@ s                         emms-stop
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
        ;;(go +lsp)         ; the hipster dialect
-       ;; (haskell +lsp)    ; a language that's lazier than I am
+       (haskell +lsp)    ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
        json              ; At least it ain't XML
@@ -781,8 +798,8 @@ s                         emms-stop
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 (package! web-mode)
-(package! org-roam)
-(package! org-journal)
+;;(package! org-roam)
+;;(package! org-journal)
 (package! vterm)
 (package! org-superstar)
 (package! olivetti)
@@ -811,7 +828,6 @@ s                         emms-stop
   :recipe (:host github
            :repo "ymarco/auto-activating-snippets"))
 
-
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
 ;; https://github.com/raxod502/straight.el#the-recipe-format
@@ -830,6 +846,7 @@ s                         emms-stop
 ;;(package! company :disable t)
 ;;(package! modeline :disable t)
 ;;(package! snippets :disable t)
+(package! org-reveal :disable t)
 
 ;; You can override the recipe of a built in package without having to specify
 ;; all the properties for `:recipe'. These will inherit the rest of its recipe

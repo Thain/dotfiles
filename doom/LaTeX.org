@@ -1,5 +1,6 @@
 #+title: LaTeX Configuration
 #+STARTUP: overview hideblocks
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/LaTeX.el
 
 * Config
 Basic config
@@ -30,8 +31,11 @@ Basic config
  ; (setq tex-fontify-script nil)
  ; (setq font-latex-fontify-script nil)
   ;; don't insert {} automatically for sub and superscripts
+  (setq indent-tabs-mode nil)
+  (setq c-basic-offset 2)
   (setq TeX-electric-sub-and-superscript nil)
   (setq-default tex-master nil))
+
 
 #+end_src
 Adding environments
@@ -135,4 +139,9 @@ Enable tex folding in all LaTeX docs
 
 (add-to-list 'load-path "~/.config/doom")
 (require 'laas)
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'LaTeX)
 #+end_src

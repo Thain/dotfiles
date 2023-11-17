@@ -1,12 +1,15 @@
+
 #+title: Org Mode Configuration
+#+STARTUP: overview hideblocks
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/org-mode.el
 
 * Config
+The basic set of configuration variables determining Org's behaviour.
 #+begin_src emacs-lisp
 (after! org
   (setq org-directory "~/documents/org"
         ;; todo vars
         org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "WAIT(w)" "DONE(d)" ))
-        ;;org-todo-keyword-faces '(("TODO" . "magenta"))
         org-use-fast-todo-selection 'expert
         ;; agenda vars
         org-agenda-skip-scheduled-if-done t
@@ -14,6 +17,7 @@
         ;; startup vars
         org-startup-folded t
         org-startup-indented t
+        org-hide-block-startup t
         ;; org-startup-with-inline-images t
         ;; fontifying
         org-fontify-done-headline t
@@ -40,7 +44,8 @@ Remove auto fill mode, which introduces line breaks if lines get really long. I 
 #+begin_src emacs-lisp
 (remove-hook 'org-mode-hook #'auto-fill-mode)
 #+end_src
-add a hook to tangle config files after I save, so they're automatically kept up to date.
+
+Create a function to tangle config files after I save, so they're automatically kept up to date. However, only do this in my dots directory.
 #+begin_src emacs-lisp
 (defun tangle-dots ()
   (when (or (equal (file-name-directory (directory-file-name buffer-file-name))
@@ -49,10 +54,6 @@ add a hook to tangle config files after I save, so they're automatically kept up
                (concat (getenv "HOME") "/dots/doom/")))
     (org-babel-tangle)
     (message "%s tangled" buffer-file-name)))
-
-(add-hook 'org-mode-hook
-          (lambda () (add-hook 'after-save-hook #'tangle-dots
-                          :append :local)))
 #+end_src
 
 * Appearance
@@ -63,13 +64,13 @@ add a hook to tangle config files after I save, so they're automatically kept up
            #'org-appear-mode
            #'olivetti-mode
            #'org-superstar-mode
-           #'prettify-symbols-mode
-           ;#'org-modern
            #'org-toggle-pretty-entities
-           ;#'variable-pitch-mode
+           #'variable-pitch-mode
+           (lambda () (add-hook 'after-save-hook #'tangle-dots :append :local ))
+;           ;#'org-modern
 )
-(setq-hook! org-mode line-spacing .1)
 #+end_src
+
 ** Face/font settings
 Strike through completed org entries
 #+begin_src emacs-lisp
@@ -78,20 +79,38 @@ Strike through completed org entries
   '(org-done          :family "FiraCode Nerd Font" :strike-through t)
   '(org-headline-done :strike-through t))
 #+end_src
+
 Making nicer and bigger faces for headings
-Old one:
+Source Sans Pro version:
+#+begin_src emacs-lisp
+(custom-set-faces!
+ '(org-document-title :family "Source Sans Pro" :height 2.5 :weight semibold)
+ '(outline-1          :family "Source Sans Pro" :height 1.5 :weight semibold)
+ '(outline-2          :family "Source Sans Pro" :height 1.3 :weight semibold)
+ '(outline-3          :family "Source Sans Pro" :height 1.2 :weight semibold)
+ '(outline-4          :family "Source Sans Pro" :height 1.1 :weight semibold)
+ '(outline-5          :family "Source Sans Pro")
+ '(outline-6          :family "Source Sans Pro")
+ '(variable-pitch     :family "Source Sans Pro" :height 1.3  :weight regular)
+ '(org-hide           :family "FiraCode Nerd Font" :height 0.8)
+ )
+#+end_src
+
+ET Bembo:
 #+begin_src emacs-lisp :tangle no
 (custom-set-faces!
- '(outline-8          :family "ETBembo" :weight bold)
- '(outline-7          :family "ETBembo" :weight bold)
- '(outline-6          :family "ETBembo" :weight bold)
- '(outline-5          :family "ETBembo" :weight bold)
- '(outline-4          :family "ETBembo" :weight bold :height 1.2)
- '(outline-3          :family "ETBembo" :weight bold :height 1.4)
- '(outline-2          :family "ETBembo" :weight bold :height 1.6)
- '(outline-1          :family "ETBembo" :weight bold :height 1.8)
- '(org-document-title :family "ETBembo" :weight bold :height 2.5 :underline nil)
- '(variable-pitch     :family "ETBembo" :height 150 :weight book)
+ '(outline-8          :family "ETBembo")
+ '(outline-7          :family "ETBembo")
+ '(outline-6          :family "ETBembo")
+ '(outline-5          :family "ETBembo")
+ '(outline-4          :family "ETBembo" :height 1.1)
+ '(outline-3          :family "ETBembo" :height 1.3)
+ '(outline-2          :family "ETBembo" :height 1.4)
+ '(outline-1          :family "ETBembo" :height 1.5)
+ '(org-document-title :family "ETBembo" :height 2.5 :underline nil)
+ '(variable-pitch     :family "ETBembo" :height 1.4  :weight book)
+ ;'(variable-pitch     :family "ETBembo" :height 150 :weight book)
+ ;'(org-default        :family "ETBembo" :height 200 :weight book)
  '(org-hide           :family "FiraCode Nerd Font" :height 0.8)
 
  '(org-document-title :family "ETBembo" :weight bold :height 2.2 :underline nil)
@@ -99,16 +118,49 @@ Old one:
                       :family "FiraCode Nerd Font" :height 200 :weight regular)
  '(org-meta-line      :foreground "#676E95", :extend nil
                       :family "FiraCode Nerd Font" :height 100 :weight regular)
- '(org-superstar-leading-bullet :family "FiraCode Nerd Font")
- '(org-checkbox-statistics-todo :height 1.1)
- '(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- '(org-date :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- '(org-table :family "FiraCode Nerd Font")
- '(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
+ '(org-superstar-header-bullet :family "FiraCode Nerd Font")
+ '(org-checkbox-statistics-todo :height 0.8)
+ '(org-checkbox-statistics-done :height 0.8)
+ ;'(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
+ ;'(org-date :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
+ ;'(org-table :family "FiraCode Nerd Font")
+ ;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
  '(fixed-pitch        :family "FiraCode Nerd Font"   :height 100))
 #+end_src
-New one:
+
+Faces I want in fixed pitch:
 #+begin_src emacs-lisp
+(custom-set-faces!
+ '(org-document-info-keyword :foreground "#676E95", :extend nil
+                      :family "FiraCode Nerd Font" :weight regular)
+ '(org-meta-line      :foreground "#676E95", :extend nil :height 0.8
+                      :family "FiraCode Nerd Font" :weight regular)
+ '(org-superstar-header-bullet :family "FiraCode Nerd Font")
+ '(org-checkbox-statistics-todo :height 0.8)
+ '(org-checkbox-statistics-done :height 0.8)
+ '(org-tag   :family "FiraCode Nerd Font" :height 0.6)
+ '(org-date  :family "FiraCode Nerd Font" :foreground nil)
+ '(org-table :family "FiraCode Nerd Font" :height 0.8)
+ '(hl-line   :background nil)
+ '(fixed-pitch        :family "FiraCode Nerd Font"   :height 0.8)
+;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
+;'(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
+ '(org-block             :family "FiraCode Nerd Font" :height 0.8)
+ '(org-block-begin-line  :family "FiraCode Nerd Font")
+ '(org-block-end-line    :family "FiraCode Nerd Font"))
+#+end_src
+Haven't figured out how to reference theme colors in the ~custom-set-faces!~ macro, so I made a function to set it in a hook.
+#+begin_src emacs-lisp
+(defun block-bg-change ()
+   (set-face-attribute 'org-block-begin-line nil :background (doom-color 'bg))
+   (set-face-attribute 'org-block-end-line   nil :background (doom-color 'bg))
+)
+
+(add-hook 'org-mode-hook 'block-bg-change)
+#+end_src
+
+My old monospaced version setup:
+#+begin_src emacs-lisp :tangle no
 (custom-set-faces!
  '(org-document-info-keyword :foreground "#676E95", :extend nil
                       :family "FiraCode Nerd Font" :weight regular)
@@ -119,16 +171,7 @@ New one:
  '(org-date :weight normal :foreground "#82aaff")
  '(org-special-keyword :weight normal :height 0.75 ))
 #+end_src
-Tweak highlighting from org source code blocks (like these!) In particular remove highlighting from start/end of org-blocks to avoid highlighting spilling out over into folded headlines. Also grey out meta info, make the document info much larger (only relevant given the symbol replacements I'm using), and make the checkbox stats for subitems (such as [2/3]) bigger. Lastly, make latex in org files display in fixed pitch.
-#+begin_src emacs-lisp
-(custom-set-faces!
-  '(org-block-begin-line  :background "#292D3E", :foreground nil, :extend nil
-                          :family "FiraCode Nerd Font" :weight regular)
-  '(org-block             :foreground unspecified, :extend nil
-                          :family "FiraCode Nerd Font" :weight regular)
-  '(org-block-end-line    :background "#292D3E", :foreground nil, :extend nil
-                          :family "FiraCode Nerd Font" :weight regular))
-#+end_src
+
 ** Margins
 Turn off line numbers, sets some margin on left and right sides of the buffer, and turns off tildes on empty lines.
 #+begin_src emacs-lisp
@@ -149,7 +192,9 @@ olivetti mode: if there is only one buffer, centers it with plenty of room on th
           olivetti-margin-width 6))
 
 (custom-set-faces! '(fringe :background "#272B3A"))
+;(custom-set-faces! '(fringe :background (doom-color 'blue)))
 #+end_src
+
 ** Symbol replacements
 ~org-entities~: See the variable ~org-entities-user~ to add new symbol replacements for pretty entities in org.
 If the symbols rendering require packages to be loaded, add these packages to ~org-latex-packages-alist~.
@@ -168,91 +213,62 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
       ("f"            "\\textit{f}" nil "&fnof;" "f" "f" "ƒ")))
 
 #+end_src
+
 ~org-appear~: when point is over an entity, show the contents.
 #+begin_src emacs-lisp
   (setq org-appear-autoemphasis t   ; need org-hide-emphasis-markers
         org-appear-autosubmarkers t ; need org-pretty-entities
         org-appear-autoentities t   ; need org-pretty-entities
   )
-  #+end_src
+#+end_src
+
 ~prettify-symbols~
 #+begin_src emacs-lisp
 (add-hook! org-mode :append
    (setq prettify-symbols-alist
-        '(("TODO" . "T")
-          ("NEXT" . "N")
-          ("WAIT" . "W")
-          ("DONE" . "D")
-          ("[ ]" . "☐")
-          ("[X]" . "◩")
-          ("[-]" . "☑")
-          ;("[#A]" . "")
-          ;("[#B]" . "")
-          ;("[#C]" . "")
-          ("#+begin_src" . "»")
-          ("#+end_src" . "«")
-          ("#+BEGIN_SRC" . "»")
-          ("#+END_SRC" . "«")
-          ("#+BEGIN_EXPORT" . "»")
-          ("#+END_EXPORT" . "«")
-          ("#+RESULTS:" . "")
-          (":PROPERTIES:" . "")
+        '(("TODO" . "T") ("NEXT" . "N") ("WAIT" . "W") ("DONE" . "D")
+          ("[ ]" . "☐")  ("[X]" . "◩")  ("[-]" . "☑")
+         ;("[#A]" . "") ("[#B]" . "") ("[#C]" . "")
+          ("#+begin_src" . "»")    ("#+end_src" . "«")
+          ("#+BEGIN_SRC" . "»")    ("#+END_SRC" . "«")
+          ("#+BEGIN_EXPORT" . "»") ("#+END_EXPORT" . "«")
+          ("#+RESULTS:" . "")     (":PROPERTIES:" . "")
+          ("#+PROPERTY:" . "")     ("#+STARTUP:" . "»")
           ;("#+STARTUP:" . "")
           ;(":Effort:" . "")
-          ("#+TITLE" . "󰬛")
-          ("#+title" . "󰬛")
-          ("#+SUBTITLE" . "󰬚")
-          ("#+subtitle" . "󰬚")
-          ("#+AUTHOR" . "󰬈")
-          ("#+author" . "󰬈")
-          ("#+DATE" . "󰬋")
-          ("#+date" . "󰬋")
-          ("[0/1]" . "󰽤")
-          ("[1/1]" . "󰪥")
-          ("[1/2]" . "󰪡")
-          ("[0/2]" . "󰽤")
-          ("[2/2]" . "󰪥")
-          ("[0/3]" . "")
-          ("[1/3]" . "󰫄")
-          ("[2/3]" . "󰫆")
-          ("[3/3]" . "󰫈")
-          ("[0/4]" . "󰽤")
-          ("[1/4]" . "󰪟")
-          ("[2/4]" . "󰪡")
-          ("[3/4]" . "󰪣")
-          ("[4/4]" . "󰪥")
-          ("[0/6]" . "")
-          ("[1/6]" . "󰫃")
-          ("[2/6]" . "󰫄")
-          ("[3/6]" . "󰫅")
-          ("[4/6]" . "󰫆")
-          ("[5/6]" . "󰫇")
-          ("[6/6]" . "󰫈")
-          ("[0/8]" . "󰽤")
-          ("[1/8]" . "󰪞")
-          ("[2/8]" . "󰪟")
-          ("[3/8]" . "󰪠")
-          ("[4/8]" . "󰪡")
-          ("[5/8]" . "󰪢")
-          ("[6/8]" . "󰪣")
-          ("[7/8]" . "󰪤")
-          ("[8/8]" . "󰪥"))))
+          ("#+TITLE" . "󰬛")        ("#+title" . "󰬛")
+          ("#+SUBTITLE" . "󰬚")     ("#+subtitle" . "󰬚")
+          ("#+AUTHOR" . "󰬈")       ("#+author" . "󰬈")
+          ("#+DATE" . "󰬋")         ("#+date" . "󰬋")
+          ("[0/1]" . "󰽤") ("[1/1]" . "󰪥")
+          ("[1/2]" . "󰪡") ("[0/2]" . "󰽤") ("[2/2]" . "󰪥")
+          ("[0/3]" . "") ("[1/3]" . "󰫄") ("[2/3]" . "󰫆") ("[3/3]" . "󰫈")
+          ("[0/4]" . "󰽤") ("[1/4]" . "󰪟")
+          ("[2/4]" . "󰪡") ("[3/4]" . "󰪣") ("[4/4]" . "󰪥")
+          ("[0/6]" . "") ("[1/6]" . "󰫃") ("[2/6]" . "󰫄")
+          ("[3/6]" . "󰫅") ("[4/6]" . "󰫆") ("[5/6]" . "󰫇") ("[6/6]" . "󰫈")
+          ("[0/8]" . "󰽤") ("[1/8]" . "󰪞") ("[2/8]" . "󰪟") ("[3/8]" . "󰪠")
+          ("[4/8]" . "󰪡") ("[5/8]" . "󰪢") ("[6/8]" . "󰪣") ("[7/8]" . "󰪤")
+          ("[8/8]" . "󰪥")
           ;("SCHEDULED:" . "")
           ;("DEADLINE:" . "")
+          ))
+   (prettify-symbols-mode 1)
+   )
 #+end_src
 ** Superstar mode
 #+begin_src emacs-lisp
 ;(setq org-hidden-keywords '(title)) ;; hide #+TITLE:
 
-; alternatives:  '("◉" "◈" "○" "▷") ;; Set different bullets
+; alternatives:  '("◉" "◈" "○" "▷")
 (setq org-superstar-item-bullet-alist
-         '((?- . ?•) (?+ . ?◉)) ;; Set different bullets for plain lists
+         '((?- . ?•) (?+ . ?◉)) ;; different bullets for plain lists
       org-superstar-headline-bullets-list
-         ;'(" ") ;; Set different bullets
-         '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍") ;; Set different bullets
-      org-hide-leading-stars t)
+         '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍") ;; different outline markers
+      ;org-hide-leading-stars t)
+      org-superstar-remove-leading-stars t)
 #+end_src
-** TODO [[https://pank.eu/blog/pretty-babel-src-blocks.html][Pretty Org babel blocks]]
+
 * Capture
 #+begin_src emacs-lisp
 (setq org-capture-templates '(
@@ -269,6 +285,7 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
 (after! org
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-files (list ( concat org-directory "/gtd/" ))
+        org-agenda-window-setup 'other-tab
         ;org-agenda-block-separator ""
         ;; styling
         org-agenda-tags-column 'auto
@@ -281,12 +298,111 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
           "⭠ now ─────────────────────────────────────────────────"
 ))
 #+end_src
+
 Editing the Agenda keymap
 #+begin_src emacs-lisp
 (map! :map evil-org-agenda-mode-map
       :m "q" 'org-agenda-quit
       :m "Q" 'org-agenda-exit
       )
+#+end_src
+
+** Appearance
+Making nicer and bigger faces for headings
+Source Sans Pro version:
+#+begin_src emacs-lisp :tangle no
+;; First create new face which is a copy of hl-line-face
+(copy-face 'hl-line 'hl-line-agenda-face)
+(copy-face 'default 'default-agenda-face)
+
+;; Change what you want in this new face
+(set-face-attribute 'hl-line-agenda-face nil
+                    :family "Source Sans Pro")
+
+(set-face-attribute 'default-agenda-face nil
+                    :family "Source Sans Pro")
+
+;; The function to use the new face
+(defun my-org-agenda-hl-line ()
+  (set (make-local-variable 'hl-line-face) 'hl-line-agenda-face)
+  (buffer-face-set 'default-agenda-face)
+  (hl-line-mode)
+)
+
+;; Finally, the hook
+(add-hook 'org-agenda-mode-hook 'my-org-agenda-hl-line)
+
+(custom-set-faces!
+ '(org-agenda-structure :family "Source Sans Pro" :height 2.5 :weight semibold)
+ ;'(variable-pitch     :family "Source Sans Pro" :height 1.4  :weight regular)
+ ;'(org-hide           :family "FiraCode Nerd Font" :height 0.8)
+ )
+#+end_src
+#+begin_src emacs-lisp
+(custom-set-faces!
+ '(org-agenda-structure :family "Source Sans Pro" :height 2.5 :weight semibold)
+ )
+#+end_src
+
+Faces I want in fixed pitch:
+#+begin_src emacs-lisp :tangle no
+(custom-set-faces!
+ '(org-document-info-keyword :foreground "#676E95", :extend nil
+                      :family "FiraCode Nerd Font" :weight regular)
+ '(org-meta-line      :foreground "#676E95", :extend nil :height 0.8
+                      :family "FiraCode Nerd Font" :weight regular)
+ '(org-superstar-header-bullet :family "FiraCode Nerd Font")
+ '(org-checkbox-statistics-todo :height 0.8)
+ '(org-checkbox-statistics-done :height 0.8)
+ '(org-tag   :family "FiraCode Nerd Font" :height 0.6)
+ '(org-date  :family "FiraCode Nerd Font" :foreground "#82aaff")
+ '(org-table :family "FiraCode Nerd Font" :height 0.8)
+ '(fixed-pitch        :family "FiraCode Nerd Font"   :height 0.8)
+ ;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
+ ;'(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
+ )
+#+end_src
+
+Hooks for olivetti:
+#+begin_src emacs-lisp
+(add-hook! org-agenda-mode
+           #'olivetti-mode
+           )
+(add-hook 'org-agenda-hook (lambda () (olivetti-mode 1)))
+(add-hook 'org-agenda-mode-hook (lambda () (olivetti-mode 1)))
+#+end_src
+
+** Custom Commands
+#+begin_src emacs-lisp :tangle no
+      (org-agenda-sorting-strategy '((tags todo-state-down priority-down category-keep)))
+ (tags-todo "tickler-SCHEDULED={.+}/TODO|LOOP|WAIT|NEXT"
+      ((org-agenda-overriding-header "Unscheduled Reminders\n")))
+(todo "PROJ" ((org-agenda-overriding-header "Projects\n")))
+(tags "CLOSED>=\"<-7d>\"|LAST_REPEAT>=\"<-7d>\""
+     ((org-agenda-overriding-header "Completed in the Last 7 Days\n")))
+(agenda "" ((org-agenda-span 'day)
+(org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)))
+(org-agenda-show-log t)
+(org-agenda-log-mode-items '(clock))))
+#+end_src
+#+begin_src emacs-lisp
+(setq org-agenda-custom-commands
+  '(("z" "My Agenda"
+     ((todo "NEXT"
+            ((org-agenda-overriding-header "Next Tasks\n")))
+      (tags-todo "-tickler/TODO|WAIT"
+           ((org-agenda-overriding-header "Task Stack\n")))
+      (agenda ""
+           ((org-agenda-span 7)
+            (org-agenda-start-day "+1d")
+            (org-agenda-overriding-header "Upcoming\n")
+            (org-agenda-show-log nil)))))
+    ("n" "My Next Tasks"
+     ((todo "NEXT"
+        ((org-agenda-overriding-header "\nTasks\n"))
+     ))
+   ))
+)
 #+end_src
 
 * Evil Keymap
@@ -471,4 +587,9 @@ From the example: what does this do?
 ;;                 :desc "Capture yesterday"         "Y" #'org-roam-dailies-capture-yesterday
 ;;                 :desc "Find directory"            "-" #'org-roam-dailies-find-directory)))
 
+#+end_src
+
+* Footer
+#+begin_src emacs-lisp
+(provide 'org-mode)
 #+end_src
