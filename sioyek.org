@@ -1,5 +1,7 @@
 #+title: Sioyek
 
+* Inbox
+** TODO sioyek "gg" go to beginning, then top of page (zz)
 * Keybinds
 #+begin_src conf :tangle ~/.config/sioyek/keys_user.config
 # ---------- NAVIGATION AND ZOOM ----------

@@ -1,19 +1,36 @@
 
-#+title: Org Mode Configuration
+#+TITLE: Org Mode Configuration
 #+STARTUP: overview hideblocks
-#+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/org-mode.el
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/org-mode.el :results silent
 
+* Inbox
+** T Switch org conf wiki links to id based
+** T sometimes org capture is colorless
+** T finding an org theme
+would like headings to be more whiteish.
+todos / dones still have their colors, and the leading symbols can have color.
+** T check out structure templates
+[[https://orgmode.org/manual/Structure-Templates.html][Structure Templates (The Org Manual)]]
+** T refile r stay here refile R follow to refiled point
+** T add ~after org~ to evil keymap in org conf
+** T org indenting weird
+See when you have a level 5 heading, and then write text under it. It's /waaaaay/ in there
+** T merging calendar and gtd
+TODO only for things i want showing up in the agenda.
+
+*** add "inactive"/"active mutually excl. tags to projects
+this way only projects i'm currently working on will appear in the agenda
 * Config
+:PROPERTIES:
+:ID:       ba52170c-cb7b-4884-8722-6bcfd040451e
+:END:
 The basic set of configuration variables determining Org's behaviour.
 #+begin_src emacs-lisp
 (after! org
   (setq org-directory "~/documents/org"
         ;; todo vars
-        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "|" "WAIT(w)" "DONE(d)" ))
+        org-todo-keywords '((sequence "T(t)" "N(n)" "|" "W(w)" "D(d)" ))
         org-use-fast-todo-selection 'expert
-        ;; agenda vars
-        org-agenda-skip-scheduled-if-done t
-        org-agenda-files (list (concat org-directory "/gtd/" ))
         ;; startup vars
         org-startup-folded t
         org-startup-indented t
@@ -31,20 +48,16 @@ The basic set of configuration variables determining Org's behaviour.
         org-agenda-block-separator ""
         org-list-allow-alphabetical t   ; have a. A. a) A) list bullets
         ;;org-fold-catch-invisible-edits 'smart ; don't brazenly edit things you can't see
-        org-archive-location "~/documents/.org-archive/%s_archive::"
-        org-refile-targets '(("~/documents/org/gtd/admin.org" :maxlevel . 2)
-                             ("~/documents/org/gtd/school.org" :maxlevel . 2)
-                             ("~/documents/org/gtd/rlist.org" :maxlevel . 2)
-                             ("~/documents/org/gtd/projects.org" :maxlevel . 2)
-                            )
 ))
 #+end_src
 
-Remove auto fill mode, which introduces line breaks if lines get really long. I like to write long paragraphs in org mode so this is just a nuisance for me.
+Remove auto fill mode, which introduces line breaks if lines get really long. I like to write long  paragraphs in org mode so this is just a nuisance for me.
 #+begin_src emacs-lisp
 (remove-hook 'org-mode-hook #'auto-fill-mode)
 #+end_src
 
+** Custom functions
+*** Config tangling
 Create a function to tangle config files after I save, so they're automatically kept up to date. However, only do this in my dots directory.
 #+begin_src emacs-lisp
 (defun tangle-dots ()
@@ -54,9 +67,67 @@ Create a function to tangle config files after I save, so they're automatically 
                (concat (getenv "HOME") "/dots/doom/")))
     (org-babel-tangle)
     (message "%s tangled" buffer-file-name)))
+(defun set-tangle-dots ()
+  (add-hook! 'after-save-hook :append :local #'tangle-dots))
+(add-hook 'org-mode-hook #'set-tangle-dots)
+#+end_src
+
+*** Parametrized Org Blocks
+This implements variable replacement in org blocks.
+#+BEGIN_SRC emacs-lisp :results none
+(defun org-babel-execute:org (body params)
+  "Return BODY with variables from PARAMS replaced by their values."
+  (let* ((vars (cl-loop for par in params
+            if (eq (car par) :var)
+            collect (cons (symbol-name (cadr par)) (cddr par))))
+     (re (regexp-opt (mapcar #'car vars) 'words))
+     (pos 0))
+    (while (string-match re body pos)
+      (setq body (replace-match
+          (format "%s" (cdr (assoc-string (match-string 0 body) vars)))
+          nil nil
+          body)))
+    body))
+#+END_SRC
+*** C-Bsp for Pairs
+This allows C-Backspace to be used for removing a pair of symbols, by using it on the left one; for now it's parens, sqbrackets, crbrackets, and quotes.
+#+begin_src emacs-lisp
+(defadvice backward-kill-word (around delete-pair activate)
+  (if (or
+       (eq (char-syntax (char-before)) ?\()
+       (eq (char-syntax (char-before)) ?\[)
+       (eq (char-syntax (char-before)) ?\")
+       (eq (char-syntax (char-before)) ?\{))
+      (progn
+        (backward-char 1)
+        (message "hi")
+        (save-excursion
+          (forward-sexp 1)
+          (delete-char -1))
+        (forward-char 1)
+        (append-next-kill)
+        (kill-backward-chars 1))
+    ad-do-it))
+#+end_src
+*** Fold Prior Heading
+When inserting a new heading, fold the previous one.
+#+begin_src emacs-lisp :tangle no
+(defun org-item-below--fold-prior (&rest args)
+     (save-excursion
+       (org-backward-element)
+       (+org/close-fold))
+  )
+(advice-add '+org/insert-item-below :after 'org-item-below--fold-prior)
 #+end_src
 
 * Appearance
+Would like my org mode to look nice and facilitate clear thinking. Would like to try the design in Figma first approach to try and clear out the cobwebs.
+
+Need to check out faces in general. see =verbatim= and ~code~ faces and change the overall face. maybe diff face for inside code blocks (prob same as ~code~).
+
+- [[https://orgmode.org/worg/org-tutorials/org-appearance.html][org appearance options]]
+- [[https://zzamboni.org/post/beautifying-org-mode-in-emacs/][beautifying org mode]]
+
 ** Hooks
 #+begin_src emacs-lisp
 (add-hook! org-mode :append
@@ -66,20 +137,11 @@ Create a function to tangle config files after I save, so they're automatically 
            #'org-superstar-mode
            #'org-toggle-pretty-entities
            #'variable-pitch-mode
-           (lambda () (add-hook 'after-save-hook #'tangle-dots :append :local ))
-;           ;#'org-modern
+           #'org-modern-mode
 )
 #+end_src
 
 ** Face/font settings
-Strike through completed org entries
-#+begin_src emacs-lisp
-(custom-set-faces!
-  '(org-todo          :family "FiraCode Nerd Font")
-  '(org-done          :family "FiraCode Nerd Font" :strike-through t)
-  '(org-headline-done :strike-through t))
-#+end_src
-
 Making nicer and bigger faces for headings
 Source Sans Pro version:
 #+begin_src emacs-lisp
@@ -141,6 +203,7 @@ Faces I want in fixed pitch:
  '(org-tag   :family "FiraCode Nerd Font" :height 0.6)
  '(org-date  :family "FiraCode Nerd Font" :foreground nil)
  '(org-table :family "FiraCode Nerd Font" :height 0.8)
+ ;'(org-table :family "FiraCode Nerd Font" :height 0.8 :inherit fixed-pitch)
  '(hl-line   :background nil)
  '(fixed-pitch        :family "FiraCode Nerd Font"   :height 0.8)
 ;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
@@ -149,6 +212,7 @@ Faces I want in fixed pitch:
  '(org-block-begin-line  :family "FiraCode Nerd Font")
  '(org-block-end-line    :family "FiraCode Nerd Font"))
 #+end_src
+
 Haven't figured out how to reference theme colors in the ~custom-set-faces!~ macro, so I made a function to set it in a hook.
 #+begin_src emacs-lisp
 (defun block-bg-change ()
@@ -196,6 +260,12 @@ olivetti mode: if there is only one buffer, centers it with plenty of room on th
 #+end_src
 
 ** Symbol replacements
+- look into exponents as entities to see if i can make it so brackets aren't required or at least are easier to enter
+- add the symbol ^{-1} for \inv and \mapsto if it exists
+- emphasis like /this/ but also on symbols/entities?
+- swap out the \to \Rightarrow for longer or bigger versions? maybe look at entities in larger faces
+- [[https://www.reddit.com/r/emacs/comments/o04it0/share_your_prettifysymbolsalist/][similar to entities but no backslash. for bullets, ellipsis, etc]]
+
 ~org-entities~: See the variable ~org-entities-user~ to add new symbol replacements for pretty entities in org.
 If the symbols rendering require packages to be loaded, add these packages to ~org-latex-packages-alist~.
 #+begin_src emacs-lisp
@@ -222,69 +292,147 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
   )
 #+end_src
 
+** T Headings
+Strike through completed org entries
+#+begin_src emacs-lisp
+(custom-set-faces!
+  '(org-todo          :family "FiraCode Nerd Font")
+  '(org-done          :family "FiraCode Nerd Font" :strike-through t)
+  '(org-headline-done :strike-through t))
+#+end_src
+
+Not a fan of ~org-modern~'s todo tags. I do my own replacement and make the faces nicer.
 ~prettify-symbols~
 #+begin_src emacs-lisp
+(setq org-modern-todo nil)
 (add-hook! org-mode :append
    (setq prettify-symbols-alist
-        '(("TODO" . "T") ("NEXT" . "N") ("WAIT" . "W") ("DONE" . "D")
-          ("[ ]" . "☐")  ("[X]" . "◩")  ("[-]" . "☑")
+        '(
+         ;("T" . "T") ("N" . "N") ("W" . "W") ("D" . "D")
+         (":PROPERTIES:" . "")    ("#+PROPERTY:" . "")
          ;("[#A]" . "") ("[#B]" . "") ("[#C]" . "")
-          ("#+begin_src" . "»")    ("#+end_src" . "«")
-          ("#+BEGIN_SRC" . "»")    ("#+END_SRC" . "«")
-          ("#+BEGIN_EXPORT" . "»") ("#+END_EXPORT" . "«")
-          ("#+RESULTS:" . "")     (":PROPERTIES:" . "")
-          ("#+PROPERTY:" . "")     ("#+STARTUP:" . "»")
-          ;("#+STARTUP:" . "")
-          ;(":Effort:" . "")
-          ("#+TITLE" . "󰬛")        ("#+title" . "󰬛")
-          ("#+SUBTITLE" . "󰬚")     ("#+subtitle" . "󰬚")
-          ("#+AUTHOR" . "󰬈")       ("#+author" . "󰬈")
-          ("#+DATE" . "󰬋")         ("#+date" . "󰬋")
-          ("[0/1]" . "󰽤") ("[1/1]" . "󰪥")
-          ("[1/2]" . "󰪡") ("[0/2]" . "󰽤") ("[2/2]" . "󰪥")
-          ("[0/3]" . "") ("[1/3]" . "󰫄") ("[2/3]" . "󰫆") ("[3/3]" . "󰫈")
-          ("[0/4]" . "󰽤") ("[1/4]" . "󰪟")
-          ("[2/4]" . "󰪡") ("[3/4]" . "󰪣") ("[4/4]" . "󰪥")
-          ("[0/6]" . "") ("[1/6]" . "󰫃") ("[2/6]" . "󰫄")
-          ("[3/6]" . "󰫅") ("[4/6]" . "󰫆") ("[5/6]" . "󰫇") ("[6/6]" . "󰫈")
-          ("[0/8]" . "󰽤") ("[1/8]" . "󰪞") ("[2/8]" . "󰪟") ("[3/8]" . "󰪠")
-          ("[4/8]" . "󰪡") ("[5/8]" . "󰪢") ("[6/8]" . "󰪣") ("[7/8]" . "󰪤")
-          ("[8/8]" . "󰪥")
-          ;("SCHEDULED:" . "")
-          ;("DEADLINE:" . "")
-          ))
+         ;("#+begin_src" . "»")    ("#+end_src" . "«")
+         ;("#+BEGIN_SRC" . "»")    ("#+END_SRC" . "«")
+         ;("#+BEGIN_EXPORT" . "»") ("#+END_EXPORT" . "«")
+         ;("#+RESULTS:" . "")    ("#+STARTUP:" . "»")
+         ;("#+STARTUP:" . "")     (":Effort:" . "")
+         ;("[0/1]" . "󰽤") ("[1/1]" . "󰪥")
+         ;("[1/2]" . "󰪡") ("[0/2]" . "󰽤") ("[2/2]" . "󰪥")
+         ;("[0/3]" . "") ("[1/3]" . "󰫄") ("[2/3]" . "󰫆") ("[3/3]" . "󰫈")
+         ;("[0/4]" . "󰽤") ("[1/4]" . "󰪟")
+         ;("[2/4]" . "󰪡") ("[3/4]" . "󰪣") ("[4/4]" . "󰪥")
+         ;("[0/6]" . "") ("[1/6]" . "󰫃") ("[2/6]" . "󰫄")
+         ;("[3/6]" . "󰫅") ("[4/6]" . "󰫆") ("[5/6]" . "󰫇") ("[6/6]" . "󰫈")
+         ;("[0/8]" . "󰽤") ("[1/8]" . "󰪞") ("[2/8]" . "󰪟") ("[3/8]" . "󰪠")
+         ;("[4/8]" . "󰪡") ("[5/8]" . "󰪢") ("[6/8]" . "󰪣") ("[7/8]" . "󰪤")
+         ;("[8/8]" . "󰪥")
+         ;("SCHEDULED:" . "")      ("DEADLINE:" . "")
+         ))
    (prettify-symbols-mode 1)
    )
 #+end_src
-** Superstar mode
-#+begin_src emacs-lisp
-;(setq org-hidden-keywords '(title)) ;; hide #+TITLE:
 
-; alternatives:  '("◉" "◈" "○" "▷")
-(setq org-superstar-item-bullet-alist
-         '((?- . ?•) (?+ . ?◉)) ;; different bullets for plain lists
-      org-superstar-headline-bullets-list
-         '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍") ;; different outline markers
-      ;org-hide-leading-stars t)
+Hiding keywords
+#+begin_src emacs-lisp
+(setq org-hidden-keywords '(title)) ;; hide #+TITLE:
+#+end_src
+** Outline Stars
+Although I use org-modern for lots of other things, I don't use it for dealing with stars in outlines, for two reasons:
+- my preferred star symbols don't work with it
+- it doesn't have an ~org-superstar-remove-leading-stars~ equivalent, to make it so that not only are leading stars hidden, they're actually removed entirely.
+I'd guess both of these problems are eminently fixable, but since I have something that works with ~org-superstar~, I'm sticking with it for now.
+#+begin_src emacs-lisp
+(setq org-modern-star nil) ; alternatives:  '("◉" "◈" "○" "▷")
+(setq org-superstar-headline-bullets-list '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍")
       org-superstar-remove-leading-stars t)
 #+end_src
-
-* Capture
+** Plain Lists
+For plain lists and check lists, on the other hand, ~org-modern~ works just fine.
 #+begin_src emacs-lisp
-(setq org-capture-templates '(
-   ("t" "TODO" entry (file "gtd/inbox.org") "* TODO %?" :unnarrowed t)
-   ( "r" "Reading list" )
-   ("re" "Emacs" entry (file/headline "gtd/rlist.org" "Emacs") "* %?")
-   ("ro" "Org Mode" entry (file+olp "gtd/rlist.org" "Org Mode" "Other") "* %?")
-   ("ra" "Arch" entry (file+headline "gtd/rlist.org" "Arch") "* %?")
-   ("rr" "Other" entry (file "gtd/rlist.org" ) "* %?")
-))
+(setq org-modern-list '((43 . "◦")
+                        (45 . "•")
+                        (42 . "–"))
+  org-modern-checkbox '((88 . "☑")
+                        (45 . "◩")
+                        (32 . "□")))
 #+end_src
+I don't love the look for progress statistics, so I turn that off.
+#+begin_src emacs-lisp
+(setq org-modern-progress nil)
+#+end_src
+
+** T Make org ids and uids look nice
+** T Tags
+Switch off ~org-modern~ tags.
+#+begin_src emacs-lisp
+(setq org-modern-tag nil)
+#+end_src
+
+* Capture, Refile, Archive
+** T Capture
+Types of captures I do often?
+- small emacs config todo
+- small arch config todo
+- general todo
+- reading list
+
+My options are to either make these all their own capture templates, or put all of it in the inbox and do refiling later.
+
+Having too many capture templates lands me back at the whole indecision problem capture is meant to *solve*.
+
+- [ ] make ~org-capture-finalize~ easier to access
+  either by rebinding ~SPC f s~ to it in capture mode, hooking saving with it, or something else. Beware though because I habitually save pretty often.
+- [ ] change capture buffer display
+  change info a top, and make it appear at bottom of screen instead of to side
+
+Here we define my capture templates. It's mainly one inbox-based one, and one for my reading list.
+#+begin_src emacs-lisp
+(after! org
+   (setq org-capture-templates '(
+      ("t" "T" entry (file "gtd/inbox.org") "* T %?" :unnarrowed t)
+      ( "r" "Reading list" )
+      ("re" "Emacs" entry (file/headline "gtd/rlist.org" "Emacs") "* %?")
+      ("ro" "Org Mode" entry (file+olp "gtd/rlist.org" "Org Mode" "Other") "* %?")
+      ("ra" "Arch" entry (file+headline "gtd/rlist.org" "Arch") "* %?")
+      ("rr" "Other" entry (file "gtd/rlist.org" ) "* %?")
+   )))
+#+end_src
+
+** T Refile
+One of my first elisp functions  I'm actually proud of!
+
+There's still more that can bo done. See using the following functions to make this function even nicer:
+- ~elt~
+- ~dolist~
+#+begin_src emacs-lisp
+(defun make-refile-targets (dir)
+  ;; takes as input a directory, and makes an alist of all org files in the
+  ;; directory, associated with a specification of maximal level 2.
+  (let* ((files (directory-files dir 'full (rx ".org" eos)))
+         (maxlev (make-list (length files) '(:maxlevel . 2))))
+    (cl-pairlis files maxlev)))
+
+
+(after! org
+    (setq org-refile-targets (append
+                               (make-refile-targets "~/dots/doom")
+                               (make-refile-targets "~/documents/org/gtd")))
+  )
+#+end_src
+
+** Archive
+I use archiving in a pretty simple fashion, just sending headings into one centralized archive directory.
+#+begin_src emacs-lisp
+(setq org-archive-location "~/documents/.org-archive/%s_archive::")
+#+end_src
+
 * Agenda
 #+begin_src emacs-lisp
 (after! org
   (setq org-agenda-skip-scheduled-if-done t
-        org-agenda-files (list ( concat org-directory "/gtd/" ))
+        org-agenda-files (list
+                          (concat org-directory "/gtd/")
+                          (concat org-directory "/calendar/"))
         org-agenda-window-setup 'other-tab
         ;org-agenda-block-separator ""
         ;; styling
@@ -307,7 +455,10 @@ Editing the Agenda keymap
       )
 #+end_src
 
-** Appearance
+** T Agenda ordering
+
+I'd like to have a custom ordering for the todo items in my agenda view. This doesn't need to be hard coded but maybe learning how tf it works would fix this problem.
+** T Appearance
 Making nicer and bigger faces for headings
 Source Sans Pro version:
 #+begin_src emacs-lisp :tangle no
@@ -367,15 +518,13 @@ Hooks for olivetti:
 #+begin_src emacs-lisp
 (add-hook! org-agenda-mode
            #'olivetti-mode
-           )
-(add-hook 'org-agenda-hook (lambda () (olivetti-mode 1)))
-(add-hook 'org-agenda-mode-hook (lambda () (olivetti-mode 1)))
+          )
 #+end_src
 
 ** Custom Commands
 #+begin_src emacs-lisp :tangle no
       (org-agenda-sorting-strategy '((tags todo-state-down priority-down category-keep)))
- (tags-todo "tickler-SCHEDULED={.+}/TODO|LOOP|WAIT|NEXT"
+ (tags-todo "tickler-SCHEDULED={.+}/T|LOOP|W|N"
       ((org-agenda-overriding-header "Unscheduled Reminders\n")))
 (todo "PROJ" ((org-agenda-overriding-header "Projects\n")))
 (tags "CLOSED>=\"<-7d>\"|LAST_REPEAT>=\"<-7d>\""
@@ -388,9 +537,9 @@ Hooks for olivetti:
 #+begin_src emacs-lisp
 (setq org-agenda-custom-commands
   '(("z" "My Agenda"
-     ((todo "NEXT"
+     ((todo "N"
             ((org-agenda-overriding-header "Next Tasks\n")))
-      (tags-todo "-tickler/TODO|WAIT"
+      (tags-todo "-tickler/T|W"
            ((org-agenda-overriding-header "Task Stack\n")))
       (agenda ""
            ((org-agenda-span 7)
@@ -398,68 +547,57 @@ Hooks for olivetti:
             (org-agenda-overriding-header "Upcoming\n")
             (org-agenda-show-log nil)))))
     ("n" "My Next Tasks"
-     ((todo "NEXT"
+     ((todo "N"
         ((org-agenda-overriding-header "\nTasks\n"))
      ))
    ))
 )
 #+end_src
-
-* Evil Keymap
-#+begin_src emacs-lisp
-(map! :map evil-org-mode-map :m :prefix "g"
-      :m "h" 'evil-first-non-blank-of-visual-line
-      :m "H" 'evil-org-top
-      :m "K" 'org-up-element
-      :m "k" 'org-backward-heading-same-level
-      :m "J" 'org-down-element
-      :m "j" 'org-forward-heading-same-level
-      :m "l" 'evil-end-of-visual-line
-      )
-#+end_src
-I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So instead of using ~evil-respect-visual-line-mode~, just rebind these two commands to their visual counterparts. Still need to somehow make this happen only in org mode ideally.
-#+begin_src emacs-lisp
-(map! :map evil-motion-state-map
-      "j" 'evil-next-visual-line
-      "k" 'evil-previous-visual-line
-      )
-#+end_src
-* Export
-** LaTeX
-#+begin_src emacs-lisp :tangle no
-(setq org-latex-default-packages-alist nil
-      org-latex-toc-command nil
-      org-latex-hyperref-template nil)
-      org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
-
-(require 'ox-extra)
-(ox-extras-activate '(ignore-headlines))
-
-(eval-after-load 'org
-  '(setf org-highlight-latex-and-related '(latex)))
-
-(setq org-latex-classes
-   '(("my-article" "
-\\documentclass[10pt,a4paper]{article}
-\\include{~/.config/latex/prelude}
-
-\\usepackage{hyperref}
-\\hypersetup{
-  colorlinks=true,
-  linkcolor=[rgb]{0,0.37,0.53},
-  citecolor=[rgb]{0,0.47,0.68},
-  filecolor=[rgb]{0,0.37,0.53},
-  urlcolor=[rgb]{0,0.37,0.53},
-  pagebackref=true,
-  linktoc=all,}"
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-)))
-#+end_src
-** HTML
+** T [[https://www.reddit.com/r/orgmode/comments/i3upt6/prettifysymbolsmode_not_working_with_orgagenda/][Prettify symbols in Agenda]]
+** T Agenda keymap
+** T Org Agenda open in current window
+here: [[https://emacs.stackexchange.com/questions/26655/org-mode-agenda-open-in-left-window-by-default][Org-Mode Agenda Open in Left Window by Default - Emacs Stack Exchange]]
+but would like to do dispatcher in minibuffer/echo area as well.
 * Calendar
+I have started getting my org calendar and nextcloud calendar integrated. A few things stand in the way:
+
+** T Rice up my calendar
+[[https://github.com/ml729/calfw-blocks][calfw-blocks]]
+#+begin_src emacs-lisp
+(use-package calfw-blocks
+  :hook (LaTeX-mode . aas-activate-for-major-mode)
+  :hook (org-mode . aas-activate-for-major-mode)
+  :config
+  (aas-set-snippets 'text-mode
+    ;; expand unconditionally
+    ";o-" "ō"
+    ";i-" "ī"
+    ";a-" "ā"
+    ";u-" "ū"
+    ";e-" "ē")
+  (aas-set-snippets 'latex-mode
+    ;; set condition!
+    :cond #'texmathp ; expand only while in math
+    "supp" "\\supp"
+    "On" "O(n)"
+    "O1" "O(1)"
+    ;; Use YAS/Tempel snippets with ease!
+    ";ig" #'insert-register
+    ";call-sin"
+    (lambda (angle) ; Get as fancy as you like
+      (interactive "sAngle: ")
+      (insert (format "%s" (sin (string-to-number angle))))))
+  ;; disable snippets by redefining them with a nil expansion
+  (aas-set-snippets 'latex-mode
+    "mk"   '(yas "\$$1\$$0") ; YASnippet snippet shorthand form
+    "supp" nil))
+
+(add-to-list 'load-path "~/.config/doom")
+(require 'laas)
+#+end_src
+
+
+** T Prettify org properties and uid for cal management
 ** Date Formats
 Custom date formats
 #+begin_src emacs-lisp
@@ -514,22 +652,132 @@ Custom date formats
                                   (float 60))
                                calendar-daylight-time-zone-name)))))
 #+end_src
-** org-caldav
+** Org-Caldav
+Syncs org events with my caldav nextcloud calendar.
+Login info ist encrypted and stored in ~~/.authinfo.gpg~
 #+begin_src emacs-lisp
 (setq org-caldav-url "https://cloud.thain.xyz/remote.php/dav/calendars/liam"
       org-icalendar-timezone "Europe/Amsterdam")
 
 (setq org-caldav-calendars
   '((:calendar-id "personal"
-     :files (( concat org-directory "/calendar/personal.org" ))
-     :inbox (file+headline ( concat org-directory "/calendar/personal.org" ) "Inbox"))
-     ;;:inbox "~/documents/org/calendar/personal.org")
-    (:calendar-id "class"
-     :files (( concat org-directory "/calendar/class.org" ))
-     :inbox ( concat org-directory "/calendar/class.org" ))))
+     :files ("~/documents/org/calendar/personal.org")
+     :inbox (file+headline "~/documents/org/calendar/personal.org" "Inbox"))
+    (:calendar-id "soenda"
+     :files ("~/documents/org/calendar/soenda.org")
+     :inbox (file+headline "~/documents/org/calendar/soenda.org" "Inbox"))
+    (:calendar-id "birthdays"
+     :files ("~/documents/org/calendar/birthdays.org")
+     :inbox (file "~/documents/org/calendar/birthdays.org"))
+  )
+)
 #+end_src
+
 From the example: what does this do?
 ~:skip-conditions (regexp "soccer")~
+* Link Insertion
+** Modifying link insertion
+Create a function to modify the behaviour of link insertion, so if on a whitespace character, it inserts ahead of point instead of at point. It does this by just inserting a space before the link-insertion runs.
+#+begin_src emacs-lisp
+(defun org-insert-link--add-space-after (&rest args)
+     (let ((is-in-evil-normal-mode
+              (and (bound-and-true-p evil-mode)
+                   (not (bound-and-true-p evil-insert-state-minor-mode))
+                   (looking-at "[[:blank:]]"))))
+       (if is-in-evil-normal-mode (insert " "))))
+(advice-add 'org-insert-link :before 'org-insert-link--add-space-after)
+(advice-add 'custom-org-cliplink :around 'org-insert-link--add-space-after)
+#+end_src
+
+** Org-cliplink
+Cliplink is specifically for copying urls into org. This contacts the site and retrieves the name of the webpage. However, I also add in some specific extra cases for domains I retrieve links from often,
+#+begin_src emacs-lisp
+(defun custom-org-cliplink ()
+  (interactive)
+  (org-cliplink-insert-transformed-title
+   (org-cliplink-clipboard-content)     ;take the URL from the CLIPBOARD
+   (lambda (url title)
+     (let* ((parsed-url (url-generic-parse-url url)) ;parse the url
+            (clean-title
+             (cond ;; if the host is github.com, cleanup the title
+              ((string= (url-host parsed-url) "github.com")
+               (replace-regexp-in-string ".*\/\\(.*\\)" "\\1" title))
+              ;; otherwise keep the original title
+              (t title))))
+       ;; forward the title to the default org-cliplink transformer
+       (org-cliplink-org-mode-link-transformer url clean-title)))))
+#+end_src
+*** T Options
+Would like to learn about interactive functions, giving the option for cliplink to give /options/ when clipping a link. For example, here's a github page title:
+
+** T Better Link Insertion
+As of now I'm doing a weird ~org-insert-link~ which is a bit clunky as it requires ~C-Y~ for pasting the link. I like ~org-cliplink~ but it seeks out the title of the page. Might be nice for putting in rules like Github, but I would also like to find or make my own function that takes the link from the clipboard but prompts for the description.
+
+- [ ] add a bind for going back after clicking a link: ~org-mark-ring-goto~
+- [ ] org links dont pop up fundamental buffer that tells about tab completion
+- [ ] also wanna use ~org-mark-ring-push~
+- [ ] add bind for displaying link ~SPC m l t~ under point
+- [ ] internal link naming for following the tree structure: e.g. Org/Keymap
+- [X] add space before insertion
+
+* Evil Keymap
+#+begin_src emacs-lisp
+(map! :map evil-org-mode-map :m :prefix "g"
+      ;; left and right
+      :m "h" 'evil-first-non-blank-of-visual-line
+      :m "l" 'evil-end-of-visual-line
+      ;; up and down
+      :m "H" 'evil-org-top
+      :m "K" 'org-up-element
+      :m "k" 'org-backward-heading-same-level
+      :m "J" 'org-down-element
+      :m "j" 'org-forward-heading-same-level
+      )
+#+end_src
+I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So instead of using ~evil-respect-visual-line-mode~, just rebind these two commands to their visual counterparts. Still need to somehow make this happen only in org mode ideally.
+#+begin_src emacs-lisp
+(map! :map evil-motion-state-map
+      "j" 'evil-next-visual-line
+      "k" 'evil-previous-visual-line
+      )
+#+end_src
+* Export
+** LaTeX
+#+begin_src emacs-lisp :tangle no
+(setq org-latex-default-packages-alist nil
+      org-latex-toc-command nil
+      org-latex-hyperref-template nil)
+      org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
+
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+
+(eval-after-load 'org
+  '(setf org-highlight-latex-and-related '(latex)))
+
+(setq org-latex-classes
+   '(("my-article" "
+\\documentclass[10pt,a4paper]{article}
+\\include{~/.config/latex/prelude}
+
+\\usepackage{hyperref}
+\\hypersetup{
+  colorlinks=true,
+  linkcolor=[rgb]{0,0.37,0.53},
+  citecolor=[rgb]{0,0.47,0.68},
+  filecolor=[rgb]{0,0.37,0.53},
+  urlcolor=[rgb]{0,0.37,0.53},
+  pagebackref=true,
+  linktoc=all,}"
+      ("\\section{%s}" . "\\section*{%s}")
+      ("\\subsection{%s}" . "\\subsection*{%s}")
+      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+)))
+#+end_src
+** HTML
+** T Custom org backend
+[[Https://www.reddit.com/r/emacs/comments/swvbmm/you_want_to_write_a_custom_org_backend_lets_write/][reddit post]]
 * Inactive
 ** Journal
 #+begin_src emacs-lisp

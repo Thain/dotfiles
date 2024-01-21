@@ -4,10 +4,46 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/config.el
 
 Externally loaded configs:
-- [[file:extras/keybinds.org][Keybinds]]
-- [[file:extras/org-mode.org][Org]]
-- [[file:extras/LaTeX.org][LaTeX]]
+- [[file:keybinds.org][Keybinds]]
+- [[file:org-mode.org][Org]]
+- [[file:LaTeX.org][LaTeX]]
 
+* Inbox
+There will always be a list of small things to do that I'll capture here.
+** TODO New Apps
+*** Mu4e back up and running
+*** Multiple cursors
+*** Info plus
+*** Treemacs or neotree
+*** Magit
+*** Helm, vertico, ivy, ido?
+*** =calendar, cfw, calfw
+*** Symon, proced, helm-top
+*** Org-contacts
+*** Ledger
+  - [[https://orgmode.org/worg/org-tutorials/weaving-a-budget.html][org tutorial]]
+  - [[https://www.ledger-cli.org/3.0/doc/ledger3.html#Introduction-to-Ledger][the manual]]
+*** Dired-du
+*** Org-attach
+  - a lil reddit [[https://www.reddit.com/r/orgmode/comments/p9i2og/does_anyone_use_org_attach_a_lot/][writeup]]
+  - and yet [[https://www.reddit.com/r/emacs/comments/ag2lt8/organize_your_hard_drive_with_emacs/][another]]
+*** Org-roam
+  - topics
+    - emacs/org
+    - web dev
+    - linux
+    - rpg
+    - math
+  - jethro kuan [[https://jethrokuan.github.io/org-roam-guide/][how i take notes with org roam]]
+** TODO C-RET and S-RET in dired open file in other window or something
+** TODO capture in minibuffer
+** TODO swap c-r and R to make redoing easier
+** TODO put "move line up/down" on alt k/j
+** TODO cap J/K for scrolling whole window
+** TODO use magit to push my dots onto github
+** TODO turn off cdlatex by default
+** TODO project-search ignore archived files
+** TODO check out webjump
 * Initial setup
 ** Name & Email
 Some functionality uses this for identification, e.g. GPG configuration, email clients, file templates and snippets.
@@ -34,7 +70,7 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
                "\n"))
      'face 'doom-dashboard-banner)))
 #+end_src
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (defun a-very-pretty-flower ()
   (let* ((banner '("                              ....                                  "
                    "                           ,;;\'\'\'\';;,                    ,;;;;,     "
@@ -79,7 +115,7 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
                "\n"))
      'face 'doom-dashboard-banner)))
  #+end_src
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 ; (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
 (setq +doom-dashboard-ascii-banner-fn #'a-very-pretty-flower)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
@@ -89,7 +125,7 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
 #+end_src
 
 #+begin_src emacs-lisp
-(add-hook 'after-init-hook (lambda () (org-agenda nil "z")))
+(add-hook 'after-init-hook (lambda () (find-file "~/documents/org/gtd/inbox.org")))
 #+end_src
 ** Theme
 My theme, with some old ones I've used thrown in.
@@ -213,57 +249,13 @@ Doesn't currently work for pdfs unfortunately.
 (map! :map view-mode-map :n "v" 'View-quit)
 (map! :map pdf-view-mode-map :n "v" 'View-quit)
 #+end_src
-* PDF
-** Hooks for pdf viewing                            :CLEAN:
-#+begin_src emacs-lisp
-(add-hook 'pdf-outline-buffer-mode-hook #'pdf-outline-hook)
-(add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode)
+** Dired
 
-(defun pdf-outline-hook ()
-  (display-line-numbers-mode -1) ;; don't display line numbers
-  (setq left-margin-width 2)     ;;
-  (outline-hide-sublevels 1))
+- [[https://www.reddit.com/r/emacs/comments/4agkye/how_do_you_customize_dired/][reddit post of useful stuff]]
+- Get dirvish for a better experience
+- file previewing of some kind
+- [[https://ashok-khanna.medium.com/introduction-to-dired-mode-91cecd3a06ff][medium blog]]
 
-#+end_src
-open pdfs scaled to fit page
-#+begin_src emacs-lisp
-(after! pdf-tools
-  (setq-default pdf-view-display-size 'fit-page))
-#+end_src
-automatically annotate highlights
-#+begin_src emacs-lisp
-(after! pdf-tools
-  (setq pdf-annot-activate-created-annotations t))
-
-(setq pdf-view-use-scaling t)
-(setq pdf-view-midnight-invert nil)
-#+end_src
-** keymap                                           :CLEAN:
-#+begin_src emacs-lisp
-(map! :after pdf-tools
-      :map pdf-isearch-active-mode-map
-      [return]  'isearch-repeat-forward
-      "ESC"     'isearch-cancel
-      )
-
- (custom-set-faces!
-   '(pdf-isearch-match :background "MediumSeaGreen"))
-
-#+end_src
-** centering when zooming
-want to recenter the document when zooming in or out.
-The relevant functions are:
-- ~pdf-view-shrink~
-- ~pdf-view-enlarge~
-#+begin_src emacs-lisp
-(defun pdf-zoom-in ()
-  (pdf-view-shrink)
-  (pdf-view-center-in-window))
-
-(defun pdf-zoom-out ()
-  (pdf-view-enlarge)
-  (pdf-view-center-in-window))
-#+end_src
 * EMMS
 ** Initialization                                   :CLEAN:
 #+begin_src emacs-lisp
@@ -587,16 +579,71 @@ s                         emms-stop
 ;;   (setq vterm-shell "/usr/bin/fish"
 ;;         vterm-ignore-blink-cursor nil))
 #+end_src
+** PDF
+*** Hooks for pdf viewing                           :CLEAN:
+#+begin_src emacs-lisp
+(add-hook 'pdf-outline-buffer-mode-hook #'pdf-outline-hook)
+(add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode)
+
+(defun pdf-outline-hook ()
+  (display-line-numbers-mode -1) ;; don't display line numbers
+  (setq left-margin-width 2)     ;;
+  (outline-hide-sublevels 1))
+
+#+end_src
+open pdfs scaled to fit page
+#+begin_src emacs-lisp
+(after! pdf-tools
+  (setq-default pdf-view-display-size 'fit-page))
+#+end_src
+automatically annotate highlights
+#+begin_src emacs-lisp
+(after! pdf-tools
+  (setq pdf-annot-activate-created-annotations t))
+
+(setq pdf-view-use-scaling t)
+(setq pdf-view-midnight-invert nil)
+#+end_src
+*** keymap                                          :CLEAN:
+#+begin_src emacs-lisp
+(map! :after pdf-tools
+      :map pdf-isearch-active-mode-map
+      [return]  'isearch-repeat-forward
+      "ESC"     'isearch-cancel
+      )
+
+ (custom-set-faces!
+   '(pdf-isearch-match :background "MediumSeaGreen"))
+
+#+end_src
+*** centering when zooming
+want to recenter the document when zooming in or out.
+The relevant functions are:
+- ~pdf-view-shrink~
+- ~pdf-view-enlarge~
+#+begin_src emacs-lisp
+(defun pdf-zoom-in ()
+  (pdf-view-shrink)
+  (pdf-view-center-in-window))
+
+(defun pdf-zoom-out ()
+  (pdf-view-enlarge)
+  (pdf-view-center-in-window))
+#+end_src
 * External loading
+Loading files containing longer, self-contained bits of configuration.
 #+begin_src emacs-lisp
 ;; (org-babel-load-file "~/dots/doom/extras/keybinds.org")
 ;; (org-babel-load-file "~/dots/doom/extras/org-mode.org")
 ;; (org-babel-load-file "~/dots/doom/extras/LaTeX.org")
 
-(load-file (expand-file-name "extra/keybinds.el" doom-user-dir))
-(load-file (expand-file-name "extra/org-mode.el" doom-user-dir))
-(load-file (expand-file-name "extra/LaTeX.el" doom-user-dir))
+(add-to-list 'load-path (expand-file-name "extra/" doom-user-dir))
+
+(require 'keybinds)
+(require 'org-mode)
+(require 'LaTeX)
 #+end_src
+
 * Modules
 #+begin_src emacs-lisp :tangle ~/.config/doom/init.el
 ;;; init.el -*- lexical-binding: t; -*-
@@ -680,7 +727,7 @@ s                         emms-stop
        ;;vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       ;;syntax              ; tasing you for every semicolon you forget
+       syntax              ; tasing you for every semicolon you forget
        ;;(spell +flyspell) ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
@@ -805,7 +852,7 @@ s                         emms-stop
 (package! olivetti)
 (package! ranger)
 (package! org-caldav)
-;(package! org-modern)
+(package! org-modern)
 ;(package! svg-tag-mode)
 ;;(package! fish-mode)
 ;;(package! mastodon)
@@ -815,9 +862,14 @@ s                         emms-stop
   :recipe (:host github
            :repo "awth13/org-appear"))
 
-(package! lambda-line
+;; Calfw blocks adds block views to the calendar
+(package! calfw-blocks
   :recipe (:host github
-           :repo "Lambda-Emacs/lambda-line"))
+           :repo "ml729/calfw-blocks"))
+
+;(package! lambda-line
+;  :recipe (:host github
+;           :repo "Lambda-Emacs/lambda-line"))
 
 ;; mode for writing kmonad config
 (package! kbd-mode
@@ -827,6 +879,10 @@ s                         emms-stop
 (package! aas
   :recipe (:host github
            :repo "ymarco/auto-activating-snippets"))
+
+;(package! calfw-blocks
+;  :recipe (:host github
+;           :repo "ml729/calfw-blocks"))
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

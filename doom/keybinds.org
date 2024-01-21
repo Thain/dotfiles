@@ -3,6 +3,11 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/keybinds.el
 
 
+* Inbox
+** TODO change tab in json to fold
+** TODO flycheck keybinds
+def want:
+- next error
 * Workspace
 #+begin_src emacs-lisp
 (map! :leader
@@ -39,7 +44,7 @@
      :desc "Open notes (notes.org)"        "n" (lambda () (interactive) (find-file "~/documents/org/notes.org"))
      :desc "Open inbox"                    "i" (lambda () (interactive) (find-file "~/documents/org/gtd/inbox.org"))
      :desc "Open Wiki"                     "w" (lambda () (interactive) (find-file "~/documents/org/wiki/index.org"))
-     :desc "Open config (conf.org)"        "C" (lambda () (interactive) (find-file "~/dots/doom/conf.org"))
+     :desc "Open config (doom.org)"        "C" (lambda () (interactive) (find-file "~/dots/doom/doom.org"))
      :desc "Open $HOME in dired"           "h" (lambda () (interactive) (dired "~"))
      :desc "Open root in dired"            "r" (lambda () (interactive) (dired "/"))
      :desc "Open todo"                     "t" #'org-todo-list))
@@ -198,7 +203,6 @@ Attempting to simplify evil
       "s" nil
       )
 #+end_src
-
 * Footer
 #+begin_src emacs-lisp
 (provide 'keybinds)

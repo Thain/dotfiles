@@ -1,7 +1,9 @@
 #+title: Latex
 
+ these tangles aren't working properly, so don't change anything from here and expect it to matter. Ideally make changes in both places until I fix this problem.
+
 * Personal sty File
-#+begin_src LaTeX :tangle ~/.config/latex/thain.sty
+#+begin_src LaTeX :tangle /usr/local/share/texmf/tex/generic/thain.sty
 \author{Liam Chung}
 \usepackage{amsfonts}
 \usepackage{amsmath, amsthm, mathtools,amssymb}
@@ -11,7 +13,7 @@
 \usepackage[margin=1in]{geometry}
 
 \usepackage{tikz-cd}
-\usepackage{/home/thain/.config/latex/quiver}
+\usepackage{quiver}
 
 \newcommand{\no}{\noindent}
 \newcommand{\vs}{\vspace{1\baselineskip}} %add one vertical space
@@ -38,10 +40,12 @@
 \newtheorem*{definition}{Definition}
 \newtheorem*{proposition}{Proposition}
 
+% Yoneda embedding
 \DeclareFontFamily{U}{min}{}
 \DeclareFontShape{U}{min}{m}{n}{<-> udmj30}{}
 \newcommand\yo{\!\text{\usefont{U}{min}{m}{n}\symbol{'207}}\!}
 
+% For completed questions
 \usepackage{CJKutf8}
 \newcommand{\wan}{
     \begin{CJK*}{UTF8}{gbsn}
@@ -50,7 +54,7 @@
 }
 #+end_src
 * Quiver
-#+begin_src LaTeX :tangle ~/.config/latex/quiver.sty
+#+begin_src LaTeX :tangle /usr/local/share/texmf/tex/generic/quiver.sty
 % *** quiver ***
 % A package for drawing commutative diagrams exported from https://q.uiver.app.
 %
@@ -92,3 +96,4 @@
 
 \endinput
 #+end_src
+* T fix tangling

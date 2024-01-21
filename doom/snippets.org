@@ -1,0 +1,68 @@
+#+title: Snippets
+
+The home for all of my snippets.
+
+* TODO Making Snippet Set
+- [[https://www.youtube.com/watch?v=W-bRZlseNm0][jake b video]]
+- [[https://www.youtube.com/watch?v=xmBovJvQ3KU][jack of some]]
+- [[https://emacs.stackexchange.com/questions/66204/how-to-remove-or-overwrite-a-yasnippets][remove/overwrite yasnippets]]
+* Org Mode
+** Source blocks
+*** Generic source block
+#+begin_src snippet :tangle ~/.config/doom/snippets/org-mode/src
+# -*- mode: snippet -*-
+# name: emacs source block
+# key: src
+# --
+
+,#+begin_src $1 ${2:$$(when (and yas-modified-p yas-moving-away-p) (concat ":tangle " yas-text))}
+$0
+,#+end_src
+#+end_src
+*** Elisp
+#+begin_src snippet :tangle ~/.config/doom/snippets/org-mode/elisp-src
+# -*- mode: snippet -*-
+# name: elisp source block
+# key: elisp
+# --
+
+,#+begin_src emacs-lisp ${1:$$(when (and yas-modified-p yas-moving-away-p) (concat ":tangle " yas-text))}
+$0
+,#+end_src
+#+end_src
+*** Haskell
+#+begin_src snippet :tangle ~/.config/doom/snippets/org-mode/haskell-src
+# -*- mode: snippet -*-
+# name: haskell source block
+# key: hsk
+# --
+
+,#+begin_src haskell ${1:$$(when (and yas-modified-p yas-moving-away-p) (concat ":tangle " yas-text))}
+$0
+,#+end_src
+#+end_src
+* LaTeX
+*** Align*
+#+begin_src snippet :tangle ~/.config/doom/snippets/latex-mode/align
+# -*- mode: snippet -*-
+# name: Align*
+# key: alis
+# condition: t
+# --
+
+\begin{align*}
+    $0
+\end{align*}
+#+end_src
+*** Alignat
+#+begin_src snippet :tangle ~/.config/doom/snippets/latex-mode/alignat
+# -*- mode: snippet -*-
+# name: AlignAt*
+# key: alia
+# condition: t
+# --
+
+\begin{alignat*}{$1}
+    $0
+\end{alignat*}
+#+end_src

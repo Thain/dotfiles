@@ -7,12 +7,90 @@ The Desktop Environment I've created, using:
 - [[Mako][Mako]] for notification
 - [[Fuzzel]] for application launcher
 
+* Inbox
+** Desktop Functionality
+*** fuzzel
+- networkmanager_dmenu
+- dmenu [[https://github.com/huijunchen9260/dmenufm?ref=mark.stosberg.com][file browser]]
+*** mako
+*** bluetooth frontend
+[[https://wiki.archlinux.org/title/Bluetooth#Front-ends][arch wiki list]]
+*** media playback
+
+- [ ] vlc [[https://www.deviantart.com/maverick07x/art/VLC-MinimalX-385698882][minimal skin]]
+- [ ] how to skin and use mpv
+    [[ttps://www.reddit.com/r/mpv/comments/krdpev/how_to_change_the_player_interface_to_make_it/][reddit thread about customization]]
+    [[ttps://mpv.io/manual/master/][mpv basics]]
+- [ ] music & visualizer
+  For music: mpd server??
+  - [[https://spicetify.app/][Spicetify]]
+  - [[https://github.com/kraxarn/spotify-qt][spotify-qt: Lightweight Spotify client using Qt]]
+  - https://colinduquesnoy.gitlab.io/MellowPlayer/
+  - https://mopidy.com/ with https://www.reddit.com/r/emacs/comments/r3gajn/looking_for_a_good_mpd_client_in_emacs/
+
+*** eww widgets for settings
+
+**** my plan
+
+I Would like to use eww to basically create a GUI settings menu for myself, with some of those things appearing on the top bar. Things I'd like to have:
+- Audio
+  - audio level
+  - audio sources (in/out)
+- Brightness
+  - level
+  - redshift toggle
+- Battery
+  - amount
+  - (stretch) on/off battery cap
+- Date/time
+  - access to calendar
+- Wifi
+  - toggle on/off?
+  - list possible networks or, failing that, just opens nmtui
+- Workspaces
+  - maybe a script for swapping between docked/mobile mode
+- Ram/cpu/disk usage
+  - opens htop or something on click
+- Logout/restart/shutdown/sleep
+
+**** learning
+
+tuTorial [[https://dharmx.is-a.dev/eww-powermenu/][here]], and github page [[https://github.com/elkowar/eww][here]]
+
+*** waybar update
+
+saw in a cool vid a concept of having the bar visible and can be made so by a keybind. want  something similar, maybe just a keybind for killing/launching it? similar to the reload one but with no config changes?
+
+*** fix chinese input
+
+specifically for brave, seems to be an issue. works fine for firefox. unfortunately. maybe i try vivaldi, or a diff input method, prob ibus.
+
+*** sioyek
+
+- Change size/shape/color of visual select highlights
+- Synctex Almost working for inverse search. Almost.
+  When doing inverse search it seems to do some random stuff esp on multi input files.
+- Crashes on Rotman
+
+*** tmux
+*** gestures on trackpad
+*** mullvad tray icon
+** Aesthetics
+*** designing
+*** inspiration
+- dreamy dots
+- [[https://www.reddit.com/r/unixporn/comments/xkvmhy/hyprland_dreamy/][reddit post]]
+- [[https://github.com/cybergaz/Hyprland_Rice][github post]]
+- [[https://github.com/flick0/dotfiles/tree/dreamy][another good rice]]
+- [[https://www.reddit.com/r/unixporn/comments/13vwue7/hyprland_my_first_rice_using_hyprland_wofi_waybar/][one that uses wofi]]
+*** TODO Waybar grey on empty workspaces
 * Monitors
 #+begin_src conf
 # monitor=eDP-1,2256x1505,0x0,1
 # monitor=DP-1, 1920x1080, 0x0,1
 monitor=,1920x1080, 0x0,1
-monitor=eDP-1,preferred,1920x580,1.3
+monitor=,preferred,0x0,1
+monitor=eDP-1,preferred,1920x580,1.333333
 #+end_src
 * Workspaces
 #+begin_src conf
@@ -142,6 +220,7 @@ bind = $mainMod, Q, killactive,
 bind = $mainMod, M, exec, telegram-desktop
 bind = $mainMod SHIFT, Q, exit,
 bind = $mainMod, E, exec, sh ~/.config/scripts/run-or-raise emacs emacs
+bind = $mainMod, Z, exec, zathura
 bind = $mainMod, V, togglefloating,
 # bindr= $mainMod, SUPER_L, exec, pkill fuzzel || fuzzel
 bind= $mainMod, SPACE, exec, pkill fuzzel || fuzzel
@@ -230,12 +309,14 @@ binde =, 123, exec, pamixer -i 5
 #+end_src
 * Wallpaper
 #+begin_src conf :tangle ~/.config/hypr/hyprpaper.conf
+splash = false
 preload = ~/media/pictures/wallpapers/outset-night.jpg
 preload = ~/media/pictures/wallpapers/outset-evening.jpg
 preload = ~/media/pictures/wallpapers/outset-day.jpg
 wallpaper = eDP-1,~/media/pictures/wallpapers/outset-night.jpg
 wallpaper = DP-1,~/media/pictures/wallpapers/outset-day.jpg
 wallpaper = DP-4,~/media/pictures/wallpapers/outset-evening.jpg
+wallpaper = DP-2,~/media/pictures/wallpapers/outset-evening.jpg
 #+end_src
 * Waybar
 ** Config
@@ -383,7 +464,7 @@ wallpaper = DP-4,~/media/pictures/wallpapers/outset-evening.jpg
 #+end_src
 ** CSS
 #+begin_src css :tangle ~/.config/waybar/style.css
- * {
+ ,* {
     border: none;
     border-radius: 0px;
     /*font-family: VictorMono, Iosevka Nerd Font, Noto Sans CJK;*/
@@ -423,6 +504,11 @@ window#waybar {
     color: #828384;
 }
 
+#workspaces button.empty {
+    color: #414141;
+    border-radius: 16px;
+}
+
 #workspaces button.active {
     color: #e1e1e1;
     border-radius: 16px;
@@ -431,7 +517,7 @@ window#waybar {
 #workspaces button:hover {
     /*background-color: #E6B9C6;*/
     background-color: transparent;
-    color: black;
+    color: #e1e1e1;
     border-radius: 16px;
 }
 

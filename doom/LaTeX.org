@@ -2,23 +2,73 @@
 #+STARTUP: overview hideblocks
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/LaTeX.el
 
+* Inbox
+** Features I want
+
+- Folding sections/subsections
+- In enum/item environ, c-RET adds new item (with appropriate indentation)
+- Keybind for going to section heading
+
+*** indentation
+*** keybinds
+
+RET
+TAB
+c-RET
+s-RET
+
+** Preview Pane
+
+- Toggling preview pane mode on a mode-specific bind
+- Hook preview pane mode to delete all other windows, before opening in its own window
+** T Improving Input
+
+As per the articles by [[https://castel.dev/post/lecture-notes-1/][Gilles Castel]] and [[https://karthinks.com/software/latex-input-for-impatient-scholars/#snippets-snap-easy][Karthik Chikmagalur]], I want to improve my LaTeX input. There are a few ways to do this, and I'd like to more or less commit to one that is specifically helpful for what I write. Importantly, these all need to happen in ~insert-mode~, and will most likely rely in a large way on ~TAB~ and potentially ~;~.
+
+SoMe particularly difficult things I do fairly often:
+- Subscripts and superscripts
+  - some just plain n, n-1, n+1, also for k, i, j
+  - some numbers like 0,1, etc
+- Environments
+- Standalone references to variables in text
+- Quiver diagrams on the fly
+- Variable modifiers such as hat, overline
+- Escaped set brackets
+
+New DOOM-specific article dropped: [[https://michaelneuper.com/posts/efficient-latex-editing-with-emacs/][Michael Neuper]]
+*** YASnippet
+
+YASnippet is in some sense the standard. By default in doom, expanding a snippet at point is done with TAB. A lot of my problems may be solved if I could somehow switch this to SPC.
+
+[[Latex-mode]] list of snipppets
+
+*** CDLaTeX
+
+CDLaTeX is lauded and allegedly has a solid heuristic for TAB movement.
+GiThub repo [[https://github.com/cdominik/cdlatex][here]]
+
+*** Auto Expanding Snippets
+
+ThEse snippets expand as soon as they're finished being typed.
+ThEre is a huge list of solid ones [[https://github.com/tecosaur/LaTeX-auto-activating-snippets/tree/master#annoying-subscripts][here]]
+** T cdlatex move to ; and start using it
 * Config
 Basic config
 #+begin_src emacs-lisp
 ;;(setq +latex-viewers '(pdf-tools))
 ;; (setq TeX-view-program-list '(("Sioyek" "sioyek %o")))
 ;; (setq TeX-view-program-selection '((output-pdf "Sioyek")))
-(setq +latex-viewers '(sioyek))
+(setq +latex-viewers '(zathura))
 
 (setq TeX-view-program-list
         ;; '(("Sioyek" ("sioyek %o --reuse-instance"
-        '(("Sioyek" ("sioyek %o"
-        (mode-io-correlate " --forward-search-file %b --forward-search-line %n --inverse-search \"emacsclient --no-wait +%2:%3 %1\"")) "sioyek"))
+        '(("Zathura" ("zathura %o"
+        (mode-io-correlate " --forward-search-file %b --forward-search-line %n --inverse-search \"emacsclient --no-wait +%2:%3 %1\"")) "zathura"))
       TeX-view-program-selection
         '(((output-dvi has-no-display-manager) "dvi2tty")
           ((output-dvi style-pstricks)  "dvips and gv")
           (output-dvi "xdvi")
-          (output-pdf "Sioyek")
+          (output-pdf "Zathura")
           (output-html "xdg-open")))
 
 ;; latex config
@@ -59,7 +109,8 @@ Enable tex folding in all LaTeX docs
 #+begin_src emacs-lisp
 (add-hook 'LaTeX-mode-hook (lambda ()
                              (cdlatex-mode 0)
-                             (outline-minor-mode 1) ))
+                             (outline-minor-mode 1)
+                             (flycheck-mode 0) ))
                              ; (TeX-fold-mode 0) ))
                              ;(latex-preview-pane-mode 1)
                              ;(TeX-fold-buffer)))
