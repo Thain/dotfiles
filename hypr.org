@@ -9,10 +9,10 @@ The Desktop Environment I've created, using:
 
 * Inbox
 ** Desktop Functionality
-*** fuzzel
+*** fuzzel adding features
 - networkmanager_dmenu
 - dmenu [[https://github.com/huijunchen9260/dmenufm?ref=mark.stosberg.com][file browser]]
-*** mako
+*** mako exploring more features
 *** bluetooth frontend
 [[https://wiki.archlinux.org/title/Bluetooth#Front-ends][arch wiki list]]
 *** media playback
@@ -95,16 +95,24 @@ monitor=eDP-1,preferred,1920x580,1.333333
 * Workspaces
 #+begin_src conf
 # workspaces setup
-# workspace=1,monitor:DP-1
-# workspace=2,monitor:DP-1
-# workspace=3,monitor:DP-1
-workspace=1,monitor:DP-4
-workspace=2,monitor:DP-4
-workspace=3,monitor:DP-4
+workspace=1,monitor:eDP-1
+workspace=2,monitor:eDP-1
+workspace=3,monitor:eDP-1
+#workspace=1,monitor:DP-4
+#workspace=2,monitor:DP-4
+#workspace=3,monitor:DP-4
 workspace=4,monitor:eDP-1
 workspace=5,monitor:eDP-1
 #+end_src
-* Startup Appliations
+* Startup Applications
+All of my startup applications.
+- ~wl-paste~ for fuzzel clipboard management
+- ~waybar~ for topbar
+- ~hyprpaper~ for wallpaper
+- ~mako~ for notifications
+- ~syncthing~ for file syncing
+- ~fcitx5~ for language switching
+- ~udiskie~ for automatic mounting of disks
 #+begin_src conf
 exec-once = wl-paste -t text --watch clipman store
 exec-once = waybar
@@ -112,8 +120,9 @@ exec-once = hyprpaper
 exec-once = mako
 exec-once = syncthing
 exec-once = fcitx5 -d --replace
+exec-once = udiskie
 #+end_src
-* Env vars
+* Appearance
 #+begin_src conf
 # Some default env vars.
 env = XCURSOR_SIZE,24
@@ -158,6 +167,17 @@ decoration {
     shadow_render_power = 3
     col.shadow = rgba(1a1a1aee)
 }
+
+group {
+    col.border_active = 0x66ffff00
+   groupbar {
+    # font_family	font used to display groupbar titles	string	Sans
+    font_size = 14
+    gradients = true
+    col.active = 0x44ffffff
+    col.inactive = 0x22ffffff
+   }
+}
 #+end_src
 * Animations
 #+begin_src conf
@@ -195,13 +215,15 @@ misc {
 #+end_src
 * Window Rules
 #+begin_src conf
-# Example windowrule v1
-# windowrule = float, ^(kitty)$
-# Example windowrule v2
-# windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
-# See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
 
 # windowrule = float, Choose Files
+windowrule = group set, ^(org.pwmt.zathura)$
+windowrule = noanim, ^(org.pwmt.zathura)$
+
+windowrule = group set, ^(Alacritty)$
+
+# don't let any windows except these be added to groups
+windowrule = group barred, ^((?!.*zathura.*)(?!.*Alacritty.*).*)$
 
 #+end_src
 * Keybinds
@@ -220,8 +242,13 @@ bind = $mainMod, Q, killactive,
 bind = $mainMod, M, exec, telegram-desktop
 bind = $mainMod SHIFT, Q, exit,
 bind = $mainMod, E, exec, sh ~/.config/scripts/run-or-raise emacs emacs
-bind = $mainMod, Z, exec, zathura
+bind = $mainMod SHIFT, E, exec, mullvad-exclude emacs
 bind = $mainMod, V, togglefloating,
+bind = $mainMod, Z, exec, zathura
+
+bind = $mainMod, TAB, changegroupactive
+bind = $mainMod CTRL, L, moveoutofgroup
+
 # bindr= $mainMod, SUPER_L, exec, pkill fuzzel || fuzzel
 bind= $mainMod, SPACE, exec, pkill fuzzel || fuzzel
 bind= $mainMod, BACKSPACE, exec, pkill fuzzel || fuzzel
@@ -230,7 +257,7 @@ bind= $mainMod, P, exec, sioyek
 #bind = $mainMod, P, pseudo, # dwindle
 #bind = $mainMod, s, togglesplit, # dwindle
 bind = $mainMod, s, swapnext,
-bind = $mainMod,Tab,cyclenext,
+bind = $mainMod CTRL,Tab,cyclenext,
 
 
 # Move focus with mainMod + arrow keys
@@ -369,9 +396,12 @@ wallpaper = DP-2,~/media/pictures/wallpapers/outset-evening.jpg
             "sort-by-number": true
          },
         "persistent_workspaces": {
-             "1": ["DP-4"],
-             "2": ["DP-4"],
-             "3": ["DP-4"],
+             //"1": ["DP-4"],
+             //"2": ["DP-4"],
+             //"3": ["DP-4"],
+             "1": ["eDP-1"],
+             "2": ["eDP-1"],
+             "3": ["eDP-1"],
              "4": ["eDP-1"],
              "5": ["eDP-1"]
          }

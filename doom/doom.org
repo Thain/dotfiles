@@ -853,6 +853,7 @@ Loading files containing longer, self-contained bits of configuration.
 (package! ranger)
 (package! org-caldav)
 (package! org-modern)
+(package! dired-du)
 ;(package! svg-tag-mode)
 ;;(package! fish-mode)
 ;;(package! mastodon)

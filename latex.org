@@ -1,16 +1,17 @@
 #+title: Latex
 
- these tangles aren't working properly, so don't change anything from here and expect it to matter. Ideally make changes in both places until I fix this problem.
+ Symlinking these files from the desired locations, e.g.:
+: /usr/local/share/texmf/tex/generic/thain.sty
 
 * Personal sty File
-#+begin_src LaTeX :tangle /usr/local/share/texmf/tex/generic/thain.sty
+#+begin_src LaTeX :tangle ~/.config/latex/thain.sty
 \author{Liam Chung}
 \usepackage{amsfonts}
 \usepackage{amsmath, amsthm, mathtools,amssymb}
 \usepackage{csquotes}
 \usepackage[utf8]{inputenc}
 \usepackage[shortlabels]{enumitem}
-\usepackage[margin=1in]{geometry}
+%\usepackage[margin=1in]{geometry}
 
 \usepackage{tikz-cd}
 \usepackage{quiver}
@@ -27,8 +28,13 @@
 \newcommand{\set}{\textbf{Set} }
 \newcommand{\id}{\text{id}}
 \newcommand{\op}{^{\text{op}}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
 \renewcommand{\hom}{\text{Hom}}
 \renewcommand{\phi}{\varphi}
+
+\newcommand{\inj}{\hookrightarrow}
+\newcommand{\surj}{\twoheadrightarrow}
 
 \newenvironment{problem}[1]
         {\no\textbf{PROBLEM #1.}}
@@ -54,7 +60,8 @@
 }
 #+end_src
 * Quiver
-#+begin_src LaTeX :tangle /usr/local/share/texmf/tex/generic/quiver.sty
+//#+begin_src LaTeX :tangle /usr/local/share/texmf/tex/generic/quiver.sty
+#+begin_src LaTeX :tangle ~/.config/latex/quiver.sty
 % *** quiver ***
 % A package for drawing commutative diagrams exported from https://q.uiver.app.
 %
@@ -96,4 +103,3 @@
 
 \endinput
 #+end_src
-* T fix tangling

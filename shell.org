@@ -150,7 +150,6 @@ export EDITOR=vim
 # export QT_STYLE_OVERRIDE=adwaita-dark
 # export QT_QPA_PLATFORMTHEME=gtk2
 #+end_src
-
 * Scripts
 ** PDF
 Dump pdf TOC to a csv:

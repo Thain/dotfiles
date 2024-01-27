@@ -494,11 +494,11 @@ output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please chec
  symbsp   (tap-hold-next-release 200 bspc @syml)
  sfcspc    (tap-hold-next-release 200 spc (layer-toggle shift))
 
- ctlspc  (tap-hold-next-release 200 spc  lctl)
- sftspc  (tap-hold-next-release 200 spc  lsft)
- altesc  (tap-hold-next-release 200 esc  ralt)
- ctlesc  (tap-hold-next-release 200 esc  lctl)
- sfesc  (tap-hold-next-release 200 esc  lsft)
+ ctlspc  (tap-hold-next-release 200 spc lctl)
+ sftspc  (tap-hold-next-release 200 spc lsft)
+ altesc  (tap-hold-next-release 200 esc ralt)
+ ctlesc  (tap-hold-next-release 200 esc lctl)
+ sfesc  (tap-hold-next-release 200 esc lsft)
  sfqt    (tap-hold-next-release 200 ' lsft)
  sfent    (tap-hold-next-release 200 ret lsft)
 
