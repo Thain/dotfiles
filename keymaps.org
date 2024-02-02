@@ -2,7 +2,9 @@
 
 * Redox
 ** Keymap
-#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/redox/keymaps/thain/keymap.c
+normally tangle to:
+: ~/.config/qmk_firmware/keyboards/redox/keymaps/thain/keymap.c
+#+begin_src C :tangle no
 #include QMK_KEYBOARD_H
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -182,7 +184,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 #+end_src
 ** Headers
-#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/redox/keymaps/thain/config.h
+normally tangle to:
+: ~/.config/qmk_firmware/keyboards/redox/keymaps/thain/config.h
+#+begin_src C :tangle no
 #pragma once
 
 /* Select hand configuration */
@@ -196,7 +200,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #+end_src
 * Kyria
 ** Keymap
-#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/keymap.c
+: ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/keymap.c
+#+begin_src C :tangle no
 #include QMK_KEYBOARD_H
 
 enum layers {
@@ -438,7 +443,8 @@ bool oled_task_user(void) {
 #endif
 #+end_src
 ** Headers
-#+begin_src C :tangle ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/config.h
+: ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/config.h
+#+begin_src C :tangle no
 #pragma once
 
 // Lets you roll mod-tap keys
@@ -448,7 +454,8 @@ bool oled_task_user(void) {
 #define OLED_BRIGHTNESS 5
 #+end_src
 ** Rules
-#+begin_src makefile :tangle ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/rules.mk
+: ~/.config/qmk_firmware/keyboards/splitkb/kyria/keymaps/thain/rules.mk
+#+begin_src makefile :tangle no
 OLED_ENABLE = yes
 OLED_DRIVER = SSD1306   # Enables the use of OLED displays
 ENCODER_ENABLE = no       # Enables the use of one or more encoders
@@ -457,11 +464,11 @@ DYNAMIC_TAPPING_TERM_ENABLE = yes
 #+end_src
 * Kmonad
 #+begin_src kbd :tangle ~/.config/kmonad.kbd
-(defcfg  ;; For linux & by-id lists pluggable devices
-fallthrough true  ;; If key not bound/left_empty(_), fall back to default
-allow-cmd true    ;; To run system commands. MIGHT face issues with tiling window managers due to command helpers.
-input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")  ;; 'ls /dev/input/by-id/' for detachable, 'ls /dev/input/by-path/' for builtin
-output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please check the docs.
+(defcfg
+    fallthrough true  ;; If key not bound/left_empty(_), fall back to default
+    allow-cmd true    ;; To run system commands. MIGHT face issues with tiling wms
+    input  (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+    output (uinput-sink "My KMonad output")
 )
 
 ;; This is the real representation of your actual keyboard. We haven't started
@@ -485,22 +492,19 @@ output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please chec
  fnl  (layer-toggle fn)
  cmk  (layer-switch colemakdh)
  qwt  (layer-switch qwerty)
- exp  (layer-switch experimental)
- crz  (layer-switch crazy)
 
  semvi  (tap-hold-next-release 200 ; (layer-toggle vim)) ;; vim keybinds when holding ;
  ovi    (tap-hold-next-release 200 o (layer-toggle vim)) ;; colemak edition
  escf   (tap-hold-next-release 200 esc @fnl)
- symbsp   (tap-hold-next-release 200 bspc @syml)
  sfcspc    (tap-hold-next-release 200 spc (layer-toggle shift))
 
- ctlspc  (tap-hold-next-release 200 spc lctl)
- sftspc  (tap-hold-next-release 200 spc lsft)
- altesc  (tap-hold-next-release 200 esc ralt)
+ ;; super launch
+ dat (cmd-button "date >> /tmp/kmonad_example.txt")   ;; Append date to tmpfile
+ spr    (tap-hold-next-release 200 KeyUnknown lmet)
+ ;;spr    (tap-hold-next-release 200 (cmd-button "pkill fuzzel || fuzzel") lmet)
+
  ctlesc  (tap-hold-next-release 200 esc lctl)
- sfesc  (tap-hold-next-release 200 esc lsft)
  sfqt    (tap-hold-next-release 200 ' lsft)
- sfent    (tap-hold-next-release 200 ret lsft)
 
  ;; a first argument on press, second on release
  ;; scrn   (cmd-button "grim -g $(slurp) /home/thain/media/pictures/screenshots/$(date +%s_grim.png)")
@@ -508,12 +512,12 @@ output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please chec
 
 ;; The first custom layer is the one that gets activated when kmonad is started
 (deflayer qwerty
-  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  @escf brdn brup prev pp  next  f6   @qwt @cmk _    mute vold volu del
   `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
   tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
   -     a    s    d    f    g    h    j    k    l    @semvi @sfqt   ret
   lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
-  lctl  _   lalt lmet           @sfcspc       @ctlesc ralt left down right
+  lctl  _   lalt  @spr           @sfcspc       @ctlesc ralt left down right
 )
 
 (deflayer vim
@@ -527,32 +531,13 @@ output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please chec
 
 ;; layer for learning colemak-dh
 (deflayer colemakdh
-  esc   brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  esc   brdn brup prev pp  next  f6   @qwt @cmk _    mute vold volu del
   `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
   tab   q    w    f    p    b    j    l    u    y    ;    [    ]    \
   -     a    r    s    t    g    m    n    e    i    @ovi @sfqt  ret
   lsft  z    x    c    d    v    k    h    ,    .    /    rsft up
-  lctl  _   lalt lmet           @sftspc      @ctlesc rctl left down right
+  lctl  _   lalt lmet           @sfcspc      @ctlesc rctl left down right
 )
-
-(deflayer experimental
-  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
-  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
-  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
-  -     a    s    d    f    g    h    j    k    l    @semvi @sfqt   ret
-  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
-  lalt  _   lmet @ctlspc       @sfent      @symbsp @altesc left down right
-)
-
-(deflayer crazy
-  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
-  `     1    2    3    4    5    _    6    7    8    9    0    =    bspc
-  tab   q    w    e    r    t    _    y    u    i    o    p    \    \
-  -     a    s    d    f    g    _    h    j    k    l    @semvi '
-  lsft  z    x    c    v    b    _    n    m    ,    .    /     up
-  lalt  _   lmet @ctlspc       @sfent      @symbsp @altesc left down right
-)
-
 
 ;; ?? mctl bldn blup stopcd
 (deflayer fn
@@ -575,45 +560,17 @@ output (uinput-sink "My KMonad output")  ;; Not sure what this does. Please chec
 )
 
 (deflayer shift
-  @escf brdn brup prev pp  next  f6   @qwt @cmk @exp mute vold volu del
+  @escf brdn brup prev pp  next  f6   @qwt @cmk _    mute vold volu del
   ~     !    @    #    $    %    ^    &    *    \(   \)   \_    +   C-bspc
   S-tab S-q  S-w  S-e  S-r  S-t  S-y  S-u  S-i  S-o  S-p  S-[  S-]  S-\
   S--   S-a  S-s  S-d  S-f  S-g  S-h  S-j  S-k  S-l  S-;  S-'   C-ret
   lsft  S-z  S-x  S-c  S-v  S-b  S-n  S-m  S-,  S-.  S-/   rsft up
   lctl  _   lalt lmet           spc          @ctlesc ralt  left down right
 )
-
-
-
-#|
-
-
-
-
-;; A layer dedicated to symbols
-(deflayer syms
-  _         _        _       _       _       _      _       _        _        _       _      _         _     _       _      _
-  _         _        _       [       ]       _      _       _        _        |       _      _         _     _
-  _         !        +       \_      &       #      _       _        @        `       \      ~         _     _
-  f11       ^        -       esc     tab     =      _       ?        :        /       $      @asf      _
-  _         _        _       ;       *       _      _       _        %        _       _      _         _
-  _         _        _                       ret                     _        _       _      _         _
-)
-
-(deflayer qwerty
-  esc   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  `     1    2    3    4    5    6    7    8    9    0    -    =    bspc
-  tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
-  lctl  a    s    d    f    g    h    j    k    l    ;    '  ret
-  lsft  z    x    c    v    b    n    m    ,    .    /     rsft up
-  lctl  _   lalt lmet           spc             ralt rctl left down right
-)
-
-
-|#
 #+end_src
 * QMK Config
-#+begin_src conf :tangle ~/.config/qmk/qmk.ini
+: ~/.config/qmk/qmk.ini
+#+begin_src conf :tangle no
 [user]
 keyboard = splitkb/kyria/rev2
 keymap = thain

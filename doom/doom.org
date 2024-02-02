@@ -142,7 +142,11 @@ My theme, with some old ones I've used thrown in.
       doom-font (font-spec :family "FiraCode Nerd Font" :size 16)
       scroll-margin 2
       confirm-kill-emacs nil)
+
+(set-frame-parameter nil 'alpha-background 90)
 #+end_src
+
+#+RESULTS:
 
 ** Misc stuff
 #+begin_src emacs-lisp
@@ -796,7 +800,7 @@ Loading files containing longer, self-contained bits of configuration.
        ;;lua               ; one-based indices? one-based indices
        ;;markdown          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
-       ;;nix               ; I hereby declare "nix geht mehr!"
+       nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        org               ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
@@ -853,7 +857,7 @@ Loading files containing longer, self-contained bits of configuration.
 (package! ranger)
 (package! org-caldav)
 (package! org-modern)
-(package! dired-du)
+;;(package! dired-du)
 ;(package! svg-tag-mode)
 ;;(package! fish-mode)
 ;;(package! mastodon)

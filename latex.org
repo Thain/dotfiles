@@ -60,7 +60,6 @@
 }
 #+end_src
 * Quiver
-//#+begin_src LaTeX :tangle /usr/local/share/texmf/tex/generic/quiver.sty
 #+begin_src LaTeX :tangle ~/.config/latex/quiver.sty
 % *** quiver ***
 % A package for drawing commutative diagrams exported from https://q.uiver.app.

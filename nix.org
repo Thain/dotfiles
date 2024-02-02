@@ -1,0 +1,370 @@
+#+title: Nix Configuration
+
+learning
+- https://github.com/humancalico/nix-learning
+- https://zero-to-nix.com/
+- https://www.zombiezen.com/blog/2021/12/nix-from-the-ground-up/
+
+other people's dots:
+- https://github.com/kjhoerr/dotfiles
+- https://github.com/quinn-dougherty/declare/tree/main/machines/laptop
+- https://github.com/cwestpha/Nix
+- https://grahamc.com/blog/nixos-on-framework/
+
+talk:
+https://christine.website/talks/nixos-pain-2021-11-10/
+
+- [[https://github.com/mdvmeijer/fw-fanctrl-nix?tab=readme-ov-file][better fan control]]
+- [[https://github.com/NixOS/nixos-hardware/tree/master/framework/13-inch/12th-gen-intel][fwupd]] does what exactly?
+- [[https://community.frame.work/t/tracking-fingerprint-scanner-compatibility-with-linux-ubuntu-fedora-etc/1501/380][fingerprint scanner]]
+
+* Frontmatter
+see https://search.nixos.org/options or the NixOS manual (~nixos-help~).
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+{ stdenv, config, lib, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      #./mytex.nix
+    ];
+
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  # networking.hostName = "nixos"; # Define your hostname.
+  # Pick only one of the below networking options.
+  networking.networkmanager.enable = true;
+
+  # Set your time zone.
+  time.timeZone = "Europe/Amsterdam";
+
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+  # console = {
+  #   font = "Lat2-Terminus16";
+  #   keyMap = "us";
+  #   useXkbConfig = true; # use xkb.options in tty.
+  # };
+
+  # Enable CUPS to print documents.
+  # services.printing.enable = true;
+
+  programs.zsh.enable = true;
+
+  # my desktop manager :)
+  programs.hyprland = {
+    enable=true;
+    xwayland.enable = true;
+  };
+ #+end_src
+* Framework hardware
+#+begin_src nix
+# Ensures lid-close leads to a sleep I actually expect, that doesn't drain my battery.
+  # "S3" here refers to Suspend-to-Ram of Intel's si0x documentation:
+  # https://www.intel.com/content/www/us/en/develop/documentation/vtune-help/top/reference/energy-analysis-metrics-reference/s0ix-states.html
+  # Lines below taken from https://github.com/NixOS/nixos-hardware/blob/488931efb69a50307fa0d71e23e78c8706909416/dell/xps/13-9370/default.nix
+  #
+  # Force S3 sleep mode. See README.wiki for details.
+#  boot.kernelParams = [ "mem_sleep_default=deep" ];
+#+end_src
+Or rather, you probably don’t want that tip, and instead use the more robust route maintained by other folks for you: the nixos-hardware project :tada: … by doing this:
+
+figure out your framework laptop’s “generation”; for me it’s 12th gen
+lookup your framework generation in the table here GitHub - NixOS/nixos-hardware: A collection of NixOS modules covering hardware quirks. 12 (stable link 3) (ctrl+f for framework)
+
+follow GitHub - NixOS/nixos-hardware: A collection of NixOS modules covering hardware quirks. 7 (stable link 3) which I’ll summarize here for convenience:
+
+add and update the nixos-hardware nixos “channel” by running:
+sudo nix-channel --add \
+    https://github.com/NixOS/nixos-hardware/archive/master.tar.gz \
+    nixos-hardware
+sudo nix-channel --update
+copy the string on the right side (for me it was <nixos-hardware/framework>; for you it might be <nixos-hardware/framework/13th-gen-intel>); let’s call it $YOUR_FRAMEWORK_STRING
+
+pull up your configuration.nix and add string from step 3:
+
+find the spot in your configuration.nix that looks like:
+imports = [
+  ./hardware-configuration.nix
+];
+add $YOUR_FRAMEWORK_STRING in that list
+imports = [
+ $YOUR_FRAMEWORK_STRING # for me this line is: <nixos-hardware/framework>
+ ./hardware-configuration.nix
+];
+see if this is working…
+
+unset previous hand-made changes for framework (eg: comment out my PSA about mem_leep_default=deep)
+force set the new changes: sudo nixos-rebuild switch --upgrade
+reboot to be sure all’s well
+I think it’s self-explanatory why a collective of configurations is better than hand-maintaining duplicate versions on your own (and likely not as complete). If you want to see what your generation’s nixos-hardware configuration is in this repo, click into your subfolder here: https://github.com/NixOS/nixos-hardware/tree/master/framework 29 (stable link 1)
+
+If you’re curious why the 11th gen does not have mem_sleep_default=deep line any longer, see this PR: framework laptop 11th gen: Improve sleep power efficiency by obj-obj · Pull Request #717 · NixOS/nixos-hardware · GitHub 3.
+
+(I really wanted to make this a separate post for higher visibility, but as it’s been merged into this thread, I’ll leave it be)
+
+but why did you post the tip above then? doesn't it work?
+Yes the original tip works, but I just didn’t look closely at the larger repo when I copied that xps13 config (until now). If you’re reading this and you’re a nixos expert, please comment with more guidance (and/or confirmation even). I certainly didn’t figure this out via any official nixos docs/wiki (would’ve been nice), so I feel like I should document how I stumbled upon this…
+
+I recently loaded this old mem_sleep_default=deep post and looked at the original github link in my inline-comment, to jog my memory…
+Realized the xps hardware config I link to in my original snippet has a sibling file for framework(!) already present :man_facepalming: https://github.com/NixOS/nixos-hardware/tree/master/framework 29 (stable link 1)
+… and sure enough my PSA’s mem_sleep_default=deep was already set by said configs 9 months before I posted
+I commented out my own PSA’s fix, and following this nixos-hardware repo’s instructions (summary above)
+I rebooted my machine and tested
+- sleep works as intended (shut lid mid-workstream, had 98% battery; 3 hours later had 97% battery)
+- improvement: to take advantage of this fprintd default already set (stable link), I tested fingerprint unlock (after running fprintd-enroll), and confirmed gdm3 and sudo both behave as expected. This hadn’t actually worked for me for a long time.
+* LaTeX
+#+begin_src nix :tangle ~/.config/nix/mytex.nix
+{ stdenv }:
+
+stdenv.mkDerivation rec {
+  name = "mytex";
+  pname = "mytex";
+  tlType = "run";
+
+  src = /home/thain/.config/latex;
+  # buildInputs = [ unzip ];
+
+  # Multiple files problem
+  # unpackPhase = ''
+  #   mkdir tudscr
+  #   cd tudscr
+  #   unzip $src
+  # '';
+
+  #dontBuild = true;
+
+  installPhase = ''
+    mkdir -p $out/tex/latex
+    cp thain.sty $out/tex/latex
+  '';
+
+  #meta = {
+  #  branch = "3";
+  #  platforms = stdenv.lib.platforms.unix;
+  #};
+}
+#+end_src
+
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+#+end_src
+
+
+* Packages
+see https://search.nixos.org/packages
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+  nixpkgs.config.allowUnfree = true;
+  nix.nixPath=[ "nixpkgs=/nix/var/nix/profiles/per-user/root/channels/nixos/nixpkgs:nixos-config=/home/thain/.config/nix/configuration.nix" ];
+
+  environment.systemPackages = with pkgs; [
+    # --- debugging area
+    pkgs.texlive.combine {
+        inherit (pkgs.texlive)
+        texdoc
+        tikz-cd
+        enumitem
+        csquotes
+        cjk;
+        simple-package = {
+            pkgs = [ (pkgs.callPackage (import ./mytex.nix) {}) ];
+        };
+    }
+
+    # texlive.combine {
+    #     inherit (pkgs.texlive)
+    #     scheme-full
+    #     texdoc
+    #     tikz-cd
+    #     enumitem
+    #     csquotes
+    #     cjk
+    # }
+    # ---
+
+    vim
+    brave
+    alacritty
+    git
+    rsync
+    zsh
+    emacs29-pgtk
+    ripgrep
+    fd
+
+    # --- desktop
+    hyprland
+    hyprpaper
+    fuzzel
+    waybar
+    mako
+    xdg-utils
+    xfce.thunar
+
+    # --- cd ripping
+    rubyripper
+    vorbis-tools
+    flac
+    ffmpeg
+    cdrdao
+
+    zip
+    unzip
+    which
+    wget
+    udisks
+    udiskie
+    gparted
+    exfatprogs
+
+    bluez
+    powertop
+    htop-vim
+    #font-manager
+
+    brightnessctl
+    playerctl
+    grim
+    pamixer
+    pavucontrol
+    clipman
+    wl-clipboard
+
+    # --- media
+    syncthing
+    jellyfin-media-player
+    nextcloud-client
+    libreoffice-still
+    vlc
+
+    # --- communication
+    telegram-desktop
+    signal-desktop
+    discord
+    zoom-us
+
+    # --- eduroam stuff
+    # python3
+    # python311Packages.dasbus
+    # python311Packages.pyopenssl
+    # openssl
+    ghc
+
+
+    haskellPackages.kmonad
+    pandoc
+    sioyek
+
+    qbittorrent
+    mullvad-vpn
+    mullvad
+  ];
+
+#+end_src
+* System services
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+  # Enable sound.
+  sound.enable = true;
+
+  services = {
+    pipewire = {
+      enable = true;
+      audio.enable = true;
+      pulse.enable = true;
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
+     jack.enable = true;
+     };
+  };
+  # hardware.pulseaudio.enable = true;
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up Bluetooth on boot
+
+  services.openssh.enable = true;
+  services.mullvad-vpn.enable = true;
+  services.blueman.enable = true;
+  services.udisks2.enable = true;
+
+
+  systemd.services.kmonad = {
+     enable = true;
+     description = "Kmonad keyboard configuration";
+     serviceConfig = {
+       ExecStart = "/run/current-system/sw/bin/kmonad /home/thain/.config/kmonad.kbd";
+     };
+     wantedBy = [ "default.target" ];
+  };
+
+  services = {
+    syncthing = {
+        enable = true;
+        user = "thain";
+        dataDir = "/home/thain/documents";
+        configDir = "/home/thain/.config/syncthing";
+    };
+  };
+#+end_src
+* Users
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # users.mutableUsers = false;
+  users.users.thain = {
+    isNormalUser = true;
+    home = "/home/thain";
+    shell = pkgs.zsh;
+    description = "Liam Chung";
+    extraGroups = [ "wheel" "networkmanager" ];
+    #openssh.authorizedKeys.keys = [ "ssh-dss ........... thain..." ];
+  };
+#+end_src
+* Fonts
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+  fonts.packages = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    font-awesome
+    #emacs-all-the-icons-fonts
+    #jetbrains-mono
+    #roboto-mono
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+    #liberation_ttf
+    #fira-code
+    #fira-code-symbols
+    #mplus-outline-fonts.githubRelease
+    #dina-font
+    #proggyfonts
+  ];
+#+end_src
+* State Version
+#+begin_src nix :tangle ~/.config/nix/configuration.nix
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  # The first version of NixOS installed on this machine,
+  # used to maintain compatibility with app data (e.g. databases) created on older NixOS versions.
+  # NEVER change this value after the initial install, for any reason,
+  # even if you've upgraded your system to a new NixOS release.
+  system.stateVersion = "23.11"; # Did you read the comment?
+}
+#+end_src
+

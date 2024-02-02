@@ -119,7 +119,7 @@ exec-once = waybar
 exec-once = hyprpaper
 exec-once = mako
 exec-once = syncthing
-exec-once = fcitx5 -d --replace
+#exec-once = fcitx5 -d --replace
 exec-once = udiskie
 #+end_src
 * Appearance
@@ -172,14 +172,16 @@ group {
     col.border_active = 0x66ffff00
    groupbar {
     # font_family	font used to display groupbar titles	string	Sans
+    # enabled = true
     font_size = 14
-    gradients = true
+    gradients = false
+    render_titles = false
     col.active = 0x44ffffff
     col.inactive = 0x22ffffff
    }
 }
 #+end_src
-* Animations
+** Animations
 #+begin_src conf
 animations {
     enabled = yes
@@ -194,159 +196,32 @@ animations {
     animation = workspaces, 1, 5, default, slidevert
 }
 #+end_src
-* Layout
-#+begin_src conf
-dwindle {
-    pseudotile = yes # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
-    preserve_split = yes # you probably want this
-}
-
-master {
-    new_is_master = true
-}
-
-gestures {
-    workspace_swipe = off
-}
-
-misc {
- disable_hyprland_logo = true
-}
-#+end_src
-* Window Rules
+** Window Rules
 #+begin_src conf
 
 # windowrule = float, Choose Files
-windowrule = group set, ^(org.pwmt.zathura)$
-windowrule = noanim, ^(org.pwmt.zathura)$
+#windowrule = group set, ^(org.pwmt.zathura)$
+#windowrule = noanim, ^(org.pwmt.zathura)$
 
+windowrule = group set, ^(sioyek)$
 windowrule = group set, ^(Alacritty)$
 
 # don't let any windows except these be added to groups
-windowrule = group barred, ^((?!.*zathura.*)(?!.*Alacritty.*).*)$
+#windowrule = group barred, ^((?!sioyek)(?!.*zathura.*)(?!.*Alacritty.*).*)$
+windowrule = group barred, ^((?!sioyek)(?!.*Alacritty.*).*)$
 
 #+end_src
-* Keybinds
-#+begin_src conf
-$mainMod = SUPER
-
-bind = $mainMod, T, exec, alacritty
-bind = $mainMod SHIFT, T, exec, mullvad-exclude alacritty
-# bind = $mainMod, B, exec, firefox
-bind = $mainMod, B, exec, brave --enable-features=UseOzonePlatform --ozone-platform=wayland
-#--gtk-version=4 '%U '
-bind = $mainMod SHIFT, B, exec, mullvad-exclude firefox
-bind = $mainMod, I, exec, clipman pick --tool=CUSTOM --tool-args="fuzzel -d"
-bind = $mainMod RALT, B, exec, sh ~/.config/scripts/waybar-hdmi
-bind = $mainMod, Q, killactive,
-bind = $mainMod, M, exec, telegram-desktop
-bind = $mainMod SHIFT, Q, exit,
-bind = $mainMod, E, exec, sh ~/.config/scripts/run-or-raise emacs emacs
-bind = $mainMod SHIFT, E, exec, mullvad-exclude emacs
-bind = $mainMod, V, togglefloating,
-bind = $mainMod, Z, exec, zathura
-
-bind = $mainMod, TAB, changegroupactive
-bind = $mainMod CTRL, L, moveoutofgroup
-
-# bindr= $mainMod, SUPER_L, exec, pkill fuzzel || fuzzel
-bind= $mainMod, SPACE, exec, pkill fuzzel || fuzzel
-bind= $mainMod, BACKSPACE, exec, pkill fuzzel || fuzzel
-bind= $mainMod, P, exec, sioyek
-
-#bind = $mainMod, P, pseudo, # dwindle
-#bind = $mainMod, s, togglesplit, # dwindle
-bind = $mainMod, s, swapnext,
-bind = $mainMod CTRL,Tab,cyclenext,
-
-
-# Move focus with mainMod + arrow keys
-bind = $mainMod, left, movefocus, l
-bind = $mainMod, right, movefocus, r
-bind = $mainMod, up, movefocus, u
-bind = $mainMod, down, movefocus, d
-
-# Switch workspaces
-bind = $mainMod, 1, workspace, 1
-bind = $mainMod, 2, workspace, 2
-bind = $mainMod, 3, workspace, 3
-bind = $mainMod, 4, workspace, 4
-bind = $mainMod, 5, workspace, 5
-
-# Move active window to a workspace
-bind = $mainMod SHIFT, 1, movetoworkspace, 1
-bind = $mainMod SHIFT, 2, movetoworkspace, 2
-bind = $mainMod SHIFT, 3, movetoworkspace, 3
-bind = $mainMod SHIFT, 4, movetoworkspace, 4
-bind = $mainMod SHIFT, 5, movetoworkspace, 5
-
-# bind = $mainMod SHIFT, left,  movetoworkspace, e-1
-# bind = $mainMod SHIFT, right, movetoworkspace, e+1
-
-# Move between workspaces, adding new ones if there are none
-bind = $mainMod, j, exec, hyprctl dispatch workspace r+1
-bind = $mainMod, k, exec, hyprctl dispatch workspace r-1
-bind = $mainMod, h, movefocus, l
-bind = $mainMod, l, movefocus, r
-# bind = $mainMod, h, focusmonitor, left
-# bind = $mainMod, l, focusmonitor, right
-
-bind = $mainMod SHIFT, j, exec, hyprctl dispatch movetoworkspace r+1
-bind = $mainMod SHIFT, k, exec, hyprctl dispatch movetoworkspace r-1
-bind = $mainMod SHIFT, h, movewindow, mon:DP-4
-bind = $mainMod SHIFT, l, movewindow, mon:eDP-1
-# bind = $mainMod, l, workspace, r+1
-# bind = $mainMod, h, workspace, r-1
-
-# Move/resize windows with mainMod + LMB/RMB and dragging
-bindm = $mainMod, mouse:272, movewindow
-bindm = $mainMod, mouse:273, resizewindow
-
-
-# BINDING FN KEYS
-# esc | bU  | bD  | 173 | 172 | 171 | f6  | f7  | cmk | f9  | 121 | 122 | 123
-# esc | bD  | bU  | rw  | pp  | ff  | ?   | ?   | ?   | ss  | mt  | vD  | vU
-# esc | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 0   | -   | =
-
-# binde will allow repeating when held.
-# change screen brightness
-binde =, XF86MonBrightnessUp, exec, backlight_control +5
-binde =, XF86MonBrightnessDown, exec, backlight_control -5
-
-# play/pause, prev and next
-bind =, 173, exec, playerctl previous
-bind =, 172, exec, playerctl play-pause
-bind =, 171, exec, playerctl next
-
-# take screenshot with grim and slurp
-# bind =, 234, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
-
-# 107 is printscreen
-bind =, 107, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
-bind =, f6, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
-
-# volume buttons
-bind  =, 121, exec, pamixer -t
-binde =, 122, exec, pamixer -d 5
-binde =, 123, exec, pamixer -i 5
-
-# bind  =, 170, exec, pamixer -t
-# bind  =, 255, exec, pamixer -t
-# bind  =, 255, exec, pamixer -t
-#+end_src
-* Wallpaper
+** Wallpaper
 #+begin_src conf :tangle ~/.config/hypr/hyprpaper.conf
 splash = false
-preload = ~/media/pictures/wallpapers/outset-night.jpg
-preload = ~/media/pictures/wallpapers/outset-evening.jpg
-preload = ~/media/pictures/wallpapers/outset-day.jpg
-wallpaper = eDP-1,~/media/pictures/wallpapers/outset-night.jpg
-wallpaper = DP-1,~/media/pictures/wallpapers/outset-day.jpg
-wallpaper = DP-4,~/media/pictures/wallpapers/outset-evening.jpg
-wallpaper = DP-2,~/media/pictures/wallpapers/outset-evening.jpg
+preload = ~/media/pictures/wallpapers/purple.png
+wallpaper = eDP-1,~/media/pictures/wallpapers/purple.png
+# wallpaper = DP-1,~/media/pictures/wallpapers/outset-day.jpg
+# wallpaper = DP-4,~/media/pictures/wallpapers/outset-evening.jpg
+# wallpaper = DP-2,~/media/pictures/wallpapers/outset-evening.jpg
 #+end_src
-* Waybar
-** Config
+** Waybar
+*** Config
 #+begin_src conf :tangle ~/.config/waybar/config.jsonc
 [{
     "position": "top",
@@ -492,7 +367,7 @@ wallpaper = DP-2,~/media/pictures/wallpapers/outset-evening.jpg
 //}
 ]
 #+end_src
-** CSS
+*** CSS
 #+begin_src css :tangle ~/.config/waybar/style.css
  ,* {
     border: none;
@@ -725,7 +600,7 @@ window#waybar {
     padding: 0px 11px 0px 9px;
 }
 #+end_src
-** waybar-hdmi
+*** waybar-hdmi
 #+begin_src sh :tangle ~/.config/waybar/waybar-hdmi
 #!/bin/env sh
 
@@ -756,6 +631,134 @@ killall waybar
 
 # start waybar
 waybar
+#+end_src
+* Layout
+#+begin_src conf
+dwindle {
+    pseudotile = yes # master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+    preserve_split = yes # you probably want this
+}
+
+master {
+    new_is_master = true
+}
+
+gestures {
+    workspace_swipe = off
+}
+
+misc {
+ disable_hyprland_logo = true
+}
+#+end_src
+* Keybinds
+** Apps
+#+begin_src conf
+$mainMod = SUPER
+
+bind = $mainMod, T, exec, alacritty
+bind = $mainMod SHIFT, T, exec, mullvad-exclude alacritty
+# bind = $mainMod, B, exec, firefox
+bind = $mainMod, B, exec, brave --enable-features=UseOzonePlatform --ozone-platform=wayland
+#--gtk-version=4 '%U '
+bind = $mainMod SHIFT, B, exec, mullvad-exclude firefox
+bind = $mainMod, I, exec, clipman pick --tool=CUSTOM --tool-args="fuzzel -d"
+bind = $mainMod RALT, B, exec, sh ~/.config/scripts/waybar-hdmi
+bind = $mainMod, Q, killactive,
+bind = $mainMod, M, exec, pidof -s telegram-desktop && hyprctl dispatch focuswindow pid:$(pidof -s telegram-desktop) || telegram-desktop
+bind = $mainMod SHIFT, Q, exit,
+bind = $mainMod, E, exec, pidof -s emacs && hyprctl dispatch focuswindow pid:$(pidof -s emacs) || emacs
+#bind = $mainMod SHIFT, E, exec, mullvad-exclude emacs
+bind = $mainMod, V, togglefloating,
+# bind = $mainMod, Z, exec, zathura
+bind= $mainMod, P, exec, sioyek
+
+# bindr= $mainMod, SUPER_L, exec, pkill fuzzel || fuzzel
+bind= $mainMod, SPACE, exec, pkill fuzzel || fuzzel
+bind= $mainMod, BACKSPACE, exec, pkill fuzzel || fuzzel
+bind= , 248, exec, pkill fuzzel || fuzzel
+#+end_src
+** Window management
+#+begin_src conf
+bind = $mainMod, TAB, changegroupactive
+bind = $mainMod CTRL, L, moveoutofgroup
+
+#bind = $mainMod, P, pseudo, # dwindle
+#bind = $mainMod, s, togglesplit, # dwindle
+bind = $mainMod, s, swapnext,
+bind = $mainMod CTRL,Tab,cyclenext,
+
+# Move focus with mainMod + arrow keys
+bind = $mainMod, left, movefocus, l
+bind = $mainMod, right, movefocus, r
+bind = $mainMod, up, movefocus, u
+bind = $mainMod, down, movefocus, d
+
+# Switch workspaces
+bind = $mainMod, 1, workspace, 1
+bind = $mainMod, 2, workspace, 2
+bind = $mainMod, 3, workspace, 3
+bind = $mainMod, 4, workspace, 4
+bind = $mainMod, 5, workspace, 5
+
+# Move active window to a workspace
+bind = $mainMod SHIFT, 1, movetoworkspace, 1
+bind = $mainMod SHIFT, 2, movetoworkspace, 2
+bind = $mainMod SHIFT, 3, movetoworkspace, 3
+bind = $mainMod SHIFT, 4, movetoworkspace, 4
+bind = $mainMod SHIFT, 5, movetoworkspace, 5
+
+# bind = $mainMod SHIFT, left,  movetoworkspace, e-1
+# bind = $mainMod SHIFT, right, movetoworkspace, e+1
+
+# Move between workspaces, adding new ones if there are none
+bind = $mainMod, j, exec, hyprctl dispatch workspace r+1
+bind = $mainMod, k, exec, hyprctl dispatch workspace r-1
+bind = $mainMod, h, movefocus, l
+bind = $mainMod, l, movefocus, r
+# bind = $mainMod, h, focusmonitor, left
+# bind = $mainMod, l, focusmonitor, right
+
+bind = $mainMod SHIFT, j, exec, hyprctl dispatch movetoworkspace r+1
+bind = $mainMod SHIFT, k, exec, hyprctl dispatch movetoworkspace r-1
+bind = $mainMod SHIFT, h, movewindow, mon:DP-4
+bind = $mainMod SHIFT, l, movewindow, mon:eDP-1
+# bind = $mainMod, l, workspace, r+1
+# bind = $mainMod, h, workspace, r-1
+
+# Move/resize windows with mainMod + LMB/RMB and dragging
+bindm = $mainMod, mouse:272, movewindow
+bindm = $mainMod, mouse:273, resizewindow
+#+end_src
+** Fn Keys
+#+begin_src conf
+# esc | bU  | bD  | 173 | 172 | 171 | f6  | f7  | cmk | f9  | 121 | 122 | 123
+# esc | bD  | bU  | rw  | pp  | ff  | ?   | ?   | ?   | ss  | mt  | vD  | vU
+# esc | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 0   | -   | =
+
+# binde will allow repeating when held.
+# change screen brightness
+# binde =, XF86MonBrightnessUp, exec, backlight_control +5
+# binde =, XF86MonBrightnessDown, exec, backlight_control -5
+binde =, XF86MonBrightnessUp, exec, brightnessctl set 5%+
+binde =, XF86MonBrightnessDown, exec, brightnessctl set 5%-
+
+# play/pause, prev and next
+bind =, 173, exec, playerctl previous
+bind =, 172, exec, playerctl play-pause
+bind =, 171, exec, playerctl next
+
+# take screenshot with grim and slurp
+# bind =, 234, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
+
+# 107 is printscreen
+bind =, 107, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
+bind =, f6, exec, grim -g "$(slurp)" /home/thain/media/pictures/screenshots/$(date +'%s_grim.png')
+
+# volume buttons
+bind  =, 121, exec, pamixer -t
+binde =, 122, exec, pamixer -d 5
+binde =, 123, exec, pamixer -i 5
 #+end_src
 * Mako
 #+begin_src conf :tangle ~/.config/mako/config

@@ -28,8 +28,8 @@ goto_right_smart gl
 move_left           <right>
 move_right          <left>
 
-screen_down J
-screen_up K
+next_page J
+previous_page K
 
 # Goto the next/prev chapter
 next_chapter gc
@@ -308,7 +308,7 @@ flat_toc                            0
 should_use_multiple_monitors        0
 
 # If set, we open a new sioyek window when a new file is opened, otherwise we open the file in the previous window
-should_launch_new_window    0
+should_launch_new_window    1
 
 # The command to use when trying to do inverse search into a LaTeX document. Uncomment and provide your own command.
 # %1 expands to the name of the file and %2 expans to the line number.

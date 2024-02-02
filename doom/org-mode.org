@@ -563,7 +563,7 @@ I have started getting my org calendar and nextcloud calendar integrated. A few 
 
 ** T Rice up my calendar
 [[https://github.com/ml729/calfw-blocks][calfw-blocks]]
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package calfw-blocks
   :hook (LaTeX-mode . aas-activate-for-major-mode)
   :hook (org-mode . aas-activate-for-major-mode)
