@@ -165,27 +165,27 @@ see https://search.nixos.org/packages
 
   environment.systemPackages = with pkgs; [
     # --- debugging area
-    pkgs.texlive.combine {
+    #texlive.combine {
+    #    inherit (pkgs.texlive)
+    #    texdoc
+    #    tikz-cd
+    #    enumitem
+    #    csquotes
+    #    cjk
+    #    # simple-package = {
+    #    #     pkgs = [ (pkgs.callPackage (import ./mytex.nix) {}) ];
+    #    # };
+    #}
+
+    texlive.combine {
         inherit (pkgs.texlive)
+        scheme-full
         texdoc
         tikz-cd
         enumitem
         csquotes
         cjk;
-        simple-package = {
-            pkgs = [ (pkgs.callPackage (import ./mytex.nix) {}) ];
-        };
     }
-
-    # texlive.combine {
-    #     inherit (pkgs.texlive)
-    #     scheme-full
-    #     texdoc
-    #     tikz-cd
-    #     enumitem
-    #     csquotes
-    #     cjk
-    # }
     # ---
 
     vim
