@@ -1,0 +1,30 @@
+#+title: Desktop
+
+Custom desktop files
+
+* Sioyek
+#+begin_src conf :tangle ~/.local/share/applications/sioyek.desktop
+[Desktop Entry]
+Name=Sioyek
+Exec=/usr/bin/sioyek.AppImage
+Terminal=false
+Type=Application
+Icon=/usr/bin/sioyek.png
+StartupWMClass=Sioyek
+X-AppImage-Version=2.5.1
+Comment=Read pdfs
+#+end_src
+* Slippi
+#+begin_src conf :tangle ~/.local/share/applications/slippi-launcher.desktop
+[Desktop Entry]
+Name=Slippi Launcher
+Exec=/usr/bin/slippi.AppImage
+Terminal=false
+Type=Application
+Icon=/usr/bin/slippi-launcher.png
+StartupWMClass=Slippi Launcher
+X-AppImage-Version=2.5.1
+Comment=Launch Slippi Online, browse and watch saved replays
+MimeType=x-scheme-handler/slippi;
+Categories=Development;
+#+end_src

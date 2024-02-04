@@ -249,6 +249,12 @@ startup_commands toggle_custom_color
 ## now in the keybinds file:
 #_my_command_name <unbound>
 
+new_command _import_annotations python3 -m sioyek.import_annotations "%{sioyek_path}" "%{local_database}" "%{shared_database}" "%{file_path}"
+
+new_command _echo_local_db echo "%{local_database}"
+new_command _echo_shared_db echo "%{shared_database}"
+
+
 # The color with which the screen is cleared before rendering the pdf (this is the background color of the application and not the PDF file)
 background_color    0.0 0.0 0.7
 # dark_mode_background_color #292D3E
