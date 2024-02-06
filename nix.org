@@ -64,6 +64,43 @@ see https://search.nixos.org/options or the NixOS manual (~nixos-help~).
     xwayland.enable = true;
   };
  #+end_src
+* LaTeX
+#+begin_src nix :tangle ~/.config/nix/mytex.nix
+{ stdenv }:
+
+stdenv.mkDerivation rec {
+  name = "mytex";
+  pname = "mytex";
+  tlType = "run";
+
+  src = /home/thain/.config/latex;
+  # buildInputs = [ unzip ];
+
+  # Multiple files problem
+  # unpackPhase = ''
+  #   mkdir tudscr
+  #   cd tudscr
+  #   unzip $src
+  # '';
+
+  #dontBuild = true;
+
+  installPhase = ''
+    mkdir -p $out/tex/latex
+    ln -s /home/thain/.config/latex/quiver.sty $out/tex/latex
+    ln -s /home/thain/.config/latex/thain.sty $out/tex/latex
+    ln -s /home/thain/.config/latex/tufte.bst $out/tex/latex
+    ln -s /home/thain/.config/latex/tufte-book.cls $out/tex/latex
+    ln -s /home/thain/.config/latex/tufte-handout.cls $out/tex/latex
+    ln -s /home/thain/.config/latex/tufte-common.def $out/tex/latex
+  '';
+
+  #meta = {
+  #  branch = "3";
+  #  platforms = stdenv.lib.platforms.unix;
+  #};
+}
+#+end_src
 * Framework hardware
 #+begin_src nix
 # Ensures lid-close leads to a sleep I actually expect, that doesn't drain my battery.
@@ -120,43 +157,6 @@ I commented out my own PSA’s fix, and following this nixos-hardware repo’s i
 I rebooted my machine and tested
 - sleep works as intended (shut lid mid-workstream, had 98% battery; 3 hours later had 97% battery)
 - improvement: to take advantage of this fprintd default already set (stable link), I tested fingerprint unlock (after running fprintd-enroll), and confirmed gdm3 and sudo both behave as expected. This hadn’t actually worked for me for a long time.
-* LaTeX
-#+begin_src nix :tangle ~/.config/nix/mytex.nix
-{ stdenv }:
-
-stdenv.mkDerivation rec {
-  name = "mytex";
-  pname = "mytex";
-  tlType = "run";
-
-  src = /home/thain/.config/latex;
-  # buildInputs = [ unzip ];
-
-  # Multiple files problem
-  # unpackPhase = ''
-  #   mkdir tudscr
-  #   cd tudscr
-  #   unzip $src
-  # '';
-
-  #dontBuild = true;
-
-  installPhase = ''
-    mkdir -p $out/tex/latex
-    cp thain.sty $out/tex/latex
-  '';
-
-  #meta = {
-  #  branch = "3";
-  #  platforms = stdenv.lib.platforms.unix;
-  #};
-}
-#+end_src
-
-#+begin_src nix :tangle ~/.config/nix/configuration.nix
-#+end_src
-
-
 * Packages
 see https://search.nixos.org/packages
 #+begin_src nix :tangle ~/.config/nix/configuration.nix
@@ -165,27 +165,30 @@ see https://search.nixos.org/packages
 
   environment.systemPackages = with pkgs; [
     # --- debugging area
-    #texlive.combine {
-    #    inherit (pkgs.texlive)
-    #    texdoc
-    #    tikz-cd
-    #    enumitem
-    #    csquotes
-    #    cjk
-    #    # simple-package = {
-    #    #     pkgs = [ (pkgs.callPackage (import ./mytex.nix) {}) ];
-    #    # };
-    #}
-
-    texlive.combine {
-        inherit (pkgs.texlive)
-        scheme-full
+    (texlive.combine {
+        inherit (texlive)
+        scheme-medium
         texdoc
         tikz-cd
         enumitem
         csquotes
-        cjk;
-    }
+        cjk
+        # tufte things
+        sauerj xifthen ifmtarg hardwrap catchfile titlesec
+          #titletoc
+          #ragged2e
+          changepage
+          paralist
+          #textcase
+          #setspace
+          placeins
+          #fancyhdr
+          #multicol
+        ;
+        simple-package = {
+            pkgs = [ (pkgs.callPackage (import ./mytex.nix) {}) ];
+        };
+    })
     # ---
 
     vim
