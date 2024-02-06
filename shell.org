@@ -1196,17 +1196,24 @@ alias ls='ls --color=auto'
 alias la='ls -la'
 alias rmd='rm -rf'
 alias cls='clear && ls'
-alias yay-clean='yay -Sc'
 alias panels='ifuse --documents es.produkt.app.panels /mnt/iphone; thunar /mnt/iphone & disown; thunar ~/media/comics & disown; exit'
 alias unpanels='fusermount -u /mnt/iphone'
 alias sleepy='systemctl suspend'
 alias pi='ssh pi@192.168.1.28'
 alias oldie='ssh 192.168.1.167'
 
+alias test='echo hello'
+
 alias wifi-list='nmcli -p -f IN-USE,SSID,RATE,BARS,SIGNAL,SECURITY dev wifi list'
 
 alias wifi-con="nmcli --ask dev wifi connect"
 alias wifi-restart='sudo systemctl restart NetworkManager'
+
+path+=('/home/thain/.config/emacs/bin')
+path+=('/home/thain/.config/chemacs/doom/bin')
+path+=('/usr/local/texlive/2023/bin/x86_64-linux')
+path+=('/home/thain/.local/bin')
+path+=('/home/thain/.config/scripts')
 
 # command autocompletion
 zstyle :compinstall filename '/home/thain/.config/zsh/.zshrc'
@@ -1219,10 +1226,10 @@ compinit
 # This file is loaded second (after .zshenv) and is for login shells
 # good for exporting environment variables
 # export PATH=$PATH:"/home/thain/.config/chemacs/doom/bin"
-# export PATH=$PATH:"/home/thain/.config/emacs/bin"
-export PATH=$PATH:"/home/thain/.emacs.d/bin"
-export PATH=$PATH:"/home/thain/.local/bin"
-export PATH=$PATH:"/home/thain/.config/scripts"
+path+=('/home/thain/.config/emacs/bin')
+path+=('/usr/local/texlive/2023/bin/x86_64-linux/')
+path+=('/home/thain/.local/bin')
+path+=('/home/thain/.config/scripts')
 #+end_src
 ** zshenv
 #+begin_src conf :tangle ~/.zshenv

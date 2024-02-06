@@ -40,6 +40,17 @@
 \newcommand{\inj}{\hookrightarrow}
 \newcommand{\surj}{\twoheadrightarrow}
 
+% arrow with a dot over it
+\newcommand{\dotarrow}{%
+  \mathrel{\vbox{\offinterlineskip
+    \mathsurround=0pt
+    \ialign{\hfil##\hfil\cr
+      \normalfont\scalebox{1.2}{.}\cr
+%      \noalign{\kern-.05ex}
+      $\longrightarrow$\cr}
+  }}%
+}
+
 %\newenvironment{problem}[1]
 %        {\no\textbf{PROBLEM #1.}}
 
@@ -47,6 +58,7 @@
 \newcommand{\alg}[1]{\mathsf{Alg}_#1}
 
 \newtheorem{exercise}{Exercise}
+
 
 %\newtheorem*{theorem}{Theorem}
 %\newtheorem*{corollary}{Corollary}
