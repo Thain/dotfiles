@@ -1,5 +1,6 @@
 #+title: My Emacs from Scratch Configuration
 #+property: header-args:emacs-lisp :tangle ~/.config/chemacs/scratch/init.el
+#+FILETAGS: :config:emacs:scratch:
 
 My attempt to build a nice-to-use Emacs Configuration from scratch.
 

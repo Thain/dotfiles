@@ -1,4 +1,5 @@
 #+title: Sioyek
+#+FILETAGS: :config:sioyek:
 
 * Inbox
 ** TODO sioyek "gg" go to beginning, then top of page (zz)

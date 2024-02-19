@@ -4,10 +4,15 @@
 
 
 * Inbox
-** TODO change tab in json to fold
-** TODO flycheck keybinds
+** T change tab in json to fold
+** T flycheck keybinds
 def want:
 - next error
+** T evil troubles
+- ~gl~ gives end of line, not past ret
+- ~gl~ in org mode is ~org-down-element~
+** T cap J/K for scrolling whole window up or down
+** T C-RET and S-RET in dired open file in other window or something
 * Workspace
 #+begin_src emacs-lisp
 (map! :leader
@@ -172,7 +177,7 @@ Attempting to simplify evil
 ;; TODO bind an ex search and replace
 (map! :map evil-motion-state-map :prefix "g"
       :desc "goto line number"                 "o" 'evil-goto-line
-      :desc "cursor to end of line"            "l" 'evil-end-of-line
+      :desc "cursor to end of line"            "l" 'evil-last-non-blank
       :desc "nonblank start of line"           "h" 'evil-first-non-blank
       "$" nil "^" nil "e" nil "E" nil ;; removing binds
       "K" nil "n" nil "N" nil "t" nil "T" nil "u" nil "U" nil "C-]" nil
@@ -206,4 +211,25 @@ Attempting to simplify evil
 * Footer
 #+begin_src emacs-lisp
 (provide 'keybinds)
+#+end_src
+* Evil-Org
+#+begin_src emacs-lisp
+(map! :map evil-org-mode-map :m :prefix "g"
+      ;; left and right
+      :m "h" 'evil-first-non-blank-of-visual-line
+      :m "l" 'evil-end-of-visual-line
+      ;; up and down
+      :m "H" 'evil-org-top
+      :m "K" 'org-up-element
+      :m "k" 'org-backward-heading-same-level
+      :m "J" 'org-down-element
+      :m "j" 'org-forward-heading-same-level
+      )
+#+end_src
+I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So instead of using ~evil-respect-visual-line-mode~, just rebind these two commands to their visual counterparts. Still need to somehow make this happen only in org mode ideally.
+#+begin_src emacs-lisp
+(map! :map evil-motion-state-map
+      "j" 'evil-next-visual-line
+      "k" 'evil-previous-visual-line
+      )
 #+end_src

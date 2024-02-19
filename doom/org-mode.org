@@ -2,17 +2,22 @@
 #+TITLE: Org Mode Configuration
 #+STARTUP: overview hideblocks
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/extra/org-mode.el :results silent
+#+FILETAGS: :config:emacs:org:
+
 
 * Inbox
-** T Switch org conf wiki links to id based
-** T sometimes org capture is colorless
+** T Switch org conf wiki links to roam
+** T opening org files
+when I open a file that isn't already open, things are weird, links don't work
+** T add org sort hook on save
+sorting by todo if a heading has todo. probably a bit involved because i have to search for headings with todo children
 ** T finding an org theme
 would like headings to be more whiteish.
 todos / dones still have their colors, and the leading symbols can have color.
-** T check out structure templates
+** N [#A] check out structure templates
 [[https://orgmode.org/manual/Structure-Templates.html][Structure Templates (The Org Manual)]]
 ** T refile r stay here refile R follow to refiled point
-** T add ~after org~ to evil keymap in org conf
+** N [#A] add ~after org~ to evil keymap in org conf
 ** T org indenting weird
 See when you have a level 5 heading, and then write text under it. It's /waaaaay/ in there
 ** T merging calendar and gtd
@@ -20,7 +25,31 @@ TODO only for things i want showing up in the agenda.
 
 *** add "inactive"/"active mutually excl. tags to projects
 this way only projects i'm currently working on will appear in the agenda
-* Config
+** T Org link delete source buffer
+When using ~S-ENT~ to click an org link, delete the source buffer, sort of like ~a~ in dired.
+** T Org-contacts
+** T Org-roam
+  - topics
+    - emacs/org
+    - web dev
+    - linux
+    - rpg
+    - math
+  - jethro kuan [[https://jethrokuan.github.io/org-roam-guide/][how i take notes with org roam]]
+** T Org-capture in minibuffer
+** N [#A] Org latex nicer setup
+- [[https://github.com/io12/org-fragtog][GitHub - io12/org-fragtog]]
+- or maybe add $ to ~org-emphasis-alist~
+  doesn't seem to work
+- prettify symbols
+- entities
+
+https://stackoverflow.com/questions/63870998/how-to-hide-the-symbol-when-highlighting-latex-equations-in-emacs-org-mode
+
+how do i set up tikz to render? definitely secondary thing.
+** T Org unfolding moves view of buffer
+** T org enter after list gives two spaces. make one?
+* Basic Vars
 :PROPERTIES:
 :ID:       ba52170c-cb7b-4884-8722-6bcfd040451e
 :END:
@@ -158,39 +187,7 @@ Source Sans Pro version:
  )
 #+end_src
 
-ET Bembo:
-#+begin_src emacs-lisp :tangle no
-(custom-set-faces!
- '(outline-8          :family "ETBembo")
- '(outline-7          :family "ETBembo")
- '(outline-6          :family "ETBembo")
- '(outline-5          :family "ETBembo")
- '(outline-4          :family "ETBembo" :height 1.1)
- '(outline-3          :family "ETBembo" :height 1.3)
- '(outline-2          :family "ETBembo" :height 1.4)
- '(outline-1          :family "ETBembo" :height 1.5)
- '(org-document-title :family "ETBembo" :height 2.5 :underline nil)
- '(variable-pitch     :family "ETBembo" :height 1.4  :weight book)
- ;'(variable-pitch     :family "ETBembo" :height 150 :weight book)
- ;'(org-default        :family "ETBembo" :height 200 :weight book)
- '(org-hide           :family "FiraCode Nerd Font" :height 0.8)
-
- '(org-document-title :family "ETBembo" :weight bold :height 2.2 :underline nil)
- '(org-document-info-keyword :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :height 200 :weight regular)
- '(org-meta-line      :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :height 100 :weight regular)
- '(org-superstar-header-bullet :family "FiraCode Nerd Font")
- '(org-checkbox-statistics-todo :height 0.8)
- '(org-checkbox-statistics-done :height 0.8)
- ;'(org-latex-and-related :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- ;'(org-date :family "FiraCode Nerd Font" :weight normal :foreground "#82aaff")
- ;'(org-table :family "FiraCode Nerd Font")
- ;'(org-special-keyword :family "FiraCode Nerd Font" :weight normal :height 0.75 )
- '(fixed-pitch        :family "FiraCode Nerd Font"   :height 100))
-#+end_src
-
-Faces I want in fixed pitch:
+Faces I want in fixed pitch.
 #+begin_src emacs-lisp
 (custom-set-faces!
  '(org-document-info-keyword :foreground "#676E95", :extend nil
@@ -200,6 +197,7 @@ Faces I want in fixed pitch:
  '(org-superstar-header-bullet :family "FiraCode Nerd Font")
  '(org-checkbox-statistics-todo :height 0.8)
  '(org-checkbox-statistics-done :height 0.8)
+ '(org-latex-and-related :family "FiraCode Nerd Font" :height 0.9)
  '(org-tag   :family "FiraCode Nerd Font" :height 0.6)
  '(org-date  :family "FiraCode Nerd Font" :foreground nil)
  '(org-table :family "FiraCode Nerd Font" :height 0.8)
@@ -223,17 +221,12 @@ Haven't figured out how to reference theme colors in the ~custom-set-faces!~ mac
 (add-hook 'org-mode-hook 'block-bg-change)
 #+end_src
 
-My old monospaced version setup:
-#+begin_src emacs-lisp :tangle no
+Striking through completed org entries.
+#+begin_src emacs-lisp
 (custom-set-faces!
- '(org-document-info-keyword :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :weight regular)
- '(org-meta-line      :foreground "#676E95", :extend nil
-                      :family "FiraCode Nerd Font" :weight regular)
- '(org-superstar-leading-bullet :family "FiraCode Nerd Font")
- '(org-latex-and-related :weight normal :foreground "#82aaff")
- '(org-date :weight normal :foreground "#82aaff")
- '(org-special-keyword :weight normal :height 0.75 ))
+  '(org-todo          :family "FiraCode Nerd Font")
+  '(org-done          :family "FiraCode Nerd Font" :strike-through t)
+  '(org-headline-done :strike-through t))
 #+end_src
 
 ** Margins
@@ -241,11 +234,12 @@ Turn off line numbers, sets some margin on left and right sides of the buffer, a
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook (lambda ()
   (display-line-numbers-mode -1)
-  (setq left-margin-width 2)
+  (setq left-margin-width 4)
   (setq right-margin-width 2)
   (vi-tilde-fringe-mode -1)))
 #+end_src
-olivetti mode: if there is only one buffer, centers it with plenty of room on the sides.
+
+Olivetti mode: if there is only one buffer, centers it with plenty of room on the sides.
 #+begin_src emacs-lisp
 (use-package! olivetti
   :after org olivetti
@@ -270,17 +264,27 @@ olivetti mode: if there is only one buffer, centers it with plenty of room on th
 If the symbols rendering require packages to be loaded, add these packages to ~org-latex-packages-alist~.
 #+begin_src emacs-lisp
 (setq org-hide-emphasis-markers t
-      org-entities-user
-    '(("R"            "\\mathbb{R}" t   "&#82;" "R" "R" "ℝ")
-      ("C"            "\\mathbb{C}" t   "&#67;" "C" "C" "ℂ")
-      ("N"            "\\mathbb{N}" t   "&#78;" "N" "N" "ℕ")
-      ("Z"            "\\mathbb{Z}" t   "&#90;" "Z" "Z" "ℤ")
-      ("mapsto"       "\\mapsto"    t   "&#8614;" "mapsto" "mapsto" "↦")
-      ("contra"       "\\lightning"  nil "&#11085;" "contra" "contra" "↯")
-      ("Rarrow"       "\\Rightarrow"  t "&#8658;" "=>" "=>" "⇒")
-      ("inj"          "\\hookrightarrow" t "&#8618;" "inj" "inj" "↪")
-      ;("yo"           "\\yo"           nil "&#x3088;" "y" "y" "よ")
-      ("f"            "\\textit{f}" nil "&fnof;" "f" "f" "ƒ")))
+     ; org-emphasis-alist
+     ; '(("*" bold)
+     ;   ("/" italic)
+     ;   ("_" underline)
+     ;   ("=" org-verbatim verbatim)
+     ;  ;("$" org-latex-and-related)
+     ;   ("~" org-code verbatim)
+     ;   ("+"
+     ;   (:strike-through t)))
+     ; org-entities-user
+     ; '(("R"            "\\mathbb{R}" t   "&#82;" "R" "R" "ℝ")
+     ;   ("C"            "\\mathcal{C}" t   "&#67;" "C" "C" "ℂ")
+     ;   ("N"            "\\mathbb{N}" t   "&#78;" "N" "N" "ℕ")
+     ;   ("Z"            "\\mathbb{Z}" t   "&#90;" "Z" "Z" "ℤ")
+     ;   ("mapsto"       "\\mapsto"    t   "&#8614;" "mapsto" "mapsto" "↦")
+     ;   ("contra"       "\\lightning"  nil "&#11085;" "contra" "contra" "↯")
+     ;   ("Rarrow"       "\\Rightarrow"  t "&#8658;" "=>" "=>" "⇒")
+     ;   ("inj"          "\\hookrightarrow" t "&#8618;" "inj" "inj" "↪")
+     ;   ;("yo"           "\\yo"           nil "&#x3088;" "y" "y" "よ")
+     ;   ("f"            "\\textit{f}" nil "&fnof;" "f" "f" "ƒ"))
+      )
 
 #+end_src
 
@@ -290,15 +294,6 @@ If the symbols rendering require packages to be loaded, add these packages to ~o
         org-appear-autosubmarkers t ; need org-pretty-entities
         org-appear-autoentities t   ; need org-pretty-entities
   )
-#+end_src
-
-** T Headings
-Strike through completed org entries
-#+begin_src emacs-lisp
-(custom-set-faces!
-  '(org-todo          :family "FiraCode Nerd Font")
-  '(org-done          :family "FiraCode Nerd Font" :strike-through t)
-  '(org-headline-done :strike-through t))
 #+end_src
 
 Not a fan of ~org-modern~'s todo tags. I do my own replacement and make the faces nicer.
@@ -343,11 +338,12 @@ Although I use org-modern for lots of other things, I don't use it for dealing w
 I'd guess both of these problems are eminently fixable, but since I have something that works with ~org-superstar~, I'm sticking with it for now.
 #+begin_src emacs-lisp
 (setq org-modern-star nil) ; alternatives:  '("◉" "◈" "○" "▷")
-(setq org-superstar-headline-bullets-list '("󱂈" "󱂉" "󱂊" "󱂋" "󱂌" "󱂍")
+(setq org-superstar-headline-bullets-list '("󱂈" "󱂉" "󱂊 " "󱂋 " "󱂌" "󱂍")
       org-superstar-remove-leading-stars t)
 #+end_src
+
 ** Plain Lists
-For plain lists and check lists, on the other hand, ~org-modern~ works just fine.
+For plain lists and check lists, as opposed to for outline stars, ~org-modern~ works just fine.
 #+begin_src emacs-lisp
 (setq org-modern-list '((43 . "◦")
                         (45 . "•")
@@ -356,18 +352,22 @@ For plain lists and check lists, on the other hand, ~org-modern~ works just fine
                         (45 . "◩")
                         (32 . "□")))
 #+end_src
+
 I don't love the look for progress statistics, so I turn that off.
 #+begin_src emacs-lisp
 (setq org-modern-progress nil)
 #+end_src
 
-** T Make org ids and uids look nice
 ** T Tags
 Switch off ~org-modern~ tags.
 #+begin_src emacs-lisp
 (setq org-modern-tag nil)
 #+end_src
 
+I'd like to make them look nicer, especially in the agenda, where they look weird.
+
+** T IDs and UIDs
+They just look bad right now. I'd like to somehow hide them and show them under cursor maybe
 * Capture, Refile, Archive
 ** T Capture
 Types of captures I do often?
@@ -415,6 +415,7 @@ There's still more that can bo done. See using the following functions to make t
 
 (after! org
     (setq org-refile-targets (append
+                               (make-refile-targets "~/dots")
                                (make-refile-targets "~/dots/doom")
                                (make-refile-targets "~/documents/org/gtd")))
   )
@@ -423,15 +424,17 @@ There's still more that can bo done. See using the following functions to make t
 ** Archive
 I use archiving in a pretty simple fashion, just sending headings into one centralized archive directory.
 #+begin_src emacs-lisp
-(setq org-archive-location "~/documents/.org-archive/%s_archive::")
+(setq org-archive-location "~/documents/org/.org-archive/%s_archive::")
 #+end_src
-
-* Agenda
+* Agenda, Calendar
+** Agenda
 #+begin_src emacs-lisp
 (after! org
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-files (list
                           (concat org-directory "/gtd/")
+                          "~/dots/"
+                          "~/dots/doom"
                           (concat org-directory "/calendar/"))
         org-agenda-window-setup 'other-tab
         ;org-agenda-block-separator ""
@@ -455,10 +458,44 @@ Editing the Agenda keymap
       )
 #+end_src
 
-** T Agenda ordering
-
-I'd like to have a custom ordering for the todo items in my agenda view. This doesn't need to be hard coded but maybe learning how tf it works would fix this problem.
-** T Appearance
+*** Custom Commands
+#+begin_src emacs-lisp :tangle no
+      (org-agenda-sorting-strategy '((tags todo-state-down priority-down category-keep)))
+ (tags-todo "tickler-SCHEDULED={.+}/T|LOOP|W|N"
+      ((org-agenda-overriding-header "Unscheduled Reminders\n")))
+(todo "PROJ" ((org-agenda-overriding-header "Projects\n")))
+(tags "CLOSED>=\"<-7d>\"|LAST_REPEAT>=\"<-7d>\""
+     ((org-agenda-overriding-header "Completed in the Last 7 Days\n")))
+(agenda "" ((org-agenda-span 'day)
+(org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)))
+(org-agenda-show-log t)
+(org-agenda-log-mode-items '(clock))))
+#+end_src
+#+begin_src emacs-lisp
+(setq org-agenda-custom-commands
+  '(("z" "My Agenda"
+     ((tags-todo "+config+PRIORITY='A'/N"
+            ((org-agenda-overriding-header "Next Tasks\n")))
+      (tags-todo "-config+PRIORITY<'A'/T|W"
+           ((org-agenda-overriding-header "Task Stack\n")))
+      (agenda ""
+           ((org-agenda-span 7)
+            (org-agenda-start-day "+1d")
+            (org-agenda-overriding-header "Upcoming\n")
+            (org-agenda-show-log nil)))))
+    ("n" "My Next Tasks"
+     ((todo "N"
+        ((org-agenda-overriding-header "\nTasks\n"))
+     )))
+    ("c" "Config Tasks"
+     ((tags-todo "+config/N"
+            ((org-agenda-overriding-header "Next Tasks\n")))
+      (tags-todo "+config/T|W"
+           ((org-agenda-overriding-header "Task Stack\n")))
+      )))
+)
+#+end_src
+*** T Agenda Appearance
 Making nicer and bigger faces for headings
 Source Sans Pro version:
 #+begin_src emacs-lisp :tangle no
@@ -521,47 +558,15 @@ Hooks for olivetti:
           )
 #+end_src
 
-** Custom Commands
-#+begin_src emacs-lisp :tangle no
-      (org-agenda-sorting-strategy '((tags todo-state-down priority-down category-keep)))
- (tags-todo "tickler-SCHEDULED={.+}/T|LOOP|W|N"
-      ((org-agenda-overriding-header "Unscheduled Reminders\n")))
-(todo "PROJ" ((org-agenda-overriding-header "Projects\n")))
-(tags "CLOSED>=\"<-7d>\"|LAST_REPEAT>=\"<-7d>\""
-     ((org-agenda-overriding-header "Completed in the Last 7 Days\n")))
-(agenda "" ((org-agenda-span 'day)
-(org-agenda-sorting-strategy '((agenda time-up priority-down category-keep)))
-(org-agenda-show-log t)
-(org-agenda-log-mode-items '(clock))))
-#+end_src
-#+begin_src emacs-lisp
-(setq org-agenda-custom-commands
-  '(("z" "My Agenda"
-     ((todo "N"
-            ((org-agenda-overriding-header "Next Tasks\n")))
-      (tags-todo "-tickler/T|W"
-           ((org-agenda-overriding-header "Task Stack\n")))
-      (agenda ""
-           ((org-agenda-span 7)
-            (org-agenda-start-day "+1d")
-            (org-agenda-overriding-header "Upcoming\n")
-            (org-agenda-show-log nil)))))
-    ("n" "My Next Tasks"
-     ((todo "N"
-        ((org-agenda-overriding-header "\nTasks\n"))
-     ))
-   ))
-)
-#+end_src
-** T [[https://www.reddit.com/r/orgmode/comments/i3upt6/prettifysymbolsmode_not_working_with_orgagenda/][Prettify symbols in Agenda]]
-** T Agenda keymap
-** T Org Agenda open in current window
+*** T [[https://www.reddit.com/r/orgmode/comments/i3upt6/prettifysymbolsmode_not_working_with_orgagenda/][Prettify symbols in Agenda]]
+*** T Agenda keymap
+*** T Agenda open in current window
 here: [[https://emacs.stackexchange.com/questions/26655/org-mode-agenda-open-in-left-window-by-default][Org-Mode Agenda Open in Left Window by Default - Emacs Stack Exchange]]
 but would like to do dispatcher in minibuffer/echo area as well.
-* Calendar
+** Calendar
 I have started getting my org calendar and nextcloud calendar integrated. A few things stand in the way:
 
-** T Rice up my calendar
+*** T Rice up my calendar
 [[https://github.com/ml729/calfw-blocks][calfw-blocks]]
 #+begin_src emacs-lisp :tangle no
 (use-package calfw-blocks
@@ -596,9 +601,8 @@ I have started getting my org calendar and nextcloud calendar integrated. A few 
 (require 'laas)
 #+end_src
 
-
-** T Prettify org properties and uid for cal management
-** Date Formats
+*** T Prettify org properties and uid for cal management
+*** Date Formats
 Custom date formats
 #+begin_src emacs-lisp
 ;(setq-default org-display-custom-times t)
@@ -607,7 +611,7 @@ Custom date formats
 (setq cfw:event-format-overview "%s - %e : %l")
 
 #+end_src
-** Holidays
+*** Holidays
 #+begin_src emacs-lisp
 (setq calendar-holidays '((holiday-fixed 1 1 "New Year's Day")
         (holiday-float 1 1 3 "Martin Luther King Day")
@@ -652,7 +656,7 @@ Custom date formats
                                   (float 60))
                                calendar-daylight-time-zone-name)))))
 #+end_src
-** Org-Caldav
+*** Org-Caldav
 Syncs org events with my caldav nextcloud calendar.
 Login info ist encrypted and stored in ~~/.authinfo.gpg~
 #+begin_src emacs-lisp
@@ -675,8 +679,99 @@ Login info ist encrypted and stored in ~~/.authinfo.gpg~
 
 From the example: what does this do?
 ~:skip-conditions (regexp "soccer")~
-* Link Insertion
-** Modifying link insertion
+* Roam, Attach, Links, Exports
+** Roam
+
+#+begin_src emacs-lisp
+(after! org
+ (setq org-roam-directory (concat org-directory "/.roam")
+       org-roam-db-autosync-mode t
+       org-id-locations-file (concat org-directory "/.roam/.orgids"))
+  )
+
+;; org roam keybinds
+(map! :leader
+      (:prefix ("r" . "roam")
+        :desc "Find node"                  "f" #'org-roam-node-find
+        :desc "Insert node"                "i" #'org-roam-node-insert
+        :desc "Capture to node"            "c" #'org-roam-capture
+       ;:desc "Find ref"                   "F" #'org-roam-ref-find
+       ;:desc "Show graph"                 "g" #'org-roam-graph
+       ;:desc "Toggle roam buffer"         "b" #'org-roam-buffer-toggle
+       ;:desc "Launch roam buffer"         "B" #'org-roam-buffer-display-dedicated
+       ;:desc "Sync database"              "s" #'org-roam-db-sync
+       ;:desc "Add ref"                    "r" #'org-roam-ref-add
+       ;:desc "Add alias"                  "a" #'org-roam-alias-add))
+        ))
+;;      (:prefix ("d" . "by date")
+;;          :desc "Arbitrary date"     "d" #'org-roam-dailies-find-date
+;;          :desc "Today"              "t" #'org-roam-dailies-find-today
+;;          :desc "Tomorrow"           "m" #'org-roam-dailies-find-tomorrow
+;;          :desc "Yesterday"          "y" #'org-roam-dailies-find-yesterday
+;;          :desc "Goto previous note" "b" #'org-roam-dailies-goto-previous-note
+;;          :desc "Goto date"          "d" #'org-roam-dailies-goto-date
+;;          :desc "Capture date"       "D" #'org-roam-dailies-capture-date
+;;          :desc "Goto next note"     "f" #'org-roam-dailies-goto-next-note
+;;          :desc "Goto tomorrow"      "m" #'org-roam-dailies-goto-tomorrow
+;;          :desc "Capture tomorrow"   "M" #'org-roam-dailies-capture-tomorrow
+;;          :desc "Capture today"      "n" #'org-roam-dailies-capture-today
+;;          :desc "Goto today"         "t" #'org-roam-dailies-goto-today
+;;          :desc "Capture today"      "T" #'org-roam-dailies-capture-today
+;;          :desc "Goto yesterday"     "y" #'org-roam-dailies-goto-yesterday
+;;          :desc "Capture yesterday"  "Y" #'org-roam-dailies-capture-yesterday
+;;          :desc "Find directory"     "-" #'org-roam-dailies-find-directory)))
+#+end_src
+** Attach
+
+Setting the folder where all org-attached files are kept. For the time being I'm going to keep all of my various papers in there because it's the easiest to keep track of why I care about each one.
+#+begin_src emacs-lisp
+(after! org
+  (setq org-attach-id-dir (concat org-directory "/.attach")))
+#+end_src
+
+*** T org attach cd
+would be nice to have an advice around org attach to cd to downloads and then back at the end
+*** T org attach linking to pages
+check out command passthrough for sioyek, so i can link to a specific page in a file.
+*** T org-attach and org-cliplink
+would be cool to make a merge of org-attach and org-cliplink where you can insert a url from clipboard and make an org-attach headline for it
+*** T org-attach reading
+**** Does anyone use org-attach a lot?
+https://www.reddit.com/r/orgmode/comments/p9i2og/does_anyone_use_org_attach_a_lot/
+**** Reddit comment
+Use org-mode's attachment functionality to create a file-system abstraction document/tree. This gives you massive tagging, searching, and metadata potential. A plain-text database, basically.
+
+The beauty of org-attach is that it files the document away into a directory based on a unique hashed id. What this means, in practice, is that instead of being concerned or even thinking about files and folders, and naming conventions, you are instead thinking in terms of abstract entities/nodes (which can be as descriptive as you like), or indeed simply linking files based on context; i.e. the files are attached to the node to which their content pertains. This is far more akin to naturalistic thinking. Humans don't naturally think in terms of file-system trees. We tend to think far more contextually.
+
+This is very powerful.
+
+I teach English here in Thailand, and I have just recently setup a giant 'teaching.org" file (under Emacs built in RCS version control). Each student gets their own subtree. Within that subtree are then child nodes based various categories, including one called "Lessons". Every single individual lesson is then a hierarchical set of nodes under that one (which I can easily subtree-export to a final document/PDF, or view in an indirect buffer to see it as a self-contained 'fresh' document).
+
+Now, as you can probably imagine, teaching individual students one-to-one involves lots of different worksheets, links to particular websites, YouTube videos, assorted documents -- all sorts of files. Instead of having to think about keeping this all organised, instead I use org-attach to simply attach (and move the original source file) to the relevant node accordingly. Every file is then where it should be based on its conceptual context, rather than its filesystem hierarchy. No more worrying about filename or directory naming. It's simply attached to the descriptive node making it clear what precisely it is and under what context it is meaningful. I am then easily able to open it from there. With the amount of files and individual stuff I needed to collate for each student, it was a nuisance. And even if I create a separate directory per student, after I finish teaching them/during our lesson sequence, I'll develop lesson materials that I'll want to re-purpose/generalise for my more general teaching materials. What do I do here? Copy the files somewhere else, and symlink to them? Move them, and try to remember their new location? And with dozens of files all with similar-ish filenames, tracking files based on filename and directory location alone quickly becomes quite a poor way of dealing with data, and I don't want to spend forever individually renaming files trying to come up with some unique convention.
+
+Org-mode allows you completely take a step back. What this means is, you can completely clear all the clutter of your user-land self-contained and random documents by intelligently embedding them via org attach to an intelligent and meaningful contextual location in your org files. You never deal with the actual directory/sub-directories containing the files themselves. After all, who cares what the actual filename is. It is the content that matters. We want to have an idea of the content without having to actually physically open each file in its particular application manually. So we create metadata in an org-file and let org-mode handle the opening/linking to the files you're interested in. Files are always associated with SOMETHING -- not just a floating entity. It might be an idea or it might be a concrete project.
+
+Similarly, if you do confuse yourself, finding a file is dead easy: simply perform a text search on the org file for any related descriptive term. Assuming you've typed any sort of meaningful relevant context, you'll almost certainly find it immediately.
+
+Needless to say, organising your files this way leverages the full power of the org-mode organisational system. Need to do some action with the related files at some point? Create a (scheduled) todo. Don't think you need them, but want to keep them just in case? Archive them. Need to create many links to the same original file? Simply copy and paste the node properties with the attachment details (assuming your new org file/location is still in the same root directory); means there is no pollution of your file-system with symbolic links.
+
+Instead of having hundreds, or indeed thousands of individual files, instead you now only need to think in terms of a small handful of large org files, which you have created after sitting down and considering the few main "categories" of whatever it is you actually do in your life/need (want) your computer for.
+
+"I'm remember something about some notes I took on some interesting music I want to check out... Where did I put it?"
+
+"...Ah, OK, so it will be in my 'recreation.org' file somewhere. Let's open it..."
+
+"So, where now... Let's see, ah, I've got a tree called "music". OK, quite a of nodes here. Now where..."
+
+"Ah, it'll be in the 'music to check out' node... Oh look, there a few other thins I wanted to check out, I added some links here."
+
+"Ah, there we go. It was a PDF file I downloaded off a review website. Let's open the org-attachment..."
+
+That's my suggestion anyway :-)
+
+** Link Insertion
+
+*** Modifying link insertion
 Create a function to modify the behaviour of link insertion, so if on a whitespace character, it inserts ahead of point instead of at point. It does this by just inserting a space before the link-insertion runs.
 #+begin_src emacs-lisp
 (defun org-insert-link--add-space-after (&rest args)
@@ -689,7 +784,7 @@ Create a function to modify the behaviour of link insertion, so if on a whitespa
 (advice-add 'custom-org-cliplink :around 'org-insert-link--add-space-after)
 #+end_src
 
-** Org-cliplink
+*** Org-cliplink
 Cliplink is specifically for copying urls into org. This contacts the site and retrieves the name of the webpage. However, I also add in some specific extra cases for domains I retrieve links from often,
 #+begin_src emacs-lisp
 (defun custom-org-cliplink ()
@@ -707,10 +802,10 @@ Cliplink is specifically for copying urls into org. This contacts the site and r
        ;; forward the title to the default org-cliplink transformer
        (org-cliplink-org-mode-link-transformer url clean-title)))))
 #+end_src
-*** T Options
+**** T Cliplink Insertion Options
 Would like to learn about interactive functions, giving the option for cliplink to give /options/ when clipping a link. For example, here's a github page title:
 
-** T Better Link Insertion
+*** T Better Link Insertion
 As of now I'm doing a weird ~org-insert-link~ which is a bit clunky as it requires ~C-Y~ for pasting the link. I like ~org-cliplink~ but it seeks out the title of the page. Might be nice for putting in rules like Github, but I would also like to find or make my own function that takes the link from the clipboard but prompts for the description.
 
 - [ ] add a bind for going back after clicking a link: ~org-mark-ring-goto~
@@ -720,67 +815,49 @@ As of now I'm doing a weird ~org-insert-link~ which is a bit clunky as it requir
 - [ ] internal link naming for following the tree structure: e.g. Org/Keymap
 - [X] add space before insertion
 
-* Evil Keymap
+** Export
+
+Exporting from Org-mode is one of my favorite features. My main use cases are for word-heavy LaTeX docs, and into nice html files.
+
+*** LaTeX
 #+begin_src emacs-lisp
-(map! :map evil-org-mode-map :m :prefix "g"
-      ;; left and right
-      :m "h" 'evil-first-non-blank-of-visual-line
-      :m "l" 'evil-end-of-visual-line
-      ;; up and down
-      :m "H" 'evil-org-top
-      :m "K" 'org-up-element
-      :m "k" 'org-backward-heading-same-level
-      :m "J" 'org-down-element
-      :m "j" 'org-forward-heading-same-level
-      )
-#+end_src
-I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So instead of using ~evil-respect-visual-line-mode~, just rebind these two commands to their visual counterparts. Still need to somehow make this happen only in org mode ideally.
-#+begin_src emacs-lisp
-(map! :map evil-motion-state-map
-      "j" 'evil-next-visual-line
-      "k" 'evil-previous-visual-line
-      )
-#+end_src
-* Export
-** LaTeX
-#+begin_src emacs-lisp :tangle no
 (setq org-latex-default-packages-alist nil
-      org-latex-toc-command nil
-      org-latex-hyperref-template nil)
-      org-format-latex-options (plist-put org-format-latex-options :scale 2.0)
+     org-latex-hyperref-template nil
+     org-export-with-date nil)
+     ;org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
 
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
 
 (eval-after-load 'org
-  '(setf org-highlight-latex-and-related '(latex)))
+  '(setf org-highlight-latex-and-related '(script entities latex)))
+  ;'(setf org-highlight-latex-and-related '(latex)))
 
-(setq org-latex-classes
-   '(("my-article" "
-\\documentclass[10pt,a4paper]{article}
-\\include{~/.config/latex/prelude}
-
-\\usepackage{hyperref}
-\\hypersetup{
-  colorlinks=true,
-  linkcolor=[rgb]{0,0.37,0.53},
-  citecolor=[rgb]{0,0.47,0.68},
-  filecolor=[rgb]{0,0.37,0.53},
-  urlcolor=[rgb]{0,0.37,0.53},
-  pagebackref=true,
-  linktoc=all,}"
-      ("\\section{%s}" . "\\section*{%s}")
-      ("\\subsection{%s}" . "\\subsection*{%s}")
-      ("\\paragraph{%s}" . "\\paragraph*{%s}")
-      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
-)))
+(setq org-latex-packages-alist '(("" "thain" nil))
+      org-latex-default-class "tufte"
+      org-latex-toc-command ""
+      org-latex-classes
+       '(("tufte" "\\documentclass{tufte-handout}"
+            ("\\section{%s}" . "\\section{%s}")
+            ("\\subsection{%s}" . "\\subsection{%s}"))
+         ("article" "\\documentclass{article}"
+            ("\\section{%s}" . "\\section*{%s}")
+            ("\\subsection{%s}" . "\\subsection*{%s}"))
+         ("tufte-numberless" "\\documentclass{tufte-handout}"
+            ("\\section{%s}" . "\\section*{%s}")
+            ("\\subsection{%s}" . "\\subsection*{%s}"))
+         ("tufte-book" "\\documentclass{tufte-book}"
+            ("\\section{%s}" . "\\section*{%s}")
+            ("\\subsection{%s}" . "\\subsection*{%s}")))
+       ; org-latex-text-markup-alist '()
+         )
 #+end_src
-** HTML
-** T Custom org backend
+*** HTML
+*** T Custom org backend
 [[Https://www.reddit.com/r/emacs/comments/swvbmm/you_want_to_write_a_custom_org_backend_lets_write/][reddit post]]
 * Inactive
 ** Journal
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (after! org-journal
   (setq org-journal-dir (concat org-directory "/journal/")
         org-journal-file-type 'weekly))
@@ -795,48 +872,6 @@ I want visual lines with ~j~ and ~k~, but buffer lines for ~A~, ~D~, etc. So ins
         :desc "Previous Entry"      "p" #'org-journal-previous-entry))
 
 #+end_src
-** Roam
-#+begin_src emacs-lisp :tangle no
-;; org roam config
-;;  manual told me to, something  about cache consistency and having roam available on startup
-;;(org-roam-db-autosync-mode)
-
-(setq org-roam-directory ( concat org-directory "/roam" )
-      org-id-locations-file ( concat org-directory "/roam/.orgids" ))
-
-;; org roam keybinds
-(map! :leader
-      (:prefix ("r" . "roam")
-        :desc "Find node"                  "f" #'org-roam-node-find
-        :desc "Find ref"                   "F" #'org-roam-ref-find
-        :desc "Show graph"                 "g" #'org-roam-graph
-        :desc "Insert node"                "i" #'org-roam-node-insert
-        :desc "Capture to node"            "c" #'org-roam-capture
-        :desc "Toggle roam buffer"         "b" #'org-roam-buffer-toggle
-        :desc "Launch roam buffer"         "B" #'org-roam-buffer-display-dedicated
-        :desc "Sync database"              "s" #'org-roam-db-sync
-        :desc "Add ref"                    "r" #'org-roam-ref-add
-        :desc "Add alias"                  "a" #'org-roam-alias-add))
-;;         (:prefix ("d" . "by date")
-;;                 :desc "Arbitrary date" "d" #'org-roam-dailies-find-date
-;;                 :desc "Today"          "t" #'org-roam-dailies-find-today
-;;                 :desc "Tomorrow"       "m" #'org-roam-dailies-find-tomorrow
-;;                 :desc "Yesterday"      "y" #'org-roam-dailies-find-yesterday
-;;                 :desc "Goto previous note"        "b" #'org-roam-dailies-goto-previous-note
-;;                 :desc "Goto date"                 "d" #'org-roam-dailies-goto-date
-;;                 :desc "Capture date"              "D" #'org-roam-dailies-capture-date
-;;                 :desc "Goto next note"            "f" #'org-roam-dailies-goto-next-note
-;;                 :desc "Goto tomorrow"             "m" #'org-roam-dailies-goto-tomorrow
-;;                 :desc "Capture tomorrow"          "M" #'org-roam-dailies-capture-tomorrow
-;;                 :desc "Capture today"             "n" #'org-roam-dailies-capture-today
-;;                 :desc "Goto today"                "t" #'org-roam-dailies-goto-today
-;;                 :desc "Capture today"             "T" #'org-roam-dailies-capture-today
-;;                 :desc "Goto yesterday"            "y" #'org-roam-dailies-goto-yesterday
-;;                 :desc "Capture yesterday"         "Y" #'org-roam-dailies-capture-yesterday
-;;                 :desc "Find directory"            "-" #'org-roam-dailies-find-directory)))
-
-#+end_src
-
 * Footer
 #+begin_src emacs-lisp
 (provide 'org-mode)

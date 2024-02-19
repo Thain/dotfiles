@@ -17,15 +17,11 @@ TAB
 c-RET
 s-RET
 
-** Preview Pane
-
-- Toggling preview pane mode on a mode-specific bind
-- Hook preview pane mode to delete all other windows, before opening in its own window
 ** T Improving Input
 
 As per the articles by [[https://castel.dev/post/lecture-notes-1/][Gilles Castel]] and [[https://karthinks.com/software/latex-input-for-impatient-scholars/#snippets-snap-easy][Karthik Chikmagalur]], I want to improve my LaTeX input. There are a few ways to do this, and I'd like to more or less commit to one that is specifically helpful for what I write. Importantly, these all need to happen in ~insert-mode~, and will most likely rely in a large way on ~TAB~ and potentially ~;~.
 
-SoMe particularly difficult things I do fairly often:
+Some particularly difficult things I do fairly often:
 - Subscripts and superscripts
   - some just plain n, n-1, n+1, also for k, i, j
   - some numbers like 0,1, etc
@@ -36,6 +32,7 @@ SoMe particularly difficult things I do fairly often:
 - Escaped set brackets
 
 New DOOM-specific article dropped: [[https://michaelneuper.com/posts/efficient-latex-editing-with-emacs/][Michael Neuper]]
+
 *** YASnippet
 
 YASnippet is in some sense the standard. By default in doom, expanding a snippet at point is done with TAB. A lot of my problems may be solved if I could somehow switch this to SPC.
@@ -45,31 +42,52 @@ YASnippet is in some sense the standard. By default in doom, expanding a snippet
 *** CDLaTeX
 
 CDLaTeX is lauded and allegedly has a solid heuristic for TAB movement.
-GiThub repo [[https://github.com/cdominik/cdlatex][here]]
+Github repo [[https://github.com/cdominik/cdlatex][here]]
 
 *** Auto Expanding Snippets
 
-ThEse snippets expand as soon as they're finished being typed.
-ThEre is a huge list of solid ones [[https://github.com/tecosaur/LaTeX-auto-activating-snippets/tree/master#annoying-subscripts][here]]
+These snippets expand as soon as they're finished being typed.
+There is a huge list of solid ones [[https://github.com/tecosaur/LaTeX-auto-activating-snippets/tree/master#annoying-subscripts][here]]
+
 ** T cdlatex move to ; and start using it
 * Config
 Basic config
 #+begin_src emacs-lisp
+(custom-set-variables
+  '(TeX-view-program-list
+    '(("Sioyek"
+      ("sioyek %o --reuse-window"
+        (mode-io-correlate " --forward-search-file %b --forward-search-line %n --inverse-search \"emacsclient --no-wait +%2:%3 %1\""))
+       "sioyek")))
+ '(TeX-view-program-selection
+   '(((output-dvi has-no-display-manager)
+      "dvi2tty")
+     ((output-dvi style-pstricks)
+      "dvips and gv")
+     (output-dvi "xdvi")
+     (output-pdf "Sioyek") ;; Here. By default this was "Evince" on my machine.
+     (output-html "xdg-open"))))
+
+(add-hook 'LaTeX-mode-hook #'TeX-source-correlate-mode)
+(with-eval-after-load 'latex
+(define-key TeX-source-correlate-map [C-down-mouse-1] #'TeX-view-mouse))
+
+
 ;;(setq +latex-viewers '(pdf-tools))
 ;; (setq TeX-view-program-list '(("Sioyek" "sioyek %o")))
 ;; (setq TeX-view-program-selection '((output-pdf "Sioyek")))
-(setq +latex-viewers '(sioyek))
-
-(setq TeX-view-program-list
-        ;; '(("Sioyek" ("sioyek %o --reuse-instance"
-        '(("Sioyek" ("sioyek %o"
-        (mode-io-correlate " --forward-search-file %b --forward-search-line %n --inverse-search \"emacsclient --no-wait +%2:%3 %1\"")) "sioyek"))
-      TeX-view-program-selection
-        '(((output-dvi has-no-display-manager) "dvi2tty")
-          ((output-dvi style-pstricks)  "dvips and gv")
-          (output-dvi "xdvi")
-          (output-pdf "Sioyek")
-          (output-html "xdg-open")))
+;;(setq +latex-viewers '(sioyek))
+;;
+;;(setq TeX-view-program-list
+;;        ;; '(("Sioyek" ("sioyek %o --reuse-instance"
+;;        '(("Sioyek" ("sioyek %o"
+;;        (mode-io-correlate " --forward-search-file %b --forward-search-line %n --inverse-search \"emacsclient --no-wait +%2:%3 %1\"")) "sioyek"))
+;;      TeX-view-program-selection
+;;        '(((output-dvi has-no-display-manager) "dvi2tty")
+;;          ((output-dvi style-pstricks)  "dvips and gv")
+;;          (output-dvi "xdvi")
+;;          (output-pdf "Sioyek")
+;;          (output-html "xdg-open")))
 
 ;; latex config
 (use-package tex

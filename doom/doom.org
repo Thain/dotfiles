@@ -2,6 +2,7 @@
 #+TITLE: Literate Configuration
 #+STARTUP: overview hideblocks
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.config/doom/config.el
+#+FILETAGS: :config:emacs:doom:
 
 Externally loaded configs:
 - [[file:keybinds.org][Keybinds]]
@@ -10,7 +11,7 @@ Externally loaded configs:
 
 * Inbox
 There will always be a list of small things to do that I'll capture here.
-** TODO New Apps
+**  New Apps
 *** Mu4e back up and running
 *** Multiple cursors
 *** Info plus
@@ -19,31 +20,27 @@ There will always be a list of small things to do that I'll capture here.
 *** Helm, vertico, ivy, ido?
 *** =calendar, cfw, calfw
 *** Symon, proced, helm-top
-*** Org-contacts
 *** Ledger
   - [[https://orgmode.org/worg/org-tutorials/weaving-a-budget.html][org tutorial]]
   - [[https://www.ledger-cli.org/3.0/doc/ledger3.html#Introduction-to-Ledger][the manual]]
 *** Dired-du
-*** Org-attach
-  - a lil reddit [[https://www.reddit.com/r/orgmode/comments/p9i2og/does_anyone_use_org_attach_a_lot/][writeup]]
-  - and yet [[https://www.reddit.com/r/emacs/comments/ag2lt8/organize_your_hard_drive_with_emacs/][another]]
-*** Org-roam
-  - topics
-    - emacs/org
-    - web dev
-    - linux
-    - rpg
-    - math
-  - jethro kuan [[https://jethrokuan.github.io/org-roam-guide/][how i take notes with org roam]]
-** TODO C-RET and S-RET in dired open file in other window or something
-** TODO capture in minibuffer
-** TODO swap c-r and R to make redoing easier
-** TODO put "move line up/down" on alt k/j
-** TODO cap J/K for scrolling whole window
-** TODO use magit to push my dots onto github
-** TODO turn off cdlatex by default
-** TODO project-search ignore archived files
-** TODO check out webjump
+*** T Exploring Proced
+[[https://laurencewarne.github.io/emacs/programming/2022/12/26/exploring-proced.html][Exploring Proced]]
+*** T [[https://github.com/stsquad/dired-rsync][dired rsync]]
+** N turn off cdlatex by default
+** T project-search ignore archived files
+** T check out webjump
+** T ssh from emacs not working
+** T Don't move buffer view when unfolding
+** T vertico dot files
+[[https://github.com/minad/vertico/issues/245][minad/vertico#245 Support two levels of details for file completion]]
+* Quarantine Zone
+This is the area for new things I'm trying out or testing out; it's also good for when I've not yet decided where in my config I want it to live, but want it to be active in my configuration.
+#+begin_src emacs-lisp
+(openwith-mode t)
+(setq openwith-associations '(("\\.pdf\\'" "sioyek" (file))))
+#+end_src
+
 * Initial setup
 ** Name & Email
 Some functionality uses this for identification, e.g. GPG configuration, email clients, file templates and snippets.
@@ -53,23 +50,7 @@ Some functionality uses this for identification, e.g. GPG configuration, email c
 #+end_src
 
 ** Startup
-Set the ascii banner to be my ascii function, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
-#+begin_src emacs-lisp :tangle no
-(defun doom-dashboard-draw-ascii-emacs-banner-fn ()
-  (let* ((banner
-          '(",---.,-.-.,---.,---.,---."
-            "|---'| | |,---||    `---."
-            "`---'` ' '`---^`---'`---'"))
-         (longest-line (apply #'max (mapcar #'length banner))))
-    (put-text-property
-     (point)
-     (dolist (line banner (point))
-       (insert (+doom-dashboard--center
-                +doom-dashboard--width
-                (concat line (make-string (max 0 (- longest-line (length line))) 32)))
-               "\n"))
-     'face 'doom-dashboard-banner)))
-#+end_src
+Create a function that returns my nice pretty flower ascii art.
 #+begin_src emacs-lisp
 (defun a-very-pretty-flower ()
   (let* ((banner '("                              ....                                  "
@@ -115,6 +96,8 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
                "\n"))
      'face 'doom-dashboard-banner)))
  #+end_src
+
+Setting the ascii art to appear on startup, remove the default menu and footer, and lastly, remove the need for the cursor to display in the dashboard buffer.
 #+begin_src emacs-lisp
 ; (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn)
 (setq +doom-dashboard-ascii-banner-fn #'a-very-pretty-flower)
@@ -124,8 +107,12 @@ Set the ascii banner to be my ascii function, remove the default menu and footer
 (setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor nil)
 #+end_src
 
-#+begin_src emacs-lisp
-(add-hook 'after-init-hook (lambda () (find-file "~/documents/org/gtd/inbox.org")))
+Opening a specific file on startup
+#+begin_src emacs-lisp :tangle no
+(add-hook 'after-init-hook (lambda () (progn
+                                  (find-file "~/documents/org/gtd/inbox.org")
+                                  (cd "~/")
+                                     )))
 #+end_src
 ** Theme
 My theme, with some old ones I've used thrown in.
@@ -146,41 +133,34 @@ My theme, with some old ones I've used thrown in.
 (set-frame-parameter nil 'alpha-background 90)
 #+end_src
 
-#+RESULTS:
-
 ** Misc stuff
+When opening file, read number of lines and add width to line number column
 #+begin_src emacs-lisp
-;; i think it should work better now since i put snippets back in packages.el?
-;;(setq doom-snippets-dir "~/.doom.d/snippets/")
-;;(setq +file-templates-dir "~/.doom.d/snippets/")
-(set-file-template! "\\.tex$" :trigger "latex-default")
-;;(yas-reload-all)
-
-;; when opening file, read number of lines and add width to line number column
 (defun display-line-numbers-equalize ()
   (setq display-line-numbers-width (length (number-to-string (line-number-at-pos (point-max))))))
 (add-hook 'find-file-hook 'display-line-numbers-equalize)
+#+end_src
 
-;; Hide the tabs since I don't want to click on them
+Hide the tabs since I don't want to click on them
+#+begin_src emacs-lisp
 (setq tab-bar-show nil
       desktop-save-mode t)
 #+end_src
+
 ** Mode hooks
 Require modes and set default modes for file extensions
 #+begin_src emacs-lisp
-(require 'web-mode)
-(require 'pdf-tools)
+;(require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.html\;" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php\;" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.js\;" . js-mode))
-;(add-to-list 'auto-mode-alist '("\\.fish\;" . fish-mode))
-(add-to-list 'auto-mode-alist '("\\.pdf\;" . pdf-tools))
 
 (use-package! kbd-mode)
 (add-to-list 'auto-mode-alist '("\\.kbd\;" . kbd-mode))
 
 #+end_src
-** Modeline
+
+** T Modeline
 #+begin_src emacs-lisp
 ; (use-package lambda-line
 ;   :custom
@@ -214,7 +194,7 @@ Some setup for using the ~info~ mode
 )
 #+end_src
 * Dired
-** Config                                           :CLEAN:
+** Config
 *** Dired ls options, recursive copying and deleting
 it seems -p doesn't work as it messes up the "R" mv to rewriting when you try to move multiple directories.
 #+begin_src emacs-lisp
@@ -570,70 +550,6 @@ p                         emms-previous
 q                         #<anonymous-function>
 r                         emms-random
 s                         emms-stop
-* Inactive
-** Mastodon                                    :NOT_IN_USE:
-#+begin_src emacs-lisp
-;; mastodon config
-;;(setq mastodon-instance-url "https://mathstodon.xyz" mastodon-active-user "thain")
-#+end_src
-** Vterm
-#+begin_src emacs-lisp
-;; vterm config
-;; (after! vterm
-;;   (setq vterm-shell "/usr/bin/fish"
-;;         vterm-ignore-blink-cursor nil))
-#+end_src
-** PDF
-*** Hooks for pdf viewing                           :CLEAN:
-#+begin_src emacs-lisp
-(add-hook 'pdf-outline-buffer-mode-hook #'pdf-outline-hook)
-(add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode)
-
-(defun pdf-outline-hook ()
-  (display-line-numbers-mode -1) ;; don't display line numbers
-  (setq left-margin-width 2)     ;;
-  (outline-hide-sublevels 1))
-
-#+end_src
-open pdfs scaled to fit page
-#+begin_src emacs-lisp
-(after! pdf-tools
-  (setq-default pdf-view-display-size 'fit-page))
-#+end_src
-automatically annotate highlights
-#+begin_src emacs-lisp
-(after! pdf-tools
-  (setq pdf-annot-activate-created-annotations t))
-
-(setq pdf-view-use-scaling t)
-(setq pdf-view-midnight-invert nil)
-#+end_src
-*** keymap                                          :CLEAN:
-#+begin_src emacs-lisp
-(map! :after pdf-tools
-      :map pdf-isearch-active-mode-map
-      [return]  'isearch-repeat-forward
-      "ESC"     'isearch-cancel
-      )
-
- (custom-set-faces!
-   '(pdf-isearch-match :background "MediumSeaGreen"))
-
-#+end_src
-*** centering when zooming
-want to recenter the document when zooming in or out.
-The relevant functions are:
-- ~pdf-view-shrink~
-- ~pdf-view-enlarge~
-#+begin_src emacs-lisp
-(defun pdf-zoom-in ()
-  (pdf-view-shrink)
-  (pdf-view-center-in-window))
-
-(defun pdf-zoom-out ()
-  (pdf-view-enlarge)
-  (pdf-view-center-in-window))
-#+end_src
 * External loading
 Loading files containing longer, self-contained bits of configuration.
 #+begin_src emacs-lisp
@@ -802,7 +718,7 @@ Loading files containing longer, self-contained bits of configuration.
        ;;nim               ; python + lisp at the speed of c
        nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       org               ; organize your plain life in plain text
+       (org +roam2)               ; organize your plain life in plain text
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
@@ -861,6 +777,11 @@ Loading files containing longer, self-contained bits of configuration.
 ;(package! svg-tag-mode)
 ;;(package! fish-mode)
 ;;(package! mastodon)
+
+;; openwith for opening files externally
+(package! openwith
+  :recipe (:host github
+           :repo "garberw/openwith"))
 
 ;; org appear to show rich text contents at point
 (package! org-appear

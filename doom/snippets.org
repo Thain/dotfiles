@@ -2,6 +2,20 @@
 
 The home for all of my snippets.
 
+* T auto inserting code snippet for code in org
+* T file templates
+#+begin_src emacs-lisp
+;; i think it should work better now since i put snippets back in packages.el?
+;;(setq doom-snippets-dir "~/.doom.d/snippets/")
+;;(setq +file-templates-dir "~/.doom.d/snippets/")
+(set-file-template! "\\.tex$" :trigger "latex-default")
+;;(yas-reload-all)
+
+#+end_src
+
+* T snippet ideas
+** catc and catd
+may also end up doing these as entities or something.
 * TODO Making Snippet Set
 - [[https://www.youtube.com/watch?v=W-bRZlseNm0][jake b video]]
 - [[https://www.youtube.com/watch?v=xmBovJvQ3KU][jack of some]]

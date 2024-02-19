@@ -1,5 +1,6 @@
 #+title: Desktop Environment
 #+property: header-args:conf :tangle ~/.config/hypr/hyprland.conf
+#+FILETAGS: :config:hypr:
 
 The Desktop Environment I've created, using:
 - Hyprland, with Hyprpaper
@@ -9,6 +10,7 @@ The Desktop Environment I've created, using:
 
 * Inbox
 ** Desktop Functionality
+*** D nix hyprland group tabs
 *** fuzzel adding features
 - networkmanager_dmenu
 - dmenu [[https://github.com/huijunchen9260/dmenufm?ref=mark.stosberg.com][file browser]]
@@ -123,6 +125,7 @@ exec-once = syncthing
 exec-once = udiskie
 #+end_src
 * Appearance
+** Windows
 #+begin_src conf
 # Some default env vars.
 env = XCURSOR_SIZE,24
@@ -169,15 +172,17 @@ decoration {
 }
 
 group {
-    col.border_active = 0x66ffff00
+    col.border_active = rgba(66ccffee) rgba(66ff99ee) 45deg
+    col.border_inactive = rgba(595959aa)
    groupbar {
-    # font_family	font used to display groupbar titles	string	Sans
-    # enabled = true
-    font_size = 14
-    gradients = false
-    render_titles = false
-    col.active = 0x44ffffff
-    col.inactive = 0x22ffffff
+    font_family = Source Sans Pro
+    enabled = true
+    text_color = 0xff000000
+    font_size = 18
+    gradients = true
+    render_titles = true
+    col.active = 0x99ccffee
+    col.inactive = 0x888989aa
    }
 }
 #+end_src
