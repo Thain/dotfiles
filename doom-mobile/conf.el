@@ -340,3 +340,16 @@
 
 (setq-hook! dired-mode line-spacing 2900)
 (setq-default line-spacing 20)
+
+(setq
+ org-roam-directory "~/org/.roam"
+ org-id-locations-file "~/org/.roam/.orgids")
+
+;; org roam keybinds
+(map! :leader
+  (:prefix ("r" . "roam")
+:desc "Find node"   "f" #'org-roam-node-find
+:desc "Find ref"    "F" #'org-roam-ref-find
+:desc "Show graph"  "g" #'org-roam-graph
+:desc "Insert node" "i" #'org-roam-node-insert
+:desc "Sync database" "s" #'org-roam-db-sync))

@@ -1,1 +1,1 @@
-(org-babel-load-file "~/.config/doom/conf.org")
+(org-babel-load-file "./conf.org")
